@@ -30,7 +30,8 @@ symbian:TARGET.CAPABILITY += NetworkServices
 CONFIG += qt-components communi
 
 # The .cpp file which was generated for your project. Feel free to hack it.
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    version.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -39,6 +40,13 @@ qtcAddDeployment()
 RESOURCES +=
 
 OTHER_FILES +=
+
+# Create a macro from the Git describe command, to use in about boxes.
+BUILDSTR = '\\"$$system(git describe)\\"'
+DEFINES += BUILD=\"$${BUILDSTR}\"
+
+HEADERS += \
+    version.h
 
 
 

@@ -36,7 +36,7 @@ Page {
             id: tabButtonServer
             x: 1
             y: 2
-            text: "Server"
+            text: "Not connected"
             tab: outputServer
 
         }

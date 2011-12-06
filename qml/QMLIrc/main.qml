@@ -37,7 +37,7 @@ Window {
         id: aboutDialog
         titleText: "About QTIrc"
         content: Label {
-            text: "QMLIrc v0.0 \n© 2011-12 MarkNotGeorge"
+            text: "QMLIrc " + Version.version() + "\n© 2011-12 MarkNotGeorge"
         }
         buttonTexts: ["OK"]
     }
