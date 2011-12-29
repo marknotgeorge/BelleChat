@@ -1,11 +1,22 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 
+import "TabArray.js" as TabArray
+
+
 
 Page {
+    id: page1
 
-    property string serverOutput : "Welcome to QMLIrc!\n"
-    property string channelOutput : ""
+    Component {
+        id: outputFlickableFactory
+        OutputFlickable {}
+    }
+
+    Component {
+        id: tabButtonFactory
+        TabButton {}
+    }
 
 
     TextField {
@@ -21,10 +32,16 @@ Page {
         anchors.left: parent.left
         anchors.leftMargin: 0
         placeholderText: "Tap to write..."
+        Keys.onReturnPressed: {
+            var page = tabGroup.currentTab
+            console.log(inputField.text);
+            Session.onInputReceived(page.channel, inputField.text);
+            inputField.text = "";
+        }
     }
 
-    TabBar {
-        id: tabbarLayout
+    TabBarLayout {
+        id: tabBarLayout
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left
@@ -32,74 +49,70 @@ Page {
         anchors.top: parent.top
         anchors.topMargin: 0
 
-        TabButton {
-            id: tabButtonServer
-            x: 1
-            y: 2
-            text: "Not connected"
-            tab: outputServer
 
-        }
-
-        TabButton {
-            id: tabButtonChannel
-            x: 465
-            y: 159
-            text: "Channel"
-            tab: outputChannel
-            visible: false
-        }
     }
 
     TabGroup {
-        id: tabgroup1
-        x: 0
-        y: 60
+        id: tabGroup
         anchors.bottomMargin: 0
-        anchors.top: tabbarLayout.bottom
+        anchors.top: tabBarLayout.bottom
         anchors.right: parent.right
         anchors.bottom: inputField.top
         anchors.left: parent.left
         anchors.topMargin: 0
+    }
 
-        OutputFlickable {
-            id: outputServer
-            x: 0
-            y: 60
-            anchors.fill: parent
-            text: serverOutput
+    Component.onCompleted: {
 
+        createTab("Server");
+    }
 
+    function createTab(channel)
+    {
+        var page = outputFlickableFactory.createObject(tabGroup)
+        var button = tabButtonFactory.createObject(tabBarLayout);
+
+        //console.log("Creating tab %s",channel)
+        button.text = channel
+        page.channel = channel
+        page.outputText.text = ""
+        button.tab = page
+        TabHash.insert(channel, button)
+        tabGroup.currentTab = page
+
+    }
+
+    function closeTab(channel)
+    {
+        var button = TabHash.value(channel)
+        if (button)
+        {
+            button.tab.destroy();
+            button.destroy();
         }
 
-        OutputFlickable {
-            id: outputChannel
-            x: -180
-            y: 60
-            anchors.fill: parent
-            text: channelOutput
-            visible: false
+    }
 
 
+    function outputToTab(channel, output) {
+
+        var outputChannel
+        if (channel === Connection.host)
+            outputChannel = "Server"
+        else
+            outputChannel = channel;
+
+        console.log("Writing to ", outputChannel)
+
+        var button = TabHash.value(outputChannel);
+        if (button) {
+           // console.log("Found tab ", outputChannel)
+            var page = button.tab
+            page.outputText.text += output;
+            //console.log("Output length:", output.length)
         }
     }
-
-
-    function showChannelOutput(channel)
-    {
-        tabButtonChannel.text = channel
-        tabButtonChannel.visible = true
-        outputChannel.visible = true
-        tabgroup1.currentTab = outputChannel
-    }
-
-    function hideChannelOutput()
-    {
-        tabButtonChannel.visible = false
-        outputChannel.visible = false
-        tabgroup1.currentTab = outputServer
-        outputChannel.text = ""
-
-    }
-
 }
+
+
+

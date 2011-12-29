@@ -1,36 +1,46 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 
-Window {
+PageStackWindow {
     id: window
     property string lastChannel: "#LastChannel"
     property string currentChannel: ""
+    initialPage: mainPage
+    platformSoftwareInputPanelEnabled: true
 
-
-    StatusBar {
-        id: statusBar
-        anchors.top: window.top
-
+    Component {
+        id: settingsPageFactory
+        SettingsPage {}
     }
+
+
+    Connections {
+        target: Session
+        onOutputString: {
+            mainPage.outputToTab(channel, output);
+        }
+        onConnected: {
+            //console.log("Connected to server!");
+            connectServer.visible = false;
+            mainPage.outputToTab("Server", "Connected to " + Connection.host + "!")
+            disconnectServer.text = "Disconnect from " + Connection.host;
+            disconnectServer.visible = true;
+            buttonJoin.enabled = true;
+        }
+        onDisconnected: {
+            buttonJoin.enabled = false;
+            disconnectServer.visible = false;
+            connectServer.text = "Connect to " + Connection.host;
+            connectServer.enabled = true;
+            connectServer.visible = true;
+        }
+    }
+
 
     MainPage {
         id: mainPage
-        anchors { left: parent.left; right: parent.right; bottom: parent.bottom; top: parent.top }
         tools: serverToolbar
 
-    }
-
-    SettingsPage {
-        id: settingsPage
-        anchors { left: parent.left; right: parent.right; bottom: parent.bottom; top: parent.top }
-        tools: settingsToolBarLayout
-
-    }
-
-    PageStack {
-        id: pageStack
-        anchors { left: parent.left; right: parent.right; top: statusBar.bottom; bottom: toolBar.top }
-        toolBar: toolBar
     }
 
     CommonDialog {
@@ -38,6 +48,7 @@ Window {
         titleText: "About QTIrc"
         content: Label {
             text: "QMLIrc " + Version.version() + "\n© 2011-12 MarkNotGeorge"
+
         }
         buttonTexts: ["OK"]
     }
@@ -46,13 +57,6 @@ Window {
         id: menuMain
 
         content: MenuLayout {
-
-            MenuItem {
-                id: menuItemSettings
-                text: "Settings"
-                onClicked: pageStack.push(settingsPage)
-            }
-
             MenuItem {
                 id: menuItemAbout
                 text: "About QMLIrc"
@@ -94,60 +98,84 @@ Window {
     Menu {
         id: menuJoin
         content: MenuLayout {
-            MenuItem {
-                id: joinLastChannel
-
-                // The text in this menuItem will be the last channel joined
-                text: "Join " + lastChannel
-                onClicked: {
-                    joinChannel(lastChannel)
-                }
-            }
-
-            MenuItem {
-                id: selectChannelFromList
-                text: "Select from list"
-                onClicked: {
-                    selectChannelDialog.open()
-                }
-            }
 
             MenuItem {
                 id: enterChannel
-                text: "Enter channel name"
+                text: "Join Channel..."
                 onClicked: {
                     showChannelDialog(lastChannel)
                 }
 
             }
 
-        }
-    }
-
-    Menu {
-        id: menuPart
-        content: MenuLayout {
             MenuItem {
                 id: partChannel
                 text: "Leave " + currentChannel
+                visible: false
                 onClicked: {
-                    leaveChannel()
+                    leaveChannel(currentChannel)
                 }
-
             }
 
             MenuItem {
-                id: showUsers
-                text: "Show users"
+                id: selectChannelFromList
+                text: "Select from list"
+                visible: false
+                onClicked: {
+                    selectChannelDialog.open()
+                }
             }
         }
     }
 
-    ToolBar {
-        id: toolBar
-        anchors.bottom: window.bottom
-
+    QueryDialog {
+        id: queryDisconnect
+        titleText: "Disconnect from " + Connection.host +"?"
+        message: "Are you sure you wish to disconnect?"
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
+        onAccepted: {
+            Session.close();
+        }
     }
+
+
+    Menu {
+        id: menuConnect
+        content: MenuLayout {
+            MenuItem {
+                id: connectServer
+                text: "Connect to " + Connection.host
+                onClicked: {
+                    Session.updateConnection();
+                    var connectingString = "Connecting to " + Connection.host +"..."
+                    text = connectingString
+                    //mainPage.outputToTab("Server", connectingString)
+                    connectServer.enabled = false;
+                    Session.open();
+                }
+
+            }
+            MenuItem {
+                id: disconnectServer
+                text: "Disconnect"
+                visible: false
+                onClicked: {
+                    queryDisconnect.open();
+                }
+            }
+
+            MenuItem {
+                id: menuItemSettings
+                text: "Settings"
+                onClicked: {
+                    var settingsPage = settingsPageFactory.createObject(mainPage);
+                    pageStack.push(settingsPage)
+                }
+            }
+        }
+    }
+
 
     ToolBarLayout {
         id: serverToolbar
@@ -159,19 +187,14 @@ Window {
         }
 
         ToolButton {
-
             id: buttonConnect
             flat: true
             iconSource: "icon-connect.svg"
             onClicked: {
-
+                menuConnect.open()
             }
 
         }
-
-
-
-
 
         ToolButton {
             x:2
@@ -181,11 +204,12 @@ Window {
             visible: true
             enabled: false
             onClicked: {
-                if (currentChannel == "")
-                    menuJoin.open()
+                var curtab = mainPage.currentTabText
+                if(curtab === "Server" || curtab === "")
+                    partChannel.visible = false;
                 else
-                    menuPart.open()
-
+                    partChannel.visible = true;
+                menuJoin.open()
             }
 
         }
@@ -202,58 +226,35 @@ Window {
             iconSource: "toolbar-menu"
             flat: true
             onClicked: {
-                menuMain.open()
+                aboutDialog.open()
             }
 
         }
     }
 
-
-
-    ToolBarLayout {
-        id: settingsToolBarLayout
-
-        ToolButton {
-            flat: true
-            iconSource: "toolbar-back"
-            onClicked: pageStack.pop()
-        }
-    }
-
     Component.onCompleted: {
-        pageStack.push(mainPage)
+        var outputString = "Welcome to QMLIrc " + Version.version() +"!\n"
+        mainPage.outputToTab("Server", outputString)
 
-    }
-
-    function outputToServer(output)
-    {
-        mainPage.serverOutput += output
-    }
-
-    function outputToChannel(output)
-    {
-        mainPage.channelOutput += output
     }
 
     function joinChannel(channel)
     {
-        outputToServer("Joining channel " + channel + " ...\n")
+
+
+        //mainPage.outputToTab("Server", "Joining channel " + channel + " ...")
         // This is where the actual channel joining code goes...
-
-        mainPage.showChannelOutput(channel)
-
+        Session.joinChannel(channel)
+        mainPage.createTab(channel)
         // Set lastChannel to channel...
         lastChannel = channel
         currentChannel = channel
     }
 
-    function leaveChannel()
+    function leaveChannel(channel)
     {
-        mainPage.hideChannelOutput()
-
-        // This is where the channel leaving code goes...
-
-        currentChannel = ""
+        Session.partChannel(channel)
+        mainPage.closeTab(channel)
 
     }
 
@@ -263,4 +264,5 @@ Window {
     }
 
 }
+
 
