@@ -45,7 +45,7 @@ PageStackWindow {
 
     CommonDialog {
         id: aboutDialog
-        titleText: "About QTIrc"
+        titleText: "About QMLIrc"
         content: Label {
             text: "QMLIrc " + Version.version() + "\n© 2011-12 MarkNotGeorge"
 
