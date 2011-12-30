@@ -606,6 +606,11 @@ void Session::partChannel(QString channel)
     }
 }
 
+bool Session::sessionConnected()
+{
+    return isConnected();
+}
+
 
 
 

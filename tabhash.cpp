@@ -1,8 +1,9 @@
 #include "tabhash.h"
 #include <QHash>
+#include <QHashIterator>
 
 TabHash::TabHash(QObject *parent) :
-    QObject(parent)
+    QObject(parent), iterator(m_tabs)
 {
 }
 
@@ -19,4 +20,36 @@ QObject *TabHash::value(QString key)
     }
     else return 0;
 }
+
+int TabHash::count()
+{
+    return m_tabs.count();
+}
+
+int TabHash::remove(QString key)
+{
+    return m_tabs.remove(key);
+}
+
+void TabHash::initIterator()
+{
+    QHashIterator<QString,QObject *>iterator(m_tabs);
+}
+
+bool TabHash::iteratorHasNext()
+{
+    return iterator.hasNext();
+}
+
+void TabHash::iteratorNext()
+{
+    iterator.next();
+}
+
+QString TabHash::iteratorKey()
+{
+    return iterator.key();
+}
+
+
 

@@ -1,10 +1,6 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 
-import "TabArray.js" as TabArray
-
-
-
 Page {
     id: page1
 
@@ -15,7 +11,9 @@ Page {
 
     Component {
         id: tabButtonFactory
-        TabButton {}
+        TabButton {
+            onClicked: currentChannel = text
+        }
     }
 
 
@@ -77,22 +75,30 @@ Page {
         page.channel = channel
         page.outputText.text = ""
         button.tab = page
-        TabHash.insert(channel, button)
         tabGroup.currentTab = page
 
     }
 
     function closeTab(channel)
     {
-        var button = TabHash.value(channel)
+        var button = findButton(channel)
         if (button)
         {
             button.tab.destroy();
             button.destroy();
+
         }
 
     }
 
+    function closeChannelTabs()
+    {
+        for (var i = 0;i<tabBarLayout.children.length; ++i)
+        {
+            if (tabBarLayout.children[i].text !== "Server")
+                closeTab(tabBarLayout.children[i].text)
+        }
+    }
 
     function outputToTab(channel, output) {
 
@@ -100,17 +106,59 @@ Page {
         if (channel === Connection.host)
             outputChannel = "Server"
         else
-            outputChannel = channel;
+            outputChannel = channel
 
-        console.log("Writing to ", outputChannel)
+        console.log("Sender:", channel)
+        console.log("Output tab:", outputChannel)
 
-        var button = TabHash.value(outputChannel);
+
+        var button = findButton(outputChannel)
         if (button) {
-           // console.log("Found tab ", outputChannel)
             var page = button.tab
-            page.outputText.text += output;
-            //console.log("Output length:", output.length)
+            page.outputText.text += output
         }
+    }
+
+    function selectTab(channel)
+    {
+        var button = findButton(channel)
+        if(button)
+        {
+            tabGroup.currentTab = button.tab
+            lastChannel = currentChannel
+            currentChannel = channel
+        }
+    }
+
+    function clearTab(channel)
+    {
+        var outputChannel
+        if (channel === Connection.host)
+            outputChannel = "Server"
+        else
+            outputChannel = channel
+
+        console.log("Sender:", channel)
+        console.log("Output tab:", outputChannel)
+
+        var button = findButton(outputChannel)
+        if (button) {
+            var page = button.tab
+            page.outputText.text = ""
+        }
+    }
+
+    function findButton(channel)
+    {
+        // Returns the button with text channel, or -1 if not found
+
+        for (var i = 0;i<tabBarLayout.children.length; ++i)
+        {
+            if (tabBarLayout.children[i].text === channel)
+                return tabBarLayout.children[i]
+        }
+        // Not found.
+        return -1
     }
 }
 

@@ -3,14 +3,34 @@ import com.nokia.symbian 1.1
 
 PageStackWindow {
     id: window
-    property string lastChannel: "#LastChannel"
-    property string currentChannel: ""
+    property string lastChannel: "Server"
+    property string currentChannel: "Server"
+    property bool userDisconnected: false
     initialPage: mainPage
     platformSoftwareInputPanelEnabled: true
 
     Component {
         id: settingsPageFactory
         SettingsPage {}
+    }
+
+    CommonDialog {
+        id: connectingProgressDlg
+        buttonTexts: ["Cancel"]
+        titleText: "Connecting to "
+        content: ProgressBar {
+            id: pb1
+            indeterminate: true
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+
+        }
+        onButtonClicked: {
+            var outputString = "Connection to " + Connection.host + " cancelled!"
+            Session.close()
+        }
     }
 
 
@@ -20,19 +40,28 @@ PageStackWindow {
             mainPage.outputToTab(channel, output);
         }
         onConnected: {
-            //console.log("Connected to server!");
             connectServer.visible = false;
+            connectingProgressDlg.close()
             mainPage.outputToTab("Server", "Connected to " + Connection.host + "!")
             disconnectServer.text = "Disconnect from " + Connection.host;
             disconnectServer.visible = true;
             buttonJoin.enabled = true;
         }
         onDisconnected: {
-            buttonJoin.enabled = false;
-            disconnectServer.visible = false;
-            connectServer.text = "Connect to " + Connection.host;
-            connectServer.enabled = true;
-            connectServer.visible = true;
+            if (!userDisconnected)
+            {
+                // Unexpected disconnection.
+                //TODO: Insert some code to notify user.
+            }
+            userDisconnected = false;
+            mainPage.closeChannelTabs()
+            mainPage.clearTab("Server")
+            mainPage.outputToTab("Server", "Disconnected from " + Connection.host + ".")
+            disconnectServer.visible = false
+            connectServer.text = "Connect to " + Connection.host
+            connectServer.enabled = true
+            connectServer.visible = true
+            buttonJoin.enabled = false
         }
     }
 
@@ -48,15 +77,22 @@ PageStackWindow {
         titleText: "About QMLIrc"
         content: Label {
             text: "QMLIrc " + Version.version() + "\n© 2011-12 MarkNotGeorge"
-
         }
         buttonTexts: ["OK"]
     }
 
     Menu {
         id: menuMain
-
         content: MenuLayout {
+            MenuItem {
+                id: menuItemSettings
+                text: "Settings"
+                onClicked: {
+                    var settingsPage = settingsPageFactory.createObject(mainPage);
+                    pageStack.push(settingsPage)
+                }
+            }
+
             MenuItem {
                 id: menuItemAbout
                 text: "About QMLIrc"
@@ -64,7 +100,6 @@ PageStackWindow {
                     aboutDialog.open()
                 }
             }
-
         }
     }
 
@@ -76,42 +111,35 @@ PageStackWindow {
         onSelectedIndexChanged: {
             joinChannel(model[selectedIndex])
         }
-
     }
 
     TextPickerDialog {
         id: enterChannelDialog
         titleText: "Join channel:"
         placeholderText: "Enter channel name..."
-        text: lastChannel
+        text: ""
         acceptButtonText: "OK"
         rejectButtonText: "Cancel"
         onAccepted: {
             joinChannel(text)
         }
-        onRejected: {
-
-        }
-
     }
 
     Menu {
         id: menuJoin
         content: MenuLayout {
-
             MenuItem {
                 id: enterChannel
                 text: "Join Channel..."
                 onClicked: {
                     showChannelDialog(lastChannel)
                 }
-
             }
 
             MenuItem {
                 id: partChannel
                 text: "Leave " + currentChannel
-                visible: false
+                visible: currentChannel !== "Server"
                 onClicked: {
                     leaveChannel(currentChannel)
                 }
@@ -128,17 +156,57 @@ PageStackWindow {
         }
     }
 
-    QueryDialog {
+    CommonDialog {
         id: queryDisconnect
         titleText: "Disconnect from " + Connection.host +"?"
-        message: "Are you sure you wish to disconnect?"
-        acceptButtonText: "Ok"
-        rejectButtonText: "Cancel"
-        onAccepted: {
-            Session.close();
+        content: Text {
+            text: "Are you sure you wish to disconnect from the server?"
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            wrapMode: Text.WordWrap
+            color: platformStyle.colorNormalLight
+        }
+
+        buttonTexts: ["Ok", "Cancel"]
+        onButtonClicked: {
+            if (!index) { // If 'Ok' pressed.
+                userDisconnected = true // Supress notification of discinnection
+                Session.close()
+                mainPage.closeChannelTabs()
+                mainPage.clearTab("Server")
+                mainPage.outputToTab("Server", "Disconnected from " + Connection.host + ".")
+                disconnectServer.visible = false
+                connectServer.text = "Connect to " + Connection.host
+                connectServer.enabled = true
+                connectServer.visible = true
+                buttonJoin.enabled = false
+            }
         }
     }
 
+    CommonDialog {
+        id: queryQuit
+        titleText: "Quit QMLIrc?"
+        content: Text {
+            text: "You are still connected to the server!\n Are you sure you wish to quit?"
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            wrapMode: Text.WordWrap
+            color: platformStyle.colorNormalLight
+        }
+        buttonTexts: ["Ok", "Cancel"]
+        onButtonClicked: {
+            if (!index) {
+                // Close the session
+                Session.close()
+                exit()
+            }
+        }
+    }
 
     Menu {
         id: menuConnect
@@ -146,16 +214,19 @@ PageStackWindow {
             MenuItem {
                 id: connectServer
                 text: "Connect to " + Connection.host
+                visible: true
                 onClicked: {
                     Session.updateConnection();
                     var connectingString = "Connecting to " + Connection.host +"..."
                     text = connectingString
-                    //mainPage.outputToTab("Server", connectingString)
-                    connectServer.enabled = false;
+                    mainPage.outputToTab("Server", connectingString)
+                    connectingProgressDlg.titleText += Connection.host
+                    connectingProgressDlg.open()
+                    //connectServer.enabled = false;
                     Session.open();
                 }
-
             }
+
             MenuItem {
                 id: disconnectServer
                 text: "Disconnect"
@@ -164,26 +235,27 @@ PageStackWindow {
                     queryDisconnect.open();
                 }
             }
-
-            MenuItem {
-                id: menuItemSettings
-                text: "Settings"
-                onClicked: {
-                    var settingsPage = settingsPageFactory.createObject(mainPage);
-                    pageStack.push(settingsPage)
-                }
-            }
         }
     }
 
 
     ToolBarLayout {
         id: serverToolbar
-
         ToolButton {
             flat: true
             iconSource: "close_stop.svg"
-            onClicked: pageStack.depth <= 1 ? Qt.quit() : pageStack.pop()
+            onClicked: {
+                // If we're connected, we need to close the connection before
+                // we quit. Open a dialog to ask if the user is sure.
+                if (Session.sessionConnected())
+                {
+                    queryQuit.open()
+                }
+                else
+                {
+                    exit()
+                }
+            }
         }
 
         ToolButton {
@@ -193,7 +265,6 @@ PageStackWindow {
             onClicked: {
                 menuConnect.open()
             }
-
         }
 
         ToolButton {
@@ -204,14 +275,8 @@ PageStackWindow {
             visible: true
             enabled: false
             onClicked: {
-                var curtab = mainPage.currentTabText
-                if(curtab === "Server" || curtab === "")
-                    partChannel.visible = false;
-                else
-                    partChannel.visible = true;
                 menuJoin.open()
             }
-
         }
 
         ToolButton {
@@ -226,22 +291,18 @@ PageStackWindow {
             iconSource: "toolbar-menu"
             flat: true
             onClicked: {
-                aboutDialog.open()
+                menuMain.open()
             }
-
         }
     }
 
     Component.onCompleted: {
         var outputString = "Welcome to QMLIrc " + Version.version() +"!\n"
         mainPage.outputToTab("Server", outputString)
-
     }
 
     function joinChannel(channel)
     {
-
-
         //mainPage.outputToTab("Server", "Joining channel " + channel + " ...")
         // This is where the actual channel joining code goes...
         Session.joinChannel(channel)
@@ -253,9 +314,10 @@ PageStackWindow {
 
     function leaveChannel(channel)
     {
+        currentChannel = lastChannel
         Session.partChannel(channel)
+        mainPage.selectTab(lastChannel)
         mainPage.closeTab(channel)
-
     }
 
     function showChannelDialog()
@@ -263,6 +325,13 @@ PageStackWindow {
         enterChannelDialog.open()
     }
 
+    function exit()
+    {
+        if (window.pageStack.depth <= 1)
+            Qt.quit()
+        else
+            window.pageStack.pop()
+    }
 }
 
 

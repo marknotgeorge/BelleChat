@@ -32,6 +32,7 @@ public slots:
     void onPassword(QString *password);
     Q_INVOKABLE void joinChannel(QString channel);
     Q_INVOKABLE void partChannel(QString channel);
+    Q_INVOKABLE bool sessionConnected();
 
 private:
     QStringList nicknameList;
