@@ -8,6 +8,9 @@ CommonDialog {
     property alias rejectButtonText: rejectButton.text
     property alias text: textField.text
     property alias placeholderText: textField.placeholderText
+    property alias validator: textField.validator
+    property alias inputMask: textField.inputMask
+    property alias inputMethodHints: textField.inputMethodHints
 
 
     content: TextField {

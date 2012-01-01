@@ -163,9 +163,15 @@ void Session::handleInviteMessage(IrcInviteMessage *message)
 
 void Session::handleJoinMessage(IrcJoinMessage *message)
 {
-    const QString sender = prettyUser(message->sender());
+    IrcSender sender = message->sender();
+    const QString prettySender = prettyUser(sender);
 
-    QString joinString =  colorize(tr("*** %1 joined %2").arg(sender, message->channel()),"green");
+    // Check to see if we are the one joining...
+    if (sender.name() == this->nickName())
+        emit channelJoined(message->channel());
+
+
+    QString joinString =  colorize(tr("*** %1 joined %2").arg(prettySender, message->channel()),"green");
     emit outputString(message->channel(), joinString);
 
 }

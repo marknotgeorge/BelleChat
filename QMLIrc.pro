@@ -7,7 +7,7 @@ DEPLOYMENTFOLDERS = folder_01
 QML_IMPORT_PATH =
 
 symbian:TARGET.UID3 = 0xE2F428B1
-symbian:ICON = QMLIrc-icon.svg
+symbian:ICON = QMLIrc.svg
 
 DEFINES += COMMUNI_STATIC
 
@@ -25,8 +25,8 @@ symbian:TARGET.CAPABILITY += NetworkServices
 
 # If your application uses the Qt Mobility libraries, uncomment the following
 # lines and add the respective components to the MOBILITY variable.
- CONFIG += mobility
- MOBILITY += bearer
+# CONFIG += mobility
+# MOBILITY +=
 
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
 # CONFIG += qdeclarative-boostable
@@ -37,8 +37,7 @@ CONFIG += qt-components communi
 SOURCES += main.cpp \
     version.cpp \
     connectionsettings.cpp \
-    sessionwrapper.cpp \
-    tabhash.cpp
+    sessionwrapper.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -58,8 +57,7 @@ DEFINES += BUILD=\"$${BUILDSTR}\"
 HEADERS += \
     version.h \
     connectionsettings.h \
-    sessionwrapper.h \
-    tabhash.h
+    sessionwrapper.h
 
 symbian {
     # Copied from QTCREATORBUG-5589

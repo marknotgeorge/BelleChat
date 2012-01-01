@@ -6,6 +6,8 @@ PageStackWindow {
     property string lastChannel: "Server"
     property string currentChannel: "Server"
     property bool userDisconnected: false
+    property bool tryingToQuit: false
+
     initialPage: mainPage
     platformSoftwareInputPanelEnabled: true
 
@@ -63,6 +65,15 @@ PageStackWindow {
             connectServer.visible = true
             buttonJoin.enabled = false
         }
+        onChannelJoined: {
+            if (mainPage.findButton(channel) === undefined)
+            {
+                mainPage.createTab(channel)
+                // Set lastChannel to channel...
+                lastChannel = currentChannel
+                currentChannel = channel
+            }
+        }
     }
 
 
@@ -117,9 +128,10 @@ PageStackWindow {
         id: enterChannelDialog
         titleText: "Join channel:"
         placeholderText: "Enter channel name..."
-        text: ""
+        text: "#"
         acceptButtonText: "OK"
         rejectButtonText: "Cancel"
+        validator: RegExpValidator { regExp: /([#&][^\x07\x2C\s]{0,200})/ }
         onAccepted: {
             joinChannel(text)
         }
@@ -172,9 +184,10 @@ PageStackWindow {
         buttonTexts: ["Ok", "Cancel"]
         onButtonClicked: {
             if (!index) { // If 'Ok' pressed.
+                console.log("Disconnecting from server...")
                 userDisconnected = true // Supress notification of discinnection
-                Session.close()
                 mainPage.closeChannelTabs()
+                Session.close()
                 mainPage.clearTab("Server")
                 mainPage.outputToTab("Server", "Disconnected from " + Connection.host + ".")
                 disconnectServer.visible = false
@@ -182,6 +195,7 @@ PageStackWindow {
                 connectServer.enabled = true
                 connectServer.visible = true
                 buttonJoin.enabled = false
+
             }
         }
     }
@@ -202,6 +216,7 @@ PageStackWindow {
         onButtonClicked: {
             if (!index) {
                 // Close the session
+                tryingToQuit = true
                 Session.close()
                 exit()
             }
@@ -253,6 +268,7 @@ PageStackWindow {
                 }
                 else
                 {
+                    tryingToQuit = true
                     exit()
                 }
             }
@@ -303,19 +319,15 @@ PageStackWindow {
 
     function joinChannel(channel)
     {
-        //mainPage.outputToTab("Server", "Joining channel " + channel + " ...")
+        mainPage.outputToTab("Server", "Joining channel " + channel + " ...")
         // This is where the actual channel joining code goes...
         Session.joinChannel(channel)
-        mainPage.createTab(channel)
-        // Set lastChannel to channel...
-        lastChannel = channel
-        currentChannel = channel
+
     }
 
     function leaveChannel(channel)
     {
         currentChannel = lastChannel
-        Session.partChannel(channel)
         mainPage.selectTab(lastChannel)
         mainPage.closeTab(channel)
     }
@@ -327,11 +339,13 @@ PageStackWindow {
 
     function exit()
     {
-        if (window.pageStack.depth <= 1)
+        if (tryingToQuit)
+        {
+            console.log("Quitting...")
             Qt.quit()
-        else
-            window.pageStack.pop()
+        }
     }
+
 }
 
 

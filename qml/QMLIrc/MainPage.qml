@@ -12,7 +12,7 @@ Page {
     Component {
         id: tabButtonFactory
         TabButton {
-            onClicked: currentChannel = text
+
         }
     }
 
@@ -58,6 +58,7 @@ Page {
         anchors.bottom: inputField.top
         anchors.left: parent.left
         anchors.topMargin: 0
+        onCurrentTabChanged: currentChannel = currentTab.channel
     }
 
     Component.onCompleted: {
@@ -65,18 +66,34 @@ Page {
         createTab("Server");
     }
 
+    function findButton(channel)
+    {
+        // Returns the button with text channel, or undefined if not found
+
+        for (var i = 0;i<tabBarLayout.children.length; ++i)
+        {
+            if (tabBarLayout.children[i].text === channel)
+            {
+                console.log(channel, "found!")
+                return tabBarLayout.children[i]
+            }
+        }
+        // Not found.
+        console.log(channel , "not found!")
+        return
+    }
+
     function createTab(channel)
     {
         var page = outputFlickableFactory.createObject(tabGroup)
-        var button = tabButtonFactory.createObject(tabBarLayout);
+                var button = tabButtonFactory.createObject(tabBarLayout);
 
-        //console.log("Creating tab %s",channel)
-        button.text = channel
-        page.channel = channel
-        page.outputText.text = ""
-        button.tab = page
-        tabGroup.currentTab = page
-
+                //console.log("Creating tab %s",channel)
+                button.text = channel
+                page.channel = channel
+                page.outputText.text = ""
+                button.tab = page
+                tabGroup.currentTab = page
     }
 
     function closeTab(channel)
@@ -84,20 +101,25 @@ Page {
         var button = findButton(channel)
         if (button)
         {
-            button.tab.destroy();
-            button.destroy();
+            console.log("Closing tab ", channel)
+            if (channel !== Session.host)
+                Session.partChannel(channel)
 
+            button.tab.destroy()
+            button.destroy()
         }
 
     }
 
     function closeChannelTabs()
     {
+        // Close all tabs...
         for (var i = 0;i<tabBarLayout.children.length; ++i)
         {
-            if (tabBarLayout.children[i].text !== "Server")
-                closeTab(tabBarLayout.children[i].text)
+            closeTab(tabBarLayout.children[i].text)
         }
+        // Create a new Server tab...
+        createTab("Server")
     }
 
     function outputToTab(channel, output) {
@@ -110,6 +132,7 @@ Page {
 
         console.log("Sender:", channel)
         console.log("Output tab:", outputChannel)
+        console.log("Message:", output)
 
 
         var button = findButton(outputChannel)
@@ -148,18 +171,7 @@ Page {
         }
     }
 
-    function findButton(channel)
-    {
-        // Returns the button with text channel, or -1 if not found
 
-        for (var i = 0;i<tabBarLayout.children.length; ++i)
-        {
-            if (tabBarLayout.children[i].text === channel)
-                return tabBarLayout.children[i]
-        }
-        // Not found.
-        return -1
-    }
 }
 
 

@@ -22,6 +22,7 @@ signals:
     void outputString(QString channel, QString output);
     void newNamesList(QString channel, QStringList nameList);
     void newChannelList(QStringList channelList);
+    void channelJoined(QString channel);
 
 public slots:
     void onConnected();
