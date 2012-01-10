@@ -4,19 +4,6 @@ import com.nokia.symbian 1.1
 Page {
     id: page1
 
-    Component {
-        id: outputFlickableFactory
-        OutputFlickable {}
-    }
-
-    Component {
-        id: tabButtonFactory
-        TabButton {
-
-        }
-    }
-
-
     TextField {
         id: inputField
         x: 0
@@ -31,7 +18,7 @@ Page {
         anchors.leftMargin: 0
         placeholderText: "Tap to write..."
         Keys.onReturnPressed: {
-            var page = tabGroup.currentTab
+            var page = outputTabGroup.currentTab
             console.log(inputField.text);
             Session.onInputReceived(page.channel, inputField.text);
             inputField.text = "";
@@ -39,7 +26,7 @@ Page {
     }
 
     TabBarLayout {
-        id: tabBarLayout
+        id: outputTabBarLayout
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.left: parent.left
@@ -51,9 +38,9 @@ Page {
     }
 
     TabGroup {
-        id: tabGroup
+        id: outputTabGroup
         anchors.bottomMargin: 0
-        anchors.top: tabBarLayout.bottom
+        anchors.top: outputTabBarLayout.bottom
         anchors.right: parent.right
         anchors.bottom: inputField.top
         anchors.left: parent.left
@@ -70,12 +57,12 @@ Page {
     {
         // Returns the button with text channel, or undefined if not found
 
-        for (var i = 0;i<tabBarLayout.children.length; ++i)
+        for (var i = 0;i<outputTabBarLayout.children.length; ++i)
         {
-            if (tabBarLayout.children[i].text === channel)
+            if (outputTabBarLayout.children[i].text === channel)
             {
                 console.log(channel, "found!")
-                return tabBarLayout.children[i]
+                return outputTabBarLayout.children[i]
             }
         }
         // Not found.
@@ -83,52 +70,61 @@ Page {
         return
     }
 
+    // Create a tab for channel
     function createTab(channel)
     {
-        var page = outputFlickableFactory.createObject(tabGroup)
-                var button = tabButtonFactory.createObject(tabBarLayout);
+        // Create an OutputFlickable item, attach it to the TabGroup
+        var pageFactory = Qt.createComponent("OutputFlickable.qml")
+        var page = pageFactory.createObject(outputTabGroup)
 
-                //console.log("Creating tab %s",channel)
-                button.text = channel
-                page.channel = channel
-                page.outputText.text = ""
-                button.tab = page
-                tabGroup.currentTab = page
+        // Create the TabButton and attach it to the TabBarLayout.
+        var button = Qt.createQmlObject("import QtQuick 1.1; import com.nokia.symbian 1.1; TabButton{}", outputTabBarLayout)
+        //console.log("Creating tab %s",channel)
+
+        // set the TabButton text and the OutputFlickable text property
+        button.text = channel
+        page.channel = channel
+        page.outputText.text = ""
+        button.tab = page
+        outputTabGroup.currentTab = page
     }
 
+    // Remove the tab with text property channel fro hte TabBarLayout
     function closeTab(channel)
     {
+        // Find the correct TabButton. findButton() returns undefined if
+        // no button is found.
         var button = findButton(channel)
         if (button)
         {
             console.log("Closing tab ", channel)
+            // If the channel isn't the server, leave the channel
             if (channel !== Session.host)
                 Session.partChannel(channel)
 
+            // Destroy the OutputFlickable (button.tab) and the TabButton
             button.tab.destroy()
             button.destroy()
         }
 
     }
 
-    function closeChannelTabs()
+    function closeAllTabs()
     {
         // Close all tabs...
-        for (var i = 0;i<tabBarLayout.children.length; ++i)
+        for (var i = 0;i<outputTabBarLayout.children.length; ++i)
         {
-            closeTab(tabBarLayout.children[i].text)
+            closeTab(outputTabBarLayout.children[i].text)
         }
-        // Create a new Server tab...
-        createTab("Server")
     }
 
     function outputToTab(channel, output) {
 
-        var outputChannel
+      var outputChannel
         if (channel === Connection.host)
-            outputChannel = "Server"
-        else
-            outputChannel = channel
+           outputChannel = "Server"
+      else
+           outputChannel = channel
 
         console.log("Sender:", channel)
         console.log("Output tab:", outputChannel)
@@ -147,7 +143,7 @@ Page {
         var button = findButton(channel)
         if(button)
         {
-            tabGroup.currentTab = button.tab
+            outputTabGroup.currentTab = button.tab
             lastChannel = currentChannel
             currentChannel = channel
         }
@@ -170,7 +166,6 @@ Page {
             page.outputText.text = ""
         }
     }
-
 
 }
 

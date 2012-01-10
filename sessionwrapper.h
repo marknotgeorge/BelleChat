@@ -14,7 +14,7 @@ class Session : public IrcSession
     Q_OBJECT
 
 public:
-    Session(QObject *parent = 0);
+    explicit Session(QObject *parent = 0);
 
 
 

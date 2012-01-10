@@ -56,14 +56,17 @@ PageStackWindow {
                 //TODO: Insert some code to notify user.
             }
             userDisconnected = false;
-            mainPage.closeChannelTabs()
-            mainPage.clearTab("Server")
-            mainPage.outputToTab("Server", "Disconnected from " + Connection.host + ".")
-            disconnectServer.visible = false
-            connectServer.text = "Connect to " + Connection.host
-            connectServer.enabled = true
-            connectServer.visible = true
-            buttonJoin.enabled = false
+           // mainPage.closeAllTabs()
+            if (!tryingToQuit)
+            {
+                mainPage.clearTab("Server")
+                mainPage.outputToTab("Server", "Disconnected from " + Connection.host + ".")
+                disconnectServer.visible = false
+                connectServer.text = "Connect to " + Connection.host
+                connectServer.enabled = true
+                connectServer.visible = true
+                buttonJoin.enabled = false
+            }
         }
         onChannelJoined: {
             if (mainPage.findButton(channel) === undefined)
@@ -114,13 +117,31 @@ PageStackWindow {
         }
     }
 
+
     SelectionDialog {
         id: selectChannelDialog
         titleText: "Select Channel:"
-        // BOILERPLATE CODE
-        model: ["#FirstChannel", "#SecondChannel", "#ThirdChannel"]
+        model: ChannelModel
+        delegate: ListItem {
+            id:item1
+            Column {
+                ListItemText {
+                    id: channelText
+                    mode: item1.mode
+                    role: "Title"
+                    text: channel + " (" + users + ")"
+                }
+                ListItemText {
+                    id: topicText
+                    mode: item1.mode
+                    role: "Subtitle"
+                    text: topic
+                }
+            }
+        }
+
         onSelectedIndexChanged: {
-            joinChannel(model[selectedIndex])
+            // joinChannel(model[selectedIndex].modelData.name)
         }
     }
 
@@ -160,7 +181,7 @@ PageStackWindow {
             MenuItem {
                 id: selectChannelFromList
                 text: "Select from list"
-                visible: false
+                visible: true
                 onClicked: {
                     selectChannelDialog.open()
                 }
@@ -186,16 +207,8 @@ PageStackWindow {
             if (!index) { // If 'Ok' pressed.
                 console.log("Disconnecting from server...")
                 userDisconnected = true // Supress notification of discinnection
-                mainPage.closeChannelTabs()
+               // mainPage.closeAllTabs()
                 Session.close()
-                mainPage.clearTab("Server")
-                mainPage.outputToTab("Server", "Disconnected from " + Connection.host + ".")
-                disconnectServer.visible = false
-                connectServer.text = "Connect to " + Connection.host
-                connectServer.enabled = true
-                connectServer.visible = true
-                buttonJoin.enabled = false
-
             }
         }
     }
@@ -217,7 +230,7 @@ PageStackWindow {
             if (!index) {
                 // Close the session
                 tryingToQuit = true
-                Session.close()
+                //Session.close()
                 exit()
             }
         }
