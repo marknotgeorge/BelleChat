@@ -56,7 +56,7 @@ PageStackWindow {
                 //TODO: Insert some code to notify user.
             }
             userDisconnected = false;
-           // mainPage.closeAllTabs()
+            // mainPage.closeAllTabs()
             if (!tryingToQuit)
             {
                 mainPage.clearTab("Server")
@@ -76,6 +76,9 @@ PageStackWindow {
                 lastChannel = currentChannel
                 currentChannel = channel
             }
+        }
+        onNewChannelList: {
+            selectChannelDialog.open()
         }
     }
 
@@ -123,25 +126,25 @@ PageStackWindow {
         titleText: "Select Channel:"
         model: ChannelModel
         delegate: ListItem {
-            id:item1
             Column {
                 ListItemText {
-                    id: channelText
-                    mode: item1.mode
                     role: "Title"
                     text: channel + " (" + users + ")"
                 }
                 ListItemText {
-                    id: topicText
-                    mode: item1.mode
                     role: "Subtitle"
                     text: topic
                 }
             }
+            onClicked: {
+                selectChannelDialog.selectedIndex = index
+                selectChannelDialog.accept()
+            }
         }
-
-        onSelectedIndexChanged: {
-            // joinChannel(model[selectedIndex].modelData.name)
+        onAccepted: {
+            var channel = model[selectedIndex].channel
+            console.log("Channel:", channel)
+            joinChannel(channel)
         }
     }
 
@@ -183,7 +186,7 @@ PageStackWindow {
                 text: "Select from list"
                 visible: true
                 onClicked: {
-                    selectChannelDialog.open()
+                    Session.getChannelList("")
                 }
             }
         }
@@ -207,7 +210,7 @@ PageStackWindow {
             if (!index) { // If 'Ok' pressed.
                 console.log("Disconnecting from server...")
                 userDisconnected = true // Supress notification of discinnection
-               // mainPage.closeAllTabs()
+                // mainPage.closeAllTabs()
                 Session.close()
             }
         }

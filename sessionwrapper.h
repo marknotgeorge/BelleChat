@@ -6,6 +6,8 @@
 #include <QStringList>
 #include <IrcMessage>
 #include "connectionsettings.h"
+#include <QList>
+#include <QDeclarativeContext>
 
 
 
@@ -15,13 +17,14 @@ class Session : public IrcSession
 
 public:
     explicit Session(QObject *parent = 0);
+    QDeclarativeContext *context;
 
 
 
 signals:
     void outputString(QString channel, QString output);
     void newNamesList(QString channel, QStringList nameList);
-    void newChannelList(QStringList channelList);
+    void newChannelList();
     void channelJoined(QString channel);
 
 public slots:
@@ -34,10 +37,12 @@ public slots:
     Q_INVOKABLE void joinChannel(QString channel);
     Q_INVOKABLE void partChannel(QString channel);
     Q_INVOKABLE bool sessionConnected();
+    Q_INVOKABLE void getChannelList(QString channel);
 
 private:
     QStringList nicknameList;
     QString password;
+    QList<QObject *> channelList;
 
 
     // Command parsing instructions...

@@ -18,13 +18,14 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     Version *appVersion = new Version(context);
     ConnectionSettings *appConnectionSettings = new ConnectionSettings(context);
     Session *appSession = new Session(context);
+    appSession->context = context;
 
     QList<QObject *> channels;
 
     // Fill ChannelListItem with dummy data;
-    channels.append(new ChannelListItem("#Wibble", 23, "Wibble, Wibble, I'm a hatstand"));
-    channels.append(new ChannelListItem("#biggun", 12, "That's what she said"));
-    channels.append(new ChannelListItem("#Banana", 45, "The rain in spain falls mainly on the plain"));
+    //channels.append(new ChannelListItem("#Wibble", 23, "Wibble, Wibble, I'm a hatstand"));
+    //channels.append(new ChannelListItem("#biggun", 12, "That's what she said"));
+    //channels.append(new ChannelListItem("#Banana", 45, "The rain in spain falls mainly on the plain"));
 
     context->setContextProperty("Version", appVersion);
     context->setContextProperty("Connection", appConnectionSettings);

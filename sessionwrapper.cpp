@@ -7,6 +7,8 @@
 #include <IrcUtil>
 #include <QDateTime>
 #include <QColor>
+#include "channellistitem.h"
+#include <QDeclarativeContext>
 
 
 Session::Session(QObject *parent) :
@@ -241,6 +243,10 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     QDateTime myDateTime;
     QString channel;
     QString msg;
+    ChannelListItem *clitem;
+    QString topic;
+    int index;
+
 
     if (message->code() < 300)
         emit outputString(this->host(), tr("[INFO] %1").arg(IrcUtil::messageToHtml(MID_(1))));
@@ -345,6 +351,21 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         nicknameList.clear();
         break;
 
+    case Irc::RPL_LISTSTART:
+        channelList.clear();
+        break;
+
+    case Irc::RPL_LIST:
+        topic = P_(3);
+        index = topic.indexOf("]");
+        clitem = new ChannelListItem(P_(1),P_(2).toInt(), P_(3).remove(0, index+2));
+        channelList.append(clitem);
+        break;
+
+    case Irc::RPL_LISTEND:
+        context->setContextProperty("ChannelModel", QVariant::fromValue(channelList));
+        emit newChannelList();
+        break;
     }
 
 }
@@ -615,6 +636,15 @@ void Session::partChannel(QString channel)
 bool Session::sessionConnected()
 {
     return isConnected();
+}
+
+void Session::getChannelList(QString channel)
+
+{
+    IrcCommand *command;
+    command = IrcCommand::createList(channel);
+    sendCommand(command);
+
 }
 
 
