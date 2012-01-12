@@ -39,10 +39,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer->setMainQmlFile(QLatin1String("qml/QMLIrc/main.qml"));
     viewer->showExpanded();
 
-    return app->exec();
+    int returnValue = app->exec();
 
-    appVersion->deleteLater();
-    appConnectionSettings->deleteLater();
-    appSession->deleteLater();
+    qDebug() << returnValue;
 
+    return returnValue;
 }

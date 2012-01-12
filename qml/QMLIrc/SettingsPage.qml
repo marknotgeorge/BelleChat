@@ -174,13 +174,26 @@ Page {
         }
     }
 
+    QueryDialog {
+        id: connectedQuery
+        titleText: "Connected to server"
+        message: "Settings changes will not apply until the next time you connect.\n"
+        acceptButtonText: "Ok"
+    }
+
     function saveSettings()
     {
-        Connection.setHost(serverField.text);
-        Connection.setPort(portField.text);
-        Connection.setNickname(nicknameField.text);
-        Connection.setUsername(usernameField.text);
-        Connection.setPassword(passwordField.text);
-        Connection.setRealname(realnameField.text);
+        if (Session.connected)
+        {
+            connectedQuery.open()
+        }
+
+        Connection.setHost(serverField.text)
+        Connection.setPort(portField.text)
+        Connection.setNickname(nicknameField.text)
+        Connection.setUsername(usernameField.text)
+        Connection.setPassword(passwordField.text)
+        Connection.setRealname(realnameField.text)
+
     }
 }

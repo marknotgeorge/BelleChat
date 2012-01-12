@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import com.nokia.extras 1.1
 
 PageStackWindow {
     id: window
@@ -16,22 +17,15 @@ PageStackWindow {
         SettingsPage {}
     }
 
-    CommonDialog {
-        id: connectingProgressDlg
-        buttonTexts: ["Cancel"]
-        titleText: "Connecting to "
-        content: ProgressBar {
-            id: pb1
-            indeterminate: true
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.right: parent.right
-            anchors.rightMargin: 10
+    InfoBanner {
+        id: connectFailedBanner
+    }
 
-        }
-        onButtonClicked: {
-            var outputString = "Connection to " + Connection.host + " cancelled!"
-            Session.close()
+    Timer {
+        id: connectionTimer
+        interval: 15000
+        onTriggered: {
+            notifyConnectionFailure()
         }
     }
 
@@ -43,7 +37,7 @@ PageStackWindow {
         }
         onConnected: {
             connectServer.visible = false;
-            connectingProgressDlg.close()
+            connectionTimer.stop();
             mainPage.outputToTab("Server", "Connected to " + Connection.host + "!")
             disconnectServer.text = "Disconnect from " + Connection.host;
             disconnectServer.visible = true;
@@ -79,6 +73,10 @@ PageStackWindow {
         }
         onNewChannelList: {
             selectChannelDialog.open()
+        }
+        onSocketError: {
+            connectionTimer.stop()
+            notifyConnectionFailure()
         }
     }
 
@@ -247,14 +245,12 @@ PageStackWindow {
                 text: "Connect to " + Connection.host
                 visible: true
                 onClicked: {
-                    Session.updateConnection();
+                    Session.updateConnection()
                     var connectingString = "Connecting to " + Connection.host +"..."
                     text = connectingString
                     mainPage.outputToTab("Server", connectingString)
-                    connectingProgressDlg.titleText += Connection.host
-                    connectingProgressDlg.open()
-                    //connectServer.enabled = false;
-                    Session.open();
+                    connectionTimer.start()
+                    Session.open()
                 }
             }
 
@@ -360,6 +356,14 @@ PageStackWindow {
             console.log("Quitting...")
             Qt.quit()
         }
+    }
+
+    function notifyConnectionFailure()
+    {
+        var failureString = "Could not connect to " + Connection.host + ".\n Please check your settings."
+        connectFailedBanner.text = failureString
+        mainPage.outputToTab("Server", failureString)
+        connectFailedBanner.open()
     }
 
 }
