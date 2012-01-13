@@ -22,33 +22,60 @@ Page {
         }
     }
 
+    Item {
+        id: splitViewInput
+        anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
+        Behavior on height { PropertyAnimation {duration: 200} }
+        states: [
+                    State {
+                        name: "Visible"; when: inputContext.visible
+                        PropertyChanges { target: splitViewInput; height: inputContext.height }
+                        PropertyChanges {
+                            target: flicker
+                            interactive:false
+                        }
+
+                    },
+
+                    State {
+                        name: "Hidden"; when: !inputContext.visible
+                        PropertyChanges { target: splitViewInput; height: window.pageStack.toolbar }
+                        PropertyChanges {
+                            target: flicker
+                            interactive:true
+                        }
+                    }
+                ]
+    }
+
+    ListHeading {
+        id: heading
+        anchors {left: parent.left; right: parent.right}
+        ListItemText {
+            id: headingText
+            anchors.fill: heading.paddingItem
+            role: "Heading"
+            text: qsTr("Server Settings")
+        }
+    }
+
     Flickable {
-        id: flickable
-        anchors.fill: parent
+        id: flicker
+        anchors {top: heading.bottom; left: parent.left; right: parent.right; bottom: splitViewInput.top}
+        contentHeight: layoutColumns.height
+
 
         Column {
             id: layoutColumns
-            x: 0
-            y: 0
             spacing: 5
-            anchors.fill: parent
-
-            ListHeading {
-                id: heading
-                ListItemText {
-                    id: headingText
-                    anchors.fill: heading.paddingItem
-                    role: "Heading"
-                    text: "Server Settings"
-                }
-            }
+            anchors {left: parent.left; right: parent.right}
 
             Label {
                 id: serverLabel
                 text: qsTr("Server")
                 anchors.left: parent.left
                 anchors.leftMargin: 20
-
+                visible: serverField.visible
             }
 
             TextField {
@@ -59,10 +86,10 @@ Page {
                 anchors.rightMargin: 10
                 anchors.left: parent.left
                 anchors.leftMargin: 10
+                visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
                 }
-
             }
 
             Label {
@@ -70,7 +97,7 @@ Page {
                 text: qsTr("Port")
                 anchors.left: parent.left
                 anchors.leftMargin: 20
-
+                visible: portField.visible
             }
 
             TextField {
@@ -82,6 +109,7 @@ Page {
                 anchors.left: parent.left
                 anchors.leftMargin: 10
                 validator: IntValidator {bottom: 0; top: 65535;}
+                visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
                 }
@@ -93,7 +121,7 @@ Page {
                 text: qsTr("Nickname")
                 anchors.left: parent.left
                 anchors.leftMargin: 20
-
+                visible: nicknameField.visible
             }
 
             TextField {
@@ -104,6 +132,7 @@ Page {
                 anchors.rightMargin: 10
                 anchors.left: parent.left
                 anchors.leftMargin: 10
+                visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
                 }
@@ -114,7 +143,7 @@ Page {
                 text: qsTr("Password")
                 anchors.left: parent.left
                 anchors.leftMargin: 20
-
+                visible: passwordField.visible
             }
 
             TextField {
@@ -126,6 +155,7 @@ Page {
                 anchors.left: parent.left
                 anchors.leftMargin: 10
                 echoMode: TextInput.PasswordEchoOnEdit
+                visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
                 }
@@ -136,6 +166,7 @@ Page {
                 text: qsTr("Username")
                 anchors.left: parent.left
                 anchors.leftMargin: 20
+                visible: usernameField.visible
             }
 
             TextField {
@@ -146,16 +177,18 @@ Page {
                 anchors.rightMargin: 10
                 anchors.left: parent.left
                 anchors.leftMargin: 10
+                visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
                 }
             }
 
             Label {
-                id: realNameLabel
+                id: realnameLabel
                 text: qsTr("Real name")
                 anchors.left: parent.left
                 anchors.leftMargin: 20
+                visible: realnameField.visible
             }
 
             TextField {
@@ -166,34 +199,35 @@ Page {
                 anchors.rightMargin: 10
                 anchors.left: parent.left
                 anchors.leftMargin: 10
+                visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
                 }
-
             }
         }
     }
 
     QueryDialog {
         id: connectedQuery
-        titleText: "Connected to server"
-        message: "Settings changes will not apply until the next time you connect.\n"
-        acceptButtonText: "Ok"
+        titleText: qsTr("Connected to server")
+        message: qsTr("Settings changes will not apply until the next time you connect.\n")
+        acceptButtonText: qsTr("Ok")
     }
 
     function saveSettings()
     {
+        // Show a message if connected to a server.
         if (Session.connected)
         {
             connectedQuery.open()
         }
 
+        // Save the settings
         Connection.setHost(serverField.text)
         Connection.setPort(portField.text)
         Connection.setNickname(nicknameField.text)
         Connection.setUsername(usernameField.text)
         Connection.setPassword(passwordField.text)
         Connection.setRealname(realnameField.text)
-
     }
 }
