@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
+import QMLIrc 1.0
 
 PageStackWindow {
     id: window
@@ -9,7 +10,7 @@ PageStackWindow {
     property bool userDisconnected: false
     property bool tryingToQuit: false
 
-    initialPage: mainPage
+    initialPage: MainPage { tools: serverToolbar }
     platformSoftwareInputPanelEnabled: true
 
     Component {
@@ -33,13 +34,13 @@ PageStackWindow {
     Connections {
         target: Session
         onOutputString: {
-            mainPage.outputToTab(channel, output);
+            initialPage.outputToTab(channel, output);
         }
         onConnected: {
             connectServer.visible = false;
             connectionTimer.stop();
-            mainPage.outputToTab("Server", "Connected to " + Connection.host + "!")
-            disconnectServer.text = "Disconnect from " + Connection.host;
+            initialPage.outputToTab("Server", "Connected to " + appConnectionSettings.host + "!")
+            disconnectServer.text = "Disconnect from " + appConnectionSettings.host;
             disconnectServer.visible = true;
             buttonJoin.enabled = true;
         }
@@ -50,22 +51,24 @@ PageStackWindow {
                 //TODO: Insert some code to notify user.
             }
             userDisconnected = false;
-            // mainPage.closeAllTabs()
+            // initialPage.closeAllTabs()
             if (!tryingToQuit)
             {
-                mainPage.clearTab("Server")
-                mainPage.outputToTab("Server", "Disconnected from " + Connection.host + ".")
+                initialPage.clearTab("Server")
+                initialPage.outputToTab("Server", "Disconnected from " + appConnectionSettings.host + ".")
                 disconnectServer.visible = false
-                connectServer.text = "Connect to " + Connection.host
+                connectServer.text = "Connect to " + appConnectionSettings.host
                 connectServer.enabled = true
                 connectServer.visible = true
                 buttonJoin.enabled = false
             }
+            else
+                exit()
         }
         onChannelJoined: {
-            if (mainPage.findButton(channel) === undefined)
+            if (initialPage.findButton(channel) === undefined)
             {
-                mainPage.createTab(channel)
+                initialPage.createTab(channel)
                 // Set lastChannel to channel...
                 lastChannel = currentChannel
                 currentChannel = channel
@@ -80,18 +83,19 @@ PageStackWindow {
         }
     }
 
+    Version {
+        id: appVersion
+    }
 
-    MainPage {
-        id: mainPage
-        tools: serverToolbar
-
+    ConnectionSettings {
+        id: appConnectionSettings
     }
 
     CommonDialog {
         id: aboutDialog
         titleText: "About QMLIrc"
         content: Label {
-            text: "QMLIrc " + Version.version() + "\n© 2011-12 MarkNotGeorge"
+            text: "QMLIrc " + appVersion.version + "\n© 2011-12 MarkNotGeorge"
         }
         buttonTexts: ["OK"]
     }
@@ -103,7 +107,7 @@ PageStackWindow {
                 id: menuItemSettings
                 text: "Settings"
                 onClicked: {
-                    var settingsPage = settingsPageFactory.createObject(mainPage);
+                    var settingsPage = settingsPageFactory.createObject(initialPage);
                     pageStack.push(settingsPage)
                 }
             }
@@ -192,7 +196,7 @@ PageStackWindow {
 
     CommonDialog {
         id: queryDisconnect
-        titleText: "Disconnect from " + Connection.host +"?"
+        titleText: "Disconnect from " + appConnectionSettings.host +"?"
         content: Text {
             text: "Are you sure you wish to disconnect from the server?"
             anchors.left: parent.left
@@ -208,7 +212,7 @@ PageStackWindow {
             if (!index) { // If 'Ok' pressed.
                 console.log("Disconnecting from server...")
                 userDisconnected = true // Supress notification of discinnection
-                // mainPage.closeAllTabs()
+                // initialPage.closeAllTabs()
                 Session.close()
             }
         }
@@ -231,8 +235,7 @@ PageStackWindow {
             if (!index) {
                 // Close the session
                 tryingToQuit = true
-                //Session.close()
-                exit()
+                Session.close()
             }
         }
     }
@@ -242,13 +245,13 @@ PageStackWindow {
         content: MenuLayout {
             MenuItem {
                 id: connectServer
-                text: "Connect to " + Connection.host
+                text: "Connect to " + appConnectionSettings.host
                 visible: true
                 onClicked: {
                     Session.updateConnection()
-                    var connectingString = "Connecting to " + Connection.host +"..."
+                    var connectingString = "Connecting to " + appConnectionSettings.host +"..."
                     text = connectingString
-                    mainPage.outputToTab("Server", connectingString)
+                    initialPage.outputToTab("Server", connectingString)
                     connectionTimer.start()
                     Session.open()
                 }
@@ -274,7 +277,7 @@ PageStackWindow {
             onClicked: {
                 // If we're connected, we need to close the connection before
                 // we quit. Open a dialog to ask if the user is sure.
-                if (Session.sessionConnected())
+                if (Session.sessionConnected)
                 {
                     queryQuit.open()
                 }
@@ -325,13 +328,13 @@ PageStackWindow {
     }
 
     Component.onCompleted: {
-        var outputString = "Welcome to QMLIrc " + Version.version() +"!\n"
-        mainPage.outputToTab("Server", outputString)
+        var outputString = "Welcome to QMLIrc " + appVersion.version +"!\n"
+        initialPage.outputToTab("Server", outputString)
     }
 
     function joinChannel(channel)
     {
-        mainPage.outputToTab("Server", "Joining channel " + channel + " ...")
+        initialPage.outputToTab("Server", "Joining channel " + channel + " ...")
         // This is where the actual channel joining code goes...
         Session.joinChannel(channel)
 
@@ -340,8 +343,8 @@ PageStackWindow {
     function leaveChannel(channel)
     {
         currentChannel = lastChannel
-        mainPage.selectTab(lastChannel)
-        mainPage.closeTab(channel)
+        initialPage.selectTab(lastChannel)
+        initialPage.closeTab(channel)
     }
 
     function showChannelDialog()
@@ -360,9 +363,10 @@ PageStackWindow {
 
     function notifyConnectionFailure()
     {
-        var failureString = "Could not connect to " + Connection.host + ".\n Please check your settings."
+        var failureString = "Could not connect to " + appConnectionSettings.host + ".\n Please check your settings."
+        Session.close()
         connectFailedBanner.text = failureString
-        mainPage.outputToTab("Server", failureString)
+        initialPage.outputToTab("Server", failureString)
         connectFailedBanner.open()
     }
 

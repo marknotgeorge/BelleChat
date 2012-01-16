@@ -6,6 +6,7 @@
 class Version : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString version READ version)
 public:
     explicit Version(QObject *parent = 0);
 

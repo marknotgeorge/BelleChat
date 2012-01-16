@@ -1,6 +1,7 @@
 // import QtQuick 1.0 // to target S60 5th Edition or Maemo 5
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import QMLIrc 1.0
 
 Page {
     id: window
@@ -81,7 +82,7 @@ Page {
             TextField {
                 id: serverField
                 height: 50
-                text: Connection.host
+                text: appConnectionSettings.host
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.left: parent.left
@@ -103,7 +104,7 @@ Page {
             TextField {
                 id: portField
                 height: 50
-                text: Connection.port
+                text: appConnectionSettings.port
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.left: parent.left
@@ -127,7 +128,7 @@ Page {
             TextField {
                 id: nicknameField
                 height: 50
-                text: Connection.nickname
+                text: appConnectionSettings.nickname
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.left: parent.left
@@ -149,7 +150,7 @@ Page {
             TextField {
                 id: passwordField
                 height: 50
-                text: Connection.password
+                text: appConnectionSettings.password
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.left: parent.left
@@ -172,7 +173,7 @@ Page {
             TextField {
                 id: usernameField
                 height: 50
-                text: Connection.username
+                text: appConnectionSettings.username
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.left: parent.left
@@ -194,7 +195,7 @@ Page {
             TextField {
                 id: realnameField
                 height: 50
-                text: Connection.realname
+                text: appConnectionSettings.realname
                 anchors.right: parent.right
                 anchors.rightMargin: 10
                 anchors.left: parent.left
@@ -223,11 +224,11 @@ Page {
         }
 
         // Save the settings
-        Connection.setHost(serverField.text)
-        Connection.setPort(portField.text)
-        Connection.setNickname(nicknameField.text)
-        Connection.setUsername(usernameField.text)
-        Connection.setPassword(passwordField.text)
-        Connection.setRealname(realnameField.text)
+        appConnectionSettings.setHost(serverField.text)
+        appConnectionSettings.setPort(portField.text)
+        appConnectionSettings.setNickname(nicknameField.text)
+        appConnectionSettings.setUsername(usernameField.text)
+        appConnectionSettings.setPassword(passwordField.text)
+        appConnectionSettings.setRealname(realnameField.text)
     }
 }

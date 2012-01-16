@@ -10,6 +10,7 @@ Page {
         y: 530
         height: 50
         text: ""
+        focus: true
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         anchors.right: parent.right
@@ -17,7 +18,8 @@ Page {
         anchors.left: parent.left
         anchors.leftMargin: 0
         placeholderText: "Tap to write..."
-        Keys.onReturnPressed: {
+        inputMethodHints: Qt.ImhNoPredictiveText
+        Keys.onEnterPressed: {
             var page = outputTabGroup.currentTab
             console.log(inputField.text);
             Session.onInputReceived(page.channel, inputField.text);
@@ -121,7 +123,7 @@ Page {
     function outputToTab(channel, output) {
 
       var outputChannel
-        if (channel === Connection.host)
+        if (channel === Session.host)
            outputChannel = "Server"
       else
            outputChannel = channel
@@ -152,7 +154,7 @@ Page {
     function clearTab(channel)
     {
         var outputChannel
-        if (channel === Connection.host)
+        if (channel === Session.host)
             outputChannel = "Server"
         else
             outputChannel = channel
