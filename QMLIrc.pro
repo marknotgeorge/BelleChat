@@ -48,7 +48,9 @@ RESOURCES +=
 
 OTHER_FILES += \
     TabArray.js \
-    qml/QMLIrc/OutputFlickable.qml
+    qml/QMLIrc/OutputFlickable.qml \
+    TempPage.qml \
+    SettingsPage.qml
 
 
 # Create a macro from the Git describe command, to use in about boxes.

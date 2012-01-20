@@ -123,10 +123,10 @@ Page {
     function outputToTab(channel, output) {
 
       var outputChannel
-        if (channel === Session.host)
+       if (channel === Session.host)
            outputChannel = "Server"
       else
-           outputChannel = channel
+          outputChannel = channel
 
         console.log("Sender:", channel)
         console.log("Output tab:", outputChannel)

@@ -14,6 +14,11 @@ PageStackWindow {
     platformSoftwareInputPanelEnabled: true
 
     Component {
+        id: serverSettingsFactory
+        ServerSettings {}
+    }
+
+    Component {
         id: settingsPageFactory
         SettingsPage {}
     }
@@ -277,7 +282,7 @@ PageStackWindow {
             onClicked: {
                 // If we're connected, we need to close the connection before
                 // we quit. Open a dialog to ask if the user is sure.
-                if (Session.sessionConnected)
+                if (Session.connected)
                 {
                     queryQuit.open()
                 }
