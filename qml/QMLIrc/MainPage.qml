@@ -35,6 +35,11 @@ Page {
         anchors.leftMargin: 0
         anchors.top: parent.top
         anchors.topMargin: 0
+        TabButton {
+            id: serverButton
+            text: "Server"
+            tab: serverPage
+        }
 
 
     }
@@ -47,12 +52,30 @@ Page {
         anchors.bottom: inputField.top
         anchors.left: parent.left
         anchors.topMargin: 0
-        onCurrentTabChanged: currentChannel = currentTab.channel
+        onCurrentTabChanged: {
+            currentChannel = outputTabGroup.currentTab.channel
+            console.log("Current tab:" + currentChannel)
+            if(currentChannel === "Server")
+            {
+                buttonUsers.enabled = false
+                partChannel.visible = false
+            }
+            else
+            {
+                buttonUsers.enabled = true
+                partChannel.visible = true
+            }
+        }
+        TabPage {
+            id: serverPage
+            channel: "Server"
+        }
+
     }
 
     Component.onCompleted: {
 
-        createTab("Server");
+        //createTab("Server")
     }
 
     function findButton(channel)
@@ -76,7 +99,7 @@ Page {
     function createTab(channel)
     {
         // Create an OutputFlickable item, attach it to the TabGroup
-        var pageFactory = Qt.createComponent("OutputFlickable.qml")
+        var pageFactory = Qt.createComponent("TabPage.qml")
         var page = pageFactory.createObject(outputTabGroup)
 
         // Create the TabButton and attach it to the TabBarLayout.
@@ -86,12 +109,12 @@ Page {
         // set the TabButton text and the OutputFlickable text property
         button.text = channel
         page.channel = channel
-        page.outputText.text = ""
+        // page.outputText.text = ""
         button.tab = page
         outputTabGroup.currentTab = page
     }
 
-    // Remove the tab with text property channel fro hte TabBarLayout
+    // Remove the tab with text property channel from the TabBarLayout
     function closeTab(channel)
     {
         // Find the correct TabButton. findButton() returns undefined if
@@ -107,16 +130,18 @@ Page {
             // Destroy the OutputFlickable (button.tab) and the TabButton
             button.tab.destroy()
             button.destroy()
+
         }
 
     }
 
     function closeAllTabs()
     {
-        // Close all tabs...
+        // Close all tabs except the Server tab...
         for (var i = 0;i<outputTabBarLayout.children.length; ++i)
         {
-            closeTab(outputTabBarLayout.children[i].text)
+            if (outputTabBarLayout.children[i].text !== "Server")
+                closeTab(outputTabBarLayout.children[i].text)
         }
     }
 
@@ -136,7 +161,7 @@ Page {
         var button = findButton(outputChannel)
         if (button) {
             var page = button.tab
-            page.outputText.text += output
+            page.addOutput(output)
         }
     }
 
@@ -165,7 +190,7 @@ Page {
         var button = findButton(outputChannel)
         if (button) {
             var page = button.tab
-            page.outputText.text = ""
+            page.clear()
         }
     }
 

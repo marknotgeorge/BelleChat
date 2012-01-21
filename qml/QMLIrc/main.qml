@@ -39,15 +39,16 @@ PageStackWindow {
     Connections {
         target: Session
         onOutputString: {
-            initialPage.outputToTab(channel, output);
+            initialPage.outputToTab(channel, output)
         }
         onConnected: {
-            connectServer.visible = false;
-            connectionTimer.stop();
+            connectServer.visible = false
+            connectionTimer.stop()
             initialPage.outputToTab("Server", "Connected to " + appConnectionSettings.host + "!")
-            disconnectServer.text = "Disconnect from " + appConnectionSettings.host;
-            disconnectServer.visible = true;
-            buttonJoin.enabled = true;
+            disconnectServer.text = "Disconnect from " + appConnectionSettings.host
+            disconnectServer.visible = true
+            buttonJoin.enabled = true
+
         }
         onDisconnected: {
             if (!userDisconnected)
@@ -56,7 +57,7 @@ PageStackWindow {
                 //TODO: Insert some code to notify user.
             }
             userDisconnected = false;
-            // initialPage.closeAllTabs()
+            initialPage.closeAllTabs()
             if (!tryingToQuit)
             {
                 initialPage.clearTab("Server")
@@ -66,6 +67,7 @@ PageStackWindow {
                 connectServer.enabled = true
                 connectServer.visible = true
                 buttonJoin.enabled = false
+                buttonUsers.enabled = false
             }
             else
                 exit()
@@ -182,7 +184,7 @@ PageStackWindow {
             MenuItem {
                 id: partChannel
                 text: "Leave " + currentChannel
-                visible: currentChannel !== "Server"
+                visible: false
                 onClicked: {
                     leaveChannel(currentChannel)
                 }
@@ -216,8 +218,8 @@ PageStackWindow {
         onButtonClicked: {
             if (!index) { // If 'Ok' pressed.
                 console.log("Disconnecting from server...")
-                userDisconnected = true // Supress notification of discinnection
-                // initialPage.closeAllTabs()
+                userDisconnected = true // Supress notification of disconnection
+                initialPage.closeAllTabs()
                 Session.close()
             }
         }
@@ -319,7 +321,13 @@ PageStackWindow {
             id: buttonUsers
             iconSource: "icon-users.svg"
             flat:true
-            enabled:false
+            enabled: false
+            onClicked: {
+                var userPageFactory = Qt.createComponent("UserPage.qml")
+                var page = userPageFactory.createObject(window)
+
+                pageStack.push(page)
+            }
         }
 
         ToolButton {
