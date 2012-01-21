@@ -43,3 +43,5 @@ void ChannelListItem::setTopic(QString newTopic)
     m_topic = newTopic;
 }
 
+
+

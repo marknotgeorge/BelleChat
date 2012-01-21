@@ -9,6 +9,7 @@
 #include <QColor>
 #include "channellistitem.h"
 #include <QDeclarativeContext>
+#include <QtAlgorithms>
 
 
 Session::Session(QObject *parent) :
@@ -27,7 +28,13 @@ void Session::onConnected()
 
 }
 
+bool Session::currentListItemLessThanChannel(QObject *left, QObject *right)
+{
+    ChannelListItem *leftChannel = (ChannelListItem *)left;
+    ChannelListItem *rightChannel = (ChannelListItem *)right;
 
+    return leftChannel->channel().toLower() < rightChannel->channel().toLower();
+}
 void Session::onInputReceived(QString channel,QString input)
 {
     IrcCommand *command = 0;
@@ -363,6 +370,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         break;
 
     case Irc::RPL_LISTEND:
+        qStableSort(channelList.begin(), channelList.end(), currentListItemLessThanChannel);
         context->setContextProperty("ChannelModel", QVariant::fromValue(channelList));
         emit newChannelList();
         break;
@@ -475,6 +483,8 @@ QString Session::formatPingReply(const IrcSender& sender, const QString& arg)
     }
     return QString();
 }
+
+
 
 IrcCommand* Session::parseAway(const QString& channel, const QStringList& params)
 {
@@ -604,6 +614,8 @@ IrcCommand* Session::parseWhowas(const QString& channel, const QStringList& para
         return IrcCommand::createWhowas(params.at(0));
     return 0;
 }
+
+
 
 void Session::onPassword(QString *passwd)
 {

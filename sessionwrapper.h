@@ -8,6 +8,7 @@
 #include "connectionsettings.h"
 #include <QList>
 #include <QDeclarativeContext>
+#include "channellistitem.h"
 
 
 
@@ -66,6 +67,8 @@ private:
     static IrcCommand* parseWhois(const QString& channel, const QStringList& params);
     static IrcCommand* parseWhowas(const QString& channel, const QStringList& params);
 
+    static bool currentListItemLessThanChannel(QObject *left, QObject *right);
+
     // Message Handling functions...
 protected:
     void handleInviteMessage(IrcInviteMessage* message);
@@ -86,6 +89,8 @@ protected:
     QString prettyUser(const QString& user);
     QString colorize(const QString& str, const QString& colourName);
     QString formatPingReply(const IrcSender& sender, const QString& arg);
+
+
 
 };
 

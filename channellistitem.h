@@ -20,6 +20,7 @@ public:
     void setUsers(int newUsers);
     QString topic();
     void setTopic(QString newTopic);
+
     
 signals:
     void channelChanged();

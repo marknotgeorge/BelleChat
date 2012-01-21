@@ -57,7 +57,7 @@ OTHER_FILES += \
 
 # Create a macro from the Git describe command, to use in about boxes.
 BUILDSTR = '\\"$$system(git describe)\\"'
-DEFINES += BUILD=\"$${BUILDSTR}\"
+DEFINES += BUILD=$${BUILDSTR}
 
 HEADERS += \
     version.h \
