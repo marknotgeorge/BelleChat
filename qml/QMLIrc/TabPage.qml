@@ -21,6 +21,7 @@ Page {
             text: model.text
         }
         anchors.fill: parent
+        clip: true
     }
 
     function addOutput(output)
