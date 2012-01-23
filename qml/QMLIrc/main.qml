@@ -9,6 +9,7 @@ PageStackWindow {
     property string currentChannel: "Server"
     property bool userDisconnected: false
     property bool tryingToQuit: false
+    property bool namesListRequested: false
 
     initialPage: MainPage { tools: serverToolbar }
     platformSoftwareInputPanelEnabled: true
@@ -23,8 +24,21 @@ PageStackWindow {
         SettingsPage {}
     }
 
+    Component {
+        id: userPageFactory
+        UserPage {}
+    }
+
     InfoBanner {
         id: connectFailedBanner
+    }
+
+    BusyIndicator {
+        id: appBusy
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        running: false
+        visible: false
     }
 
     Timer {
@@ -32,6 +46,7 @@ PageStackWindow {
         interval: 15000
         onTriggered: {
             notifyConnectionFailure()
+            menuToDisconnected()
         }
     }
 
@@ -62,12 +77,7 @@ PageStackWindow {
             {
                 initialPage.clearTab("Server")
                 initialPage.outputToTab("Server", "Disconnected from " + appConnectionSettings.host + ".")
-                disconnectServer.visible = false
-                connectServer.text = "Connect to " + appConnectionSettings.host
-                connectServer.enabled = true
-                connectServer.visible = true
-                buttonJoin.enabled = false
-                buttonUsers.enabled = false
+                menuToDisconnected()
             }
             else
                 exit()
@@ -82,29 +92,47 @@ PageStackWindow {
             }
         }
         onNewChannelList: {
+            appBusy.visible = false
+            appBusy.running = false
             selectChannelDialog.open()
         }
         onSocketError: {
             connectionTimer.stop()
             notifyConnectionFailure()
+            menuToDisconnected()
         }
-    }
-
-    Version {
-        id: appVersion
+        onNewNamesList: {
+            // A list of names are sent when a user joins a channel. By setting namesListRequested
+            // to true only when the user pressed the Users ToolButton, showing the Users page when
+            // this list arrives is supressed.
+            if (namesListRequested)
+            {
+                // Kill the BusyIndicator...
+                appBusy.visible = false
+                appBusy.running = false
+                console.log("Names list arrived for:" + channel)
+                if (channel === currentChannel)
+                {
+                    // Only show the page if the current tab is still selected...
+                    var page = userPageFactory.createObject(window)
+                    page.userCount = count;
+                    pageStack.push(page)
+                }
+                // Clear the namesListRequested flag...
+                namesListRequested = false;
+            }
+        }
     }
 
     ConnectionSettings {
         id: appConnectionSettings
     }
 
-    CommonDialog {
+    QueryDialog {
         id: aboutDialog
         titleText: "About QMLIrc"
-        content: Label {
-            text: "QMLIrc " + appVersion.version + "\n© 2011-12 MarkNotGeorge"
-        }
-        buttonTexts: ["OK"]
+        message: "QMLIrc " + Version + "\n© 2011-12 MarkNotGeorge\nUses Communi written by J-P Nurmi et al.\n"
+        acceptButtonText: "OK"
     }
 
     Menu {
@@ -195,6 +223,8 @@ PageStackWindow {
                 text: "Select from list"
                 visible: true
                 onClicked: {
+                    appBusy.visible = true
+                    appBusy.running = true
                     Session.getChannelList("")
                 }
             }
@@ -323,10 +353,10 @@ PageStackWindow {
             flat:true
             enabled: false
             onClicked: {
-                var userPageFactory = Qt.createComponent("UserPage.qml")
-                var page = userPageFactory.createObject(window)
-
-                pageStack.push(page)
+                appBusy.visible = true
+                appBusy.running = true
+                namesListRequested = true
+                Session.onRefreshNames(currentChannel)
             }
         }
 
@@ -341,7 +371,7 @@ PageStackWindow {
     }
 
     Component.onCompleted: {
-        var outputString = "Welcome to QMLIrc " + appVersion.version +"!\n"
+        var outputString = "Welcome to QMLIrc " + Version +"!\n"
         initialPage.outputToTab("Server", outputString)
     }
 
@@ -381,6 +411,16 @@ PageStackWindow {
         connectFailedBanner.text = failureString
         initialPage.outputToTab("Server", failureString)
         connectFailedBanner.open()
+    }
+
+    function menuToDisconnected()
+    {
+        disconnectServer.visible = false
+        connectServer.text = "Connect to " + appConnectionSettings.host
+        connectServer.enabled = true
+        connectServer.visible = true
+        buttonJoin.enabled = false
+        buttonUsers.enabled = false
     }
 
 }

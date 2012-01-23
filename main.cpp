@@ -1,6 +1,6 @@
 #include <QtGui/QApplication>
 #include "qmlapplicationviewer.h"
-#include "version.h"
+
 #include "connectionsettings.h"
 #include <QDeclarativeContext>
 #include "sessionwrapper.h"
@@ -14,21 +14,17 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QmlApplicationViewer viewer;
     Session appSession;
     appSession.context = viewer.rootContext();
+    QString appVersion = BUILD;
 
-    qmlRegisterType<Version>("QMLIrc",1,0,"Version");
+
     qmlRegisterType<ConnectionSettings>("QMLIrc",1,0,"ConnectionSettings");
-
-
     QList<QObject *> channels;
+    QStringList users;
 
-    // Fill ChannelListItem with dummy data;
-    //channels.append(new ChannelListItem("#Wibble", 23, "Wibble, Wibble, I'm a hatstand"));
-    //channels.append(new ChannelListItem("#biggun", 12, "That's what she said"));
-    //channels.append(new ChannelListItem("#Banana", 45, "The rain in spain falls mainly on the plain"));
-
-
+    viewer.rootContext()->setContextProperty("Version", appVersion);
     viewer.rootContext()->setContextProperty("Session", &appSession);
     viewer.rootContext()->setContextProperty("ChannelModel", QVariant::fromValue(channels));
+    viewer.rootContext()->setContextProperty("UserModel", QVariant::fromValue(users));
 
 
 

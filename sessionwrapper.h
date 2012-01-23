@@ -24,7 +24,7 @@ public:
 
 signals:
     void outputString(QString channel, QString output);
-    void newNamesList(QString channel, QStringList nameList);
+    void newNamesList(QString channel, int count);
     void newChannelList();
     void channelJoined(QString channel);
 

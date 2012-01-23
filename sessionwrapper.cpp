@@ -39,66 +39,88 @@ void Session::onInputReceived(QString channel,QString input)
 {
     IrcCommand *command = 0;
 
-    // qDebug() << "Channel: " << channel << "\n"<< "String: " << input;
+    qDebug() << "Channel: " << channel << "\n"<< "String: " << input;
 
+
+    // Check to see if the input is a message or a command...
     if(input[0] == '/')
     {
-        // parse the input.
-        typedef IrcCommand*(*ParseFunc)(const QString&, const QStringList&);
-
-        static QHash<QString, ParseFunc> parseFunctions;
-        if (parseFunctions.isEmpty())
-        {
-            parseFunctions.insert("AWAY", &Session::parseAway);
-            parseFunctions.insert("INVITE", &Session::parseInvite);
-            parseFunctions.insert("JOIN", &Session::parseJoin);
-            parseFunctions.insert("KICK", &Session::parseKick);
-            parseFunctions.insert("ME", &Session::parseMe);
-            parseFunctions.insert("MODE", &Session::parseMode);
-            parseFunctions.insert("NAMES", &Session::parseNames);
-            parseFunctions.insert("NICK", &Session::parseNick);
-            parseFunctions.insert("NOTICE", &Session::parseNotice);
-            parseFunctions.insert("PART", &Session::parsePart);
-            parseFunctions.insert("PING", &Session::parsePing);
-            parseFunctions.insert("QUIT", &Session::parseQuit);
-            parseFunctions.insert("QUOTE", &Session::parseQuote);
-            parseFunctions.insert("TIME", &Session::parseTime);
-            parseFunctions.insert("TOPIC", &Session::parseTopic);
-            parseFunctions.insert("VERSION", &Session::parseVersion);
-            parseFunctions.insert("WHOIS", &Session::parseWhois);
-            parseFunctions.insert("WHOWAS", &Session::parseWhowas);
-        }
-
+        // Input is a command. Parse and create the IrcCommand
         const QStringList words = input.mid(1).split(" ", QString::SkipEmptyParts);
-        const QString commandString = words.value(0).toUpper();
-        ParseFunc parseFunc = parseFunctions.value(commandString);
-        if (parseFunc)
+        const QString commandString = words[0].toUpper();
+        const QStringList paramsList = words.mid(1);
+
+        qDebug() << "commandString: " << commandString;
+        qDebug() << "Parameters: " << paramsList;
+
+
+        if (commandString == "AWAY")
+            command = parseAway(channel, paramsList);
+        else if (commandString == "INVITE")
+            command = parseInvite(channel, paramsList);
+        else if (commandString == "JOIN")
+            command = parseJoin(channel, paramsList);
+        else if (commandString == "KICK")
+            command = parseKick(channel, paramsList);
+        else if (commandString == "ME")
+            command = parseMe(channel, paramsList);
+        else if (commandString == "MODE")
+            command = parseMode(channel, paramsList);
+        else if (commandString == "NAMES")
+            command = parseNames(channel, paramsList);
+        else if (commandString == "NICK")
+            command = parseNick(channel, paramsList);
+        else if (commandString == "NOTICE")
+            command = parseNotice(channel, paramsList);
+        else if (commandString == "PART")
+            command = parsePart(channel, paramsList);
+        else if (commandString == "PING")
+            command = parsePing(channel, paramsList);
+        else if (commandString == "QUIT")
+            command = parseQuit(channel, paramsList);
+        else if (commandString == "QUOTE")
+            command = parseQuote(channel, paramsList);
+        else if (commandString == "TIME")
+            command = parseTime(channel, paramsList);
+        else if (commandString == "TOPIC")
+            command = parseTopic(channel, paramsList);
+        else if (commandString == "VERSION")
+            command = parseVersion(channel, paramsList);
+        else if (commandString == "WHOIS")
+            command = parseWhois(channel, paramsList);
+        else if (commandString == "WHOWAS")
+            command = parseWhowas(channel, paramsList);
+        if (!command)
         {
-            command = parseFunc(channel, words.mid(1));
-            if (!command)
-            {
-                emit outputString(this->host(), tr("Unable to understand command!"));
-                return;
-            }
+            // Output an error message...
+            emit outputString(this->host(), tr("Unable to understand command!"));
+            return;
         }
     }
     else
     {
+        // It's a message. Create a Message IrcCommand...
         command = IrcCommand::createMessage(channel, input);
     }
     if (command->type() == IrcCommand::Message || command->type() == IrcCommand::CtcpAction)
     {
+        // If a message or an action, echo the output to the client...
         IrcMessage* msg = IrcMessage::fromCommand(this->nickName(), command);
         emit messageReceived(msg);
         delete msg;
     }
+
+    // Finally send the command...
     if (command)
+    {
+        qDebug() << "Sending command " << command->toString();
         sendCommand(command);
+    }
 }
 
 void Session::onRefreshNames(QString channel)
 {
-    // send a names command to the server...
+    // send a NAMES command to the server...
     IrcCommand *command = IrcCommand::createNames(channel);
     this->sendCommand(command);
 }
@@ -253,6 +275,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     ChannelListItem *clitem;
     QString topic;
     int index;
+    bool newNames = true;
 
 
     if (message->code() < 300)
@@ -282,25 +305,25 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         break;
     case Irc::RPL_WHOISUSER:
         emit outputString(this->host(), colorize(tr("*** %1 is %2@%3 (%4)")
-                                   .arg(P_(1), P_(2), P_(3),
-                                        IrcUtil::messageToHtml(MID_(5))), "green"));
+                                                 .arg(P_(1), P_(2), P_(3),
+                                                      IrcUtil::messageToHtml(MID_(5))), "green"));
         break;
     case Irc::RPL_WHOISSERVER:
         emit outputString(this->host(), colorize(tr("*** %1 is online via %2 (%3)")
-                                   .arg(P_(1), P_(2), P_(3)), "green"));
+                                                 .arg(P_(1), P_(2), P_(3)), "green"));
         break;
     case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
         emit outputString(this->host(), colorize(tr("*** %1 %3 %2").arg(P_(1), P_(2), P_(3)), "green"));
         break;
     case Irc::RPL_WHOWASUSER:
         emit outputString(this->host(), colorize(tr("*** %1 was %2@%3 %4 %5")
-                                   .arg(P_(1), P_(2), P_(3), P_(4), P_(5)), "green"));
+                                                 .arg(P_(1), P_(2), P_(3), P_(4), P_(5)), "green"));
         break;
     case Irc::RPL_WHOISIDLE:
         myDateTime = QDateTime::fromTime_t(P_(3).toInt());
         myTime = QTime().addSecs(P_(2).toInt());
         emit outputString(this->host(), colorize(tr("*** %1 has been online since %2 (idle for %3)")
-                                   .arg(P_(1), myDateTime.toString(), myTime.toString()), "green"));
+                                                 .arg(P_(1), myDateTime.toString(), myTime.toString()), "green"));
 
         break;
     case Irc::RPL_WHOISCHANNELS:
@@ -311,31 +334,31 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         break;
     case Irc::RPL_CHANNEL_URL:
         emit outputString(this->host(), colorize(tr("*** %1 url is %2")
-                                   .arg(P_(1), IrcUtil::messageToHtml(P_(2))), "green"));
+                                                 .arg(P_(1), IrcUtil::messageToHtml(P_(2))), "green"));
         break;
     case Irc::RPL_CREATIONTIME:
         myDateTime = QDateTime::fromTime_t(P_(2).toInt());
         emit outputString(this->host(), colorize(tr("*** %1 was created %2")
-                                   .arg(P_(1), myDateTime.toString()), "green"));
+                                                 .arg(P_(1), myDateTime.toString()), "green"));
         break;
     case Irc::RPL_NOTOPIC:
         emit outputString(P_(1), colorize(tr("*** %1 has no topic set").arg(P_(1)), "green"));
         break;
     case Irc::RPL_TOPIC:
         emit outputString(P_(1), colorize(tr("*** %1 topic is \"%2\"")
-                                   .arg(P_(1), IrcUtil::messageToHtml(P_(2))), "green"));
+                                          .arg(P_(1), IrcUtil::messageToHtml(P_(2))), "green"));
         break;
     case Irc::RPL_TOPICWHOTIME:
         myDateTime = QDateTime::fromTime_t(P_(3).toInt());
         emit outputString(P_(1), colorize(tr("*** %1 topic was set %2 by %3")
-                                   .arg(P_(1), myDateTime.toString(), P_(2)), "green"));
+                                          .arg(P_(1), myDateTime.toString(), P_(2)), "green"));
         break;
     case Irc::RPL_INVITING:
         emit outputString(this->host(), colorize(tr("*** inviting %1 to %2").arg(P_(1), P_(2)), "green"));
         break;
     case Irc::RPL_VERSION:
         emit outputString(this-> host(), colorize(tr("*** %1 version is %2")
-                                   .arg(message->sender().name(), P_(1)),"green"));
+                                                  .arg(message->sender().name(), P_(1)),"green"));
         break;
     case Irc::RPL_TIME:
         emit outputString(this->host(), colorize(tr("*** %1 time is %2").arg(P_(1), P_(2)),"green"));
@@ -345,17 +368,26 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         emit outputString(this->host(), colorize(tr("*** %1").arg(P_(1)), "green"));
         break;
     case Irc::RPL_NAMREPLY:
+        // If first RPL_NAMEREPLY in a group, clear the list.
+        if (newNames)
+            nicknameList.clear();
+        qDebug() << P_(3);
+        // Parse through the list adding the names to the list.
+        // It's in a single string, so it's necessary to split it.
         foreach (const QString& name, P_(3).split(" ", QString::SkipEmptyParts))
             nicknameList.append(name);
-        emit outputString(this->host(), QString());
+        // Stop the list clearing when another RPL_NAMEREPLY comes in.
+        newNames = false;
         break;
 
     case Irc::RPL_ENDOFNAMES:
         channel = P_(1);
         msg = colorize(tr("*** %1 has %2 user(s)").arg(channel).arg(nicknameList.count()), "green");
-        emit newNamesList(channel, nicknameList);
+        qStableSort(nicknameList);
+        emit newNamesList(channel, nicknameList.count());
+        context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
         emit outputString(this->host(), msg);
-        nicknameList.clear();
+        newNames = true;
         break;
 
     case Irc::RPL_LISTSTART:
@@ -409,8 +441,8 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
         emit outputString(message->target(), colorize(tr("*** %1 %2").arg(sender, msg), "purple"));
     else if (message->isRequest())
         emit outputString(message->target(), colorize(tr("*** %1 requested %2")
-                                   .arg(sender,
-                                        msg.split(" ").value(0).toLower()), "green"));
+                                                      .arg(sender,
+                                                           msg.split(" ").value(0).toLower()), "green"));
     else
         emit outputString(message->target(), tr("&lt;%1&gt; %2").arg(sender, msg));
 }
@@ -490,12 +522,13 @@ IrcCommand* Session::parseAway(const QString& channel, const QStringList& params
 {
     Q_UNUSED(channel);
     return IrcCommand::createAway(params.value(0));
+
 }
 
 IrcCommand* Session::parseInvite(const QString& channel, const QStringList& params)
 {
     if (params.count() == 1)
-        return IrcCommand::createInvite(params.at(0), channel);
+        return IrcCommand::createInvite(params.value(0), channel);
     return 0;
 }
 
@@ -503,14 +536,14 @@ IrcCommand* Session::parseJoin(const QString& channel, const QStringList& params
 {
     Q_UNUSED(channel);
     if (params.count() == 1 || params.count() == 2)
-        return IrcCommand::createJoin(params.at(0), params.value(1));
+        return IrcCommand::createJoin(params.value(0), params.value(1));
     return 0;
 }
 
 IrcCommand* Session::parseKick(const QString& channel, const QStringList& params)
 {
     if (params.count() >= 1)
-        return IrcCommand::createKick(channel, params.at(0), QStringList(params.mid(1)).join(" "));
+        return IrcCommand::createKick(channel, params[0], QStringList(params.mid(1)).join(" "));
     return 0;
 }
 
@@ -602,16 +635,20 @@ IrcCommand* Session::parseVersion(const QString& channel, const QStringList& par
 IrcCommand* Session::parseWhois(const QString& channel, const QStringList& params)
 {
     Q_UNUSED(channel);
-    if (params.count() == 1)
-        return IrcCommand::createWhois(params.at(0));
+    QString user = params[0];
+    qDebug() << user;
+    if (!user.isEmpty())
+        return IrcCommand::createWhois(user);
     return 0;
 }
 
 IrcCommand* Session::parseWhowas(const QString& channel, const QStringList& params)
 {
     Q_UNUSED(channel);
-    if (params.count() == 1)
-        return IrcCommand::createWhowas(params.at(0));
+    QString user = params[0];
+    qDebug() << user;
+    if (!user.isEmpty())
+        return IrcCommand::createWhowas(user);
     return 0;
 }
 
@@ -658,6 +695,8 @@ void Session::getChannelList(QString channel)
     sendCommand(command);
 
 }
+
+
 
 
 

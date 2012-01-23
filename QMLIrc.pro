@@ -35,7 +35,6 @@ symbian:TARGET.CAPABILITY += NetworkServices
 CONFIG += qt-components communi
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    version.cpp \
     connectionsettings.cpp \
     sessionwrapper.cpp \
     channellistitem.cpp
@@ -48,7 +47,6 @@ RESOURCES +=
 
 OTHER_FILES += \
     TabArray.js \
-    qml/QMLIrc/OutputFlickable.qml \
     TempPage.qml \
     SettingsPage.qml \
     qml/UserPage.qml \
@@ -57,10 +55,9 @@ OTHER_FILES += \
 
 # Create a macro from the Git describe command, to use in about boxes.
 BUILDSTR = '\\"$$system(git describe)\\"'
-DEFINES += BUILD=$${BUILDSTR}
+DEFINES += BUILD=\"$${BUILDSTR}\"
 
 HEADERS += \
-    version.h \
     connectionsettings.h \
     sessionwrapper.h \
     channellistitem.h

@@ -11,6 +11,7 @@ Page {
         height: 50
         text: ""
         focus: true
+        enabled: false
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
         anchors.right: parent.right
@@ -23,6 +24,17 @@ Page {
             var page = outputTabGroup.currentTab
             console.log(inputField.text);
             Session.onInputReceived(page.channel, inputField.text);
+            inputField.text = "";
+        }
+        //Required for the simulator...
+        Keys.onReturnPressed: {
+            var page = outputTabGroup.currentTab
+            var inputChannel = page.channel
+            console.log(inputChannel, inputField.text)
+            if (inputChannel === "Server")
+                inputChannel = Session.host
+
+            Session.onInputReceived(inputChannel, inputField.text)
             inputField.text = "";
         }
     }
@@ -40,8 +52,6 @@ Page {
             text: "Server"
             tab: serverPage
         }
-
-
     }
 
     TabGroup {
@@ -59,11 +69,13 @@ Page {
             {
                 buttonUsers.enabled = false
                 partChannel.visible = false
+                inputField.enabled = false
             }
             else
             {
                 buttonUsers.enabled = true
                 partChannel.visible = true
+                inputField.enabled = true
             }
         }
         TabPage {

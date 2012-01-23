@@ -4,6 +4,7 @@ import com.nokia.symbian 1.1
 
 Page {
     id: window
+    property int userCount: 0
 
     tools: ToolBarLayout {
         id: settingsToolBarLayout
@@ -17,4 +18,29 @@ Page {
         }
     }
 
+
+    ListView {
+        id: userView
+        anchors.fill: parent
+        model: UserModel
+        header: ListHeading {
+            id: userHeading
+            ListItemText {
+                id: userHeadingText
+                role: "Heading"
+                text: currentChannel + ": " + userCount + " users"
+            }
+        }
+        delegate: UserListItem {
+            username: model.modelData
+        }
+    }
+
+    ScrollDecorator {
+        id: userDecorator
+        flickableItem: userView
+    }
+
 }
+
+

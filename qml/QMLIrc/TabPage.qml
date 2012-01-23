@@ -22,11 +22,18 @@ Page {
         }
         anchors.fill: parent
         clip: true
+
+    }
+
+    ScrollDecorator {
+        id: outputScroll
+        flickableItem: outputView
     }
 
     function addOutput(output)
     {
         outputModel.append({"text": output})
+        outputView.currentIndex++
         outputView.positionViewAtEnd()
     }
 
