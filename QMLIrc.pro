@@ -37,7 +37,8 @@ CONFIG += qt-components communi
 SOURCES += main.cpp \
     connectionsettings.cpp \
     sessionwrapper.cpp \
-    channellistitem.cpp
+    channellistitem.cpp \
+    userlistitem.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -60,7 +61,8 @@ DEFINES += BUILD=\"$${BUILDSTR}\"
 HEADERS += \
     connectionsettings.h \
     sessionwrapper.h \
-    channellistitem.h
+    channellistitem.h \
+    userlistitem.h
 
 symbian {
     # Copied from QTCREATORBUG-5589

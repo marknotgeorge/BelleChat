@@ -41,7 +41,7 @@ public slots:
     Q_INVOKABLE void getChannelList(QString channel);
 
 private:
-    QStringList nicknameList;
+    QList<QObject *> nicknameList;
     QString password;
     QList<QObject *> channelList;
 
@@ -68,6 +68,7 @@ private:
     static IrcCommand* parseWhowas(const QString& channel, const QStringList& params);
 
     static bool currentListItemLessThanChannel(QObject *left, QObject *right);
+    static bool userListItemLessThan(QObject *left, QObject *right);
 
     // Message Handling functions...
 protected:

@@ -5,6 +5,7 @@
 #include <QDeclarativeContext>
 #include "sessionwrapper.h"
 #include "channellistitem.h"
+#include "userlistitem.h"
 #include <QtDeclarative>
 
 
@@ -19,7 +20,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     qmlRegisterType<ConnectionSettings>("QMLIrc",1,0,"ConnectionSettings");
     QList<QObject *> channels;
-    QStringList users;
+    QList<QObject *> users;
 
     viewer.rootContext()->setContextProperty("Version", appVersion);
     viewer.rootContext()->setContextProperty("Session", &appSession);

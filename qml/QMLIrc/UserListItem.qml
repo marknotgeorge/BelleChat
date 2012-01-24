@@ -9,7 +9,6 @@ ListItem {
     ListItemText {
         id: userListText
         role: "Title"
-        text: modelData
         anchors.verticalCenter: userListItem.verticalCenter
     }
 }

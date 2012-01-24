@@ -18,21 +18,22 @@ Page {
         }
     }
 
+    ListHeading {
+        id: userHeading
+        anchors { left: parent.left; right: parent.right; top: parent.top; }
+        ListItemText {
+            id: userHeadingText
+            role: "Heading"
+            text: currentChannel + ": " + userCount + " users"
+        }
+    }
 
     ListView {
         id: userView
-        anchors.fill: parent
+        anchors { left: parent.left; right: parent.right; top: userHeading.bottom; bottom: parent.bottom; }
         model: UserModel
-        header: ListHeading {
-            id: userHeading
-            ListItemText {
-                id: userHeadingText
-                role: "Heading"
-                text: currentChannel + ": " + userCount + " users"
-            }
-        }
         delegate: UserListItem {
-            username: model.modelData
+            username: name
         }
     }
 
@@ -40,7 +41,6 @@ Page {
         id: userDecorator
         flickableItem: userView
     }
-
 }
 
 

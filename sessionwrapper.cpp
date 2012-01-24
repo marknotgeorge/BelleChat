@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QColor>
 #include "channellistitem.h"
+#include "userlistitem.h"
 #include <QDeclarativeContext>
 #include <QtAlgorithms>
 
@@ -35,6 +36,15 @@ bool Session::currentListItemLessThanChannel(QObject *left, QObject *right)
 
     return leftChannel->channel().toLower() < rightChannel->channel().toLower();
 }
+
+bool Session::userListItemLessThan(QObject *left, QObject *right)
+{
+    UserListItem *leftItem = (UserListItem *)left;
+    UserListItem *rightItem = (UserListItem *)right;
+
+    return leftItem->name().toLower() < rightItem->name().toLower();
+}
+
 void Session::onInputReceived(QString channel,QString input)
 {
     IrcCommand *command = 0;
@@ -301,18 +311,22 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
     case Irc::RPL_WHOISSECURE: // nick is using a secure connection
     case Irc::RPL_WHOISHOST: // nick is connecting from <...>
+        qDebug() << message->parameters();
         emit outputString(this->host(), colorize(tr("*** %1").arg(MID_(1)), "green"));
         break;
     case Irc::RPL_WHOISUSER:
+        qDebug() << message->parameters();
         emit outputString(this->host(), colorize(tr("*** %1 is %2@%3 (%4)")
                                                  .arg(P_(1), P_(2), P_(3),
                                                       IrcUtil::messageToHtml(MID_(5))), "green"));
         break;
     case Irc::RPL_WHOISSERVER:
+        qDebug() << message->parameters();
         emit outputString(this->host(), colorize(tr("*** %1 is online via %2 (%3)")
                                                  .arg(P_(1), P_(2), P_(3)), "green"));
         break;
     case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
+        qDebug() << message->parameters();
         emit outputString(this->host(), colorize(tr("*** %1 %3 %2").arg(P_(1), P_(2), P_(3)), "green"));
         break;
     case Irc::RPL_WHOWASUSER:
@@ -327,6 +341,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
 
         break;
     case Irc::RPL_WHOISCHANNELS:
+        qDebug() << message->parameters();
         emit outputString(this->host(), colorize(tr("*** %1 is on channels %2").arg(P_(1), P_(2)), "green"));
         break;
     case Irc::RPL_CHANNELMODEIS:
@@ -371,11 +386,14 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         // If first RPL_NAMEREPLY in a group, clear the list.
         if (newNames)
             nicknameList.clear();
-        qDebug() << P_(3);
         // Parse through the list adding the names to the list.
         // It's in a single string, so it's necessary to split it.
         foreach (const QString& name, P_(3).split(" ", QString::SkipEmptyParts))
-            nicknameList.append(name);
+        {
+            UserListItem *newUser = new UserListItem();
+            newUser->setName(name);
+            nicknameList.append(newUser);
+        }
         // Stop the list clearing when another RPL_NAMEREPLY comes in.
         newNames = false;
         break;
@@ -383,7 +401,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     case Irc::RPL_ENDOFNAMES:
         channel = P_(1);
         msg = colorize(tr("*** %1 has %2 user(s)").arg(channel).arg(nicknameList.count()), "green");
-        qStableSort(nicknameList);
+        qStableSort(nicknameList.begin(), nicknameList.end(), userListItemLessThan);
         emit newNamesList(channel, nicknameList.count());
         context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
         emit outputString(this->host(), msg);
