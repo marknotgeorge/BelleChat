@@ -171,6 +171,7 @@ PageStackWindow {
                 ListItemText {
                     role: "Subtitle"
                     text: topic
+                    wrapMode: Text.Wrap
                 }
             }
             onClicked: {

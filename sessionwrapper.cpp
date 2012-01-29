@@ -207,14 +207,26 @@ void Session::handleJoinMessage(IrcJoinMessage *message)
     IrcSender sender = message->sender();
     const QString prettySender = prettyUser(sender);
 
-    // Check to see if we are the one joining...
+    // Check to see if we are the one joining. If we are, signal
+    // the UI, so it can open a new tab...
     if (sender.name() == this->nickName())
         emit channelJoined(message->channel());
+
+    // Add user to nickname list
+
+    if (!nicknameHash.contains(sender.name()))
+    {
+        UserListItem *newUser = new UserListItem();
+        newUser->setName(sender.name());
+        whoIs(sender.name());
+        nicknameList.append(newUser);
+        nicknameHash.insert(sender.name(), newUser);
+        context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
+    }
 
 
     QString joinString =  colorize(tr("*** %1 joined %2").arg(prettySender, message->channel()),"green");
     emit outputString(message->channel(), joinString);
-
 }
 
 void Session::handleKickMessage(IrcKickMessage *message)
@@ -283,6 +295,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     QString channel;
     QString msg;
     ChannelListItem *clitem;
+    UserListItem *whoisUser;
     QString topic;
     int index;
     bool newNames = true;
@@ -304,26 +317,54 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         emit outputString(this->host(), colorize(tr("*** %1 is away (%2)").arg(P_(1), MID_(2)), "green"));
         break;
     case Irc::RPL_ENDOFWHOIS:
+        // qDebug() << message->parameters();
+        // Set the complete flag. This is used by the UI to allow the user to
+        // open the UserDetails page.
+        whoisUser = (UserListItem *)nicknameHash.value(P_(1));
+        if (whoisUser)
+            whoisUser->setDataComplete(true);
         emit outputString(this->host(), QString());
+        // Update the UserModel
+        context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
         break;
     case Irc::RPL_WHOISOPERATOR:
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
     case Irc::RPL_WHOISSECURE: // nick is using a secure connection
-    case Irc::RPL_WHOISHOST: // nick is connecting from <...>
         qDebug() << message->parameters();
         emit outputString(this->host(), colorize(tr("*** %1").arg(MID_(1)), "green"));
         break;
+    case Irc::RPL_WHOISHOST: // nick is connecting from <...>
+
+        qDebug() << "RPL_WHOISHOST" << message->parameters();
+        emit outputString(this->host(), colorize(tr("*** %1").arg(MID_(1)), "green"));
+        break;
     case Irc::RPL_WHOISUSER:
-        qDebug() << message->parameters();
+        //qDebug() << message->parameters();
+        whoisUser = (UserListItem *)nicknameHash.value(P_(1), 0);
+        if (whoisUser)
+        {
+            whoisUser->setUser(QString("%1@%2").arg(P_(2),P_(3)));
+            whoisUser->setRealname(P_(5));
+        }
         emit outputString(this->host(), colorize(tr("*** %1 is %2@%3 (%4)")
                                                  .arg(P_(1), P_(2), P_(3),
                                                       IrcUtil::messageToHtml(MID_(5))), "green"));
+        // Update the UserModel
+        context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
         break;
     case Irc::RPL_WHOISSERVER:
-        qDebug() << message->parameters();
+        // qDebug() << message->parameters();
+        whoisUser = (UserListItem *)nicknameHash.value(P_(1), 0);
+        if (whoisUser)
+        {
+            whoisUser->setServer(P_(2));
+
+        }
         emit outputString(this->host(), colorize(tr("*** %1 is online via %2 (%3)")
                                                  .arg(P_(1), P_(2), P_(3)), "green"));
+        // Update the UserModel
+        context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
         break;
     case Irc::RPL_WHOISACCOUNT: // nick user is logged in as
         qDebug() << message->parameters();
@@ -336,13 +377,29 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     case Irc::RPL_WHOISIDLE:
         myDateTime = QDateTime::fromTime_t(P_(3).toInt());
         myTime = QTime().addSecs(P_(2).toInt());
+        whoisUser = (UserListItem *)nicknameHash.value(P_(1), 0);
+        // Save to nicknameList. I'm not bothering with the idle time, as it's going
+        // to be very inaccurate by the time the user sees it.
+        if (whoisUser)
+        {
+            whoisUser->setOnlineSince(myDateTime);
+        }
         emit outputString(this->host(), colorize(tr("*** %1 has been online since %2 (idle for %3)")
                                                  .arg(P_(1), myDateTime.toString(), myTime.toString()), "green"));
-
+        // Update the UserModel
+        context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
         break;
     case Irc::RPL_WHOISCHANNELS:
-        qDebug() << message->parameters();
+        // qDebug() << message->parameters();
+        // Save to nicknameList
+        whoisUser = (UserListItem *)nicknameHash.value(P_(1), 0);
+        if (whoisUser)
+        {
+            whoisUser->setChannels(P_(2));
+        }
         emit outputString(this->host(), colorize(tr("*** %1 is on channels %2").arg(P_(1), P_(2)), "green"));
+        // Update the UserModel
+        context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
         break;
     case Irc::RPL_CHANNELMODEIS:
         emit outputString(this->host(), colorize(tr("*** %1 mode is %2").arg(P_(1), P_(2)), "green"));
@@ -383,16 +440,24 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         emit outputString(this->host(), colorize(tr("*** %1").arg(P_(1)), "green"));
         break;
     case Irc::RPL_NAMREPLY:
+        qDebug() << MID_(0);
         // If first RPL_NAMEREPLY in a group, clear the list.
         if (newNames)
+        {
             nicknameList.clear();
+            nicknameHash.clear();
+        }
         // Parse through the list adding the names to the list.
         // It's in a single string, so it's necessary to split it.
         foreach (const QString& name, P_(3).split(" ", QString::SkipEmptyParts))
         {
             UserListItem *newUser = new UserListItem();
+
             newUser->setName(name);
             nicknameList.append(newUser);
+            nicknameHash.insert(name, newUser);
+            if (!name.startsWith("&"))
+                whoIs(name);
         }
         // Stop the list clearing when another RPL_NAMEREPLY comes in.
         newNames = false;
@@ -430,18 +495,32 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
 
 void Session::handlePartMessage(IrcPartMessage *message)
 {
-    const QString sender = prettyUser(message->sender());
+    IrcSender sender = message->sender();
+    const QString senderString = prettyUser(message->sender());
+
+    // Remove the user from the nickname list...
+    UserListItem *user = (UserListItem *)nicknameHash.value(sender.name(), 0);
+    if (user)
+    {
+        int index = nicknameList.indexOf(user);
+        nicknameList.removeAt(index);
+        nicknameHash.remove(sender.name());
+    }
+
+    // Update the channel list
+    context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
+
     if (!message->reason().isEmpty())
     {
         QString output = colorize(tr("*** %1 left %2 (%3)")
-                                  .arg(sender, message->channel(),
+                                  .arg(senderString, message->channel(),
                                        IrcUtil::messageToHtml(message->reason())),"green");
         emit outputString(message->channel(), output);
     }
     else
     {
         QString output = colorize(tr("*** %1 left %2")
-                                  .arg(sender, message->channel()),"green");
+                                  .arg(senderString, message->channel()),"green");
         emit outputString(message->channel(), output);
     }
 }
@@ -712,6 +791,13 @@ void Session::getChannelList(QString channel)
     command = IrcCommand::createList(channel);
     sendCommand(command);
 
+}
+
+void Session::whoIs(QString user)
+{
+    IrcCommand *command;
+    command = IrcCommand::createWhois(user);
+    sendCommand(command);
 }
 
 

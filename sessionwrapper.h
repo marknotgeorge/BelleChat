@@ -39,9 +39,11 @@ public slots:
     Q_INVOKABLE void partChannel(QString channel);
     Q_INVOKABLE bool sessionConnected();
     Q_INVOKABLE void getChannelList(QString channel);
+    Q_INVOKABLE void whoIs(QString user);
 
 private:
     QList<QObject *> nicknameList;
+    QHash<QString, QObject *>nicknameHash;
     QString password;
     QList<QObject *> channelList;
 

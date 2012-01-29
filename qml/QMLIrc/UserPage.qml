@@ -6,6 +6,11 @@ Page {
     id: window
     property int userCount: 0
 
+    Component {
+        id: userDetailPageFactory
+        UserDetailPage {}
+    }
+
     tools: ToolBarLayout {
         id: settingsToolBarLayout
 
@@ -34,6 +39,13 @@ Page {
         model: UserModel
         delegate: UserListItem {
             username: name
+            propername: realname
+            complete: dataComplete
+            onPressAndHold: userContextMenu.open()
+            onClicked: {
+                var page = userDetailPageFactory.createObject(window)
+                pageStack.push(page)
+            }
         }
     }
 
@@ -41,6 +53,21 @@ Page {
         id: userDecorator
         flickableItem: userView
     }
+
+    ContextMenu {
+        id: userContextMenu
+        MenuLayout {
+            MenuItem {
+                id: menuWhois
+                text: "Whois"
+                onClicked: {
+                    var user = userView.currentItem.username
+                    Session.whoIs(user)
+                }
+            }
+        }
+    }
+
 }
 
 

@@ -51,7 +51,9 @@ OTHER_FILES += \
     TempPage.qml \
     SettingsPage.qml \
     qml/UserPage.qml \
-    qml/TabPage.qml
+    qml/TabPage.qml \
+    UserContextMenu.qml \
+    qml/UserDetailItem.qml
 
 
 # Create a macro from the Git describe command, to use in about boxes.

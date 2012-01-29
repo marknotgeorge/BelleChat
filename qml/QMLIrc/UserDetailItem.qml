@@ -4,23 +4,19 @@ import com.nokia.symbian 1.1
 
 ListItem {
     id: userListItem
-    property alias username: userListText.text
-    property alias propername: realnameText.text
-    property bool complete: false
-
-    subItemIndicator: complete
-
+    property alias title: userDetailTitle.text
+    property alias data: userDetailData.text
     Column {
-        id: userListColumn
-
         ListItemText {
-            id: userListText
+            id: userDetailTitle
             role: "Title"
         }
-
         ListItemText {
-            id: realnameText
+            id: userDetailData
             role: "Subtitle"
+            wrapMode: Text.Wrap
         }
     }
 }
+
+
