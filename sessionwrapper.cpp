@@ -800,6 +800,16 @@ void Session::whoIs(QString user)
     sendCommand(command);
 }
 
+void Session::kick(QString channel, QString user, QString reason)
+{
+    IrcCommand *command;
+    command = IrcCommand::createKick(channel, user, reason);
+    sendCommand(command);
+
+}
+
+
+
 
 
 

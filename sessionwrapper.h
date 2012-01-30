@@ -40,6 +40,8 @@ public slots:
     Q_INVOKABLE bool sessionConnected();
     Q_INVOKABLE void getChannelList(QString channel);
     Q_INVOKABLE void whoIs(QString user);
+    Q_INVOKABLE void kick(QString channel, QString user, QString reason);
+
 
 private:
     QList<QObject *> nicknameList;

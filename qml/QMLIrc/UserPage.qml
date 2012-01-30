@@ -54,20 +54,44 @@ Page {
         flickableItem: userView
     }
 
+    TextPickerDialog {
+        id: enterReason
+        titleText: "Enter Kick reason"
+        placeholderText: "Enter reason for kick..."
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
+        onAccepted: {
+            Session.kick(currentChannel, userView.currentItem.username, text)
+        }
+    }
+
     ContextMenu {
         id: userContextMenu
         MenuLayout {
             MenuItem {
-                id: menuWhois
+                id: menuIgnore
                 text: "Whois"
                 onClicked: {
-                    var user = userView.currentItem.username
-                    Session.whoIs(user)
+                    Session.whoIs(userView.currentItem.username)
+                }
+
+            }
+            MenuItem{
+                id: kickUser
+                text: "Kick"
+                onClicked: {
+                    enterReason.open()
+                }
+            }
+            MenuItem {
+                id: slapUser
+                text: "Slap"
+                onClicked: {
+                    var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
+                    Session.onInputReceived(currentChannel, slapString)
                 }
             }
         }
     }
-
 }
-
 
