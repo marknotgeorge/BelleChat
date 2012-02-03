@@ -12,8 +12,7 @@ Page {
     }
 
     tools: ToolBarLayout {
-        id: settingsToolBarLayout
-
+        id: userToolBarLayout
         ToolButton {
             flat: true
             iconSource: "toolbar-back"

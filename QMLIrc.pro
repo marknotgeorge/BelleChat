@@ -11,14 +11,14 @@ symbian:ICON = QMLIrc.svg
 
 DEFINES += COMMUNI_STATIC
 
+QT += core gui network
+
 # Smart Installer package's UID
 # This UID is from the protected range and therefore the package will
 # fail to install if self-signed. By default qmake uses the unprotected
 # range value if unprotected UID is defined for the application and
 # 0x2002CCCF value if protected UID is given to the application
 #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
-
-QT += core gui network
 
 # Allow network access on Symbian
 symbian:TARGET.CAPABILITY += NetworkServices
@@ -43,18 +43,6 @@ SOURCES += main.cpp \
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
 qtcAddDeployment()
-
-RESOURCES +=
-
-OTHER_FILES += \
-    TabArray.js \
-    TempPage.qml \
-    SettingsPage.qml \
-    qml/UserPage.qml \
-    qml/TabPage.qml \
-    UserContextMenu.qml \
-    qml/UserDetailItem.qml
-
 
 # Create a macro from the Git describe command, to use in about boxes.
 BUILDSTR = '\\"$$system(git describe)\\"'

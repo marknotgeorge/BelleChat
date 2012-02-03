@@ -94,6 +94,7 @@ protected:
     QString prettyUser(const QString& user);
     QString colorize(const QString& str, const QString& colourName);
     QString formatPingReply(const IrcSender& sender, const QString& arg);
+    QString getTimestamp();
 
 
 

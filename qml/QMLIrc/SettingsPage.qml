@@ -24,6 +24,11 @@ Page {
             page: "ServerSettings.qml"
             icon: "icon-server.svg"
         }
+        ListElement {
+            title: "Display"
+            page: "DisplaySettings.qml"
+            icon: "icon-device.svg"
+        }
     }
 
 

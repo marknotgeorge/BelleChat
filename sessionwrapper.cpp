@@ -11,6 +11,7 @@
 #include "userlistitem.h"
 #include <QDeclarativeContext>
 #include <QtAlgorithms>
+#include "connectionsettings.h"
 
 
 Session::Session(QObject *parent) :
@@ -299,6 +300,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     QString topic;
     int index;
     bool newNames = true;
+    ConnectionSettings settings;
 
 
     if (message->code() < 300)
@@ -456,7 +458,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
             newUser->setName(name);
             nicknameList.append(newUser);
             nicknameHash.insert(name, newUser);
-            if (!name.startsWith("&"))
+            if (settings.autoFetchWhois())
                 whoIs(name);
         }
         // Stop the list clearing when another RPL_NAMEREPLY comes in.
@@ -532,8 +534,15 @@ void Session::handlePongMessage(IrcPongMessage *message)
 
 void Session::handlePrivateMessage(IrcPrivateMessage *message)
 {
+    ConnectionSettings settings;
     const QString sender = prettyUser(message->sender());
     const QString msg = IrcUtil::messageToHtml(message->message());
+    QString timestamp = "";
+    if (settings.showTimestamp())
+    {
+        timestamp = getTimestamp();
+    }
+
     if (message->isAction())
         emit outputString(message->target(), colorize(tr("*** %1 %2").arg(sender, msg), "purple"));
     else if (message->isRequest())
@@ -541,7 +550,7 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
                                                       .arg(sender,
                                                            msg.split(" ").value(0).toLower()), "green"));
     else
-        emit outputString(message->target(), tr("&lt;%1&gt; %2").arg(sender, msg));
+        emit outputString(message->target(), tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp));
 }
 
 void Session::handleQuitMessage(IrcQuitMessage *message)
@@ -611,6 +620,12 @@ QString Session::formatPingReply(const IrcSender& sender, const QString& arg)
         return tr("*** %1 replied in %2s").arg(prettyUser(sender), result);
     }
     return QString();
+}
+
+QString Session::getTimestamp()
+{
+    QString timeNow = "[" + QTime::currentTime().toString("hh:mm") + "]";
+    return colorize(timeNow, "grey");
 }
 
 

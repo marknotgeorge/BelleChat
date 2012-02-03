@@ -13,6 +13,8 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (QString password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY (QString username READ username WRITE setUsername NOTIFY usernameChanged)
     Q_PROPERTY (QString realname READ realname WRITE setRealname NOTIFY realnameChanged)
+    Q_PROPERTY (bool showTimestamp READ showTimestamp WRITE setShowTimestamp NOTIFY showTimestampChanged)
+    Q_PROPERTY (bool autoFetchWhois READ autoFetchWhois WRITE setAutoFetchWhois NOTIFY autoFetchWhoisChanged)
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -23,6 +25,9 @@ public:
     Q_INVOKABLE QString password();
     Q_INVOKABLE QString username();
     Q_INVOKABLE QString realname();
+    Q_INVOKABLE bool showTimestamp();
+    Q_INVOKABLE bool autoFetchWhois();
+
 signals:
     void hostChanged(QString newHost);
     void portChanged(QString newPort);
@@ -30,6 +35,8 @@ signals:
     void passwordChanged(QString newPassword);
     void usernameChanged(QString newUsername);
     void realnameChanged(QString newRealname);
+    void showTimestampChanged(bool newShowTimestamp);
+    void autoFetchWhoisChanged(bool newAutoFetchWhois);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -39,6 +46,8 @@ public slots:
     Q_INVOKABLE void setPassword(QString newPassword);
     Q_INVOKABLE void setUsername(QString newUsername);
     Q_INVOKABLE void setRealname(QString newRealname);
+    Q_INVOKABLE void setShowTimestamp(bool newShowTimestamp);
+    Q_INVOKABLE void setAutoFetchWhois(bool newAutoFetchWhois);
 
 private:
 

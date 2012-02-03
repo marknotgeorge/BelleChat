@@ -46,6 +46,18 @@ QString ConnectionSettings::realname()
     return settings.value("realname", "Dante Hicks").toString();
 }
 
+bool ConnectionSettings::showTimestamp()
+{
+    QSettings settings;
+    return settings.value("showTimestamp", "false").toBool();
+}
+
+bool ConnectionSettings::autoFetchWhois()
+{
+    QSettings settings;
+    return settings.value("autoFetchWhois", "false").toBool();
+}
+
 void ConnectionSettings::setHost(QString newHost)
 {
     QSettings settings;
@@ -91,8 +103,22 @@ void ConnectionSettings::setUsername(QString newUsername)
 void ConnectionSettings::setRealname(QString newRealname)
 {
     QSettings settings;
-    qDebug() << "Setting value to " << newRealname;
+    // qDebug() << "Setting value to " << newRealname;
     settings.setValue("realname", newRealname);
     emit realnameChanged(newRealname);
+}
+
+void ConnectionSettings::setShowTimestamp(bool newShowTimestamp)
+{
+    QSettings settings;
+    settings.setValue("showTimestamp", newShowTimestamp);
+    emit showTimestampChanged(newShowTimestamp);
+}
+
+void ConnectionSettings::setAutoFetchWhois(bool newAutoFetchWhois)
+{
+    QSettings settings;
+    settings.setValue("autoFetchWhois", newAutoFetchWhois);
+    emit autoFetchWhoisChanged(newAutoFetchWhois);
 }
 
