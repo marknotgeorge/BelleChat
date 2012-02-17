@@ -170,7 +170,8 @@ PageStackWindow {
                 }
                 Text {
                     text: topic
-                    wrapMode: Text.Wrap
+                    color: platformStyle.colorNormalLight
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
             }
             onClicked: {
