@@ -18,7 +18,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QString appVersion = BUILD;
 
 
-    qmlRegisterType<ConnectionSettings>("QMLIrc",1,0,"ConnectionSettings");
+    qmlRegisterType<ConnectionSettings>("BelleChat",1,0,"ConnectionSettings");
     QList<QObject *> channels;
     QList<QObject *> users;
 
@@ -36,7 +36,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     int returnValue = app.exec();
 
-    qDebug() << returnValue;
+    //qDebug() << returnValue;
 
     appSession.context = 0;
 

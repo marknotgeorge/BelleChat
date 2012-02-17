@@ -12,6 +12,7 @@
 
 
 
+
 class Session : public IrcSession
 {
     Q_OBJECT
@@ -27,6 +28,7 @@ signals:
     void newNamesList(QString channel, int count);
     void newChannelList();
     void channelJoined(QString channel);
+    void whoIsReceived(QString user);
 
 public slots:
     void onConnected();
