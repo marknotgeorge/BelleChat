@@ -58,6 +58,18 @@ bool ConnectionSettings::autoFetchWhois()
     return settings.value("autoFetchWhois", "false").toBool();
 }
 
+int ConnectionSettings::textColour()
+{
+    QSettings settings;
+    return settings.value("textColour", "0").toInt();
+}
+
+int ConnectionSettings::backgroundColour()
+{
+    QSettings settings;
+    return settings.value("backgroundColour", "1").toInt();
+}
+
 void ConnectionSettings::setHost(QString newHost)
 {
     QSettings settings;
@@ -120,5 +132,19 @@ void ConnectionSettings::setAutoFetchWhois(bool newAutoFetchWhois)
     QSettings settings;
     settings.setValue("autoFetchWhois", newAutoFetchWhois);
     emit autoFetchWhoisChanged(newAutoFetchWhois);
+}
+
+void ConnectionSettings::setTextColour(int newTextColour)
+{
+    QSettings settings;
+    settings.setValue("textColour", newTextColour);
+    emit textColourChanged(newTextColour);
+}
+
+void ConnectionSettings::setBackgroundColour(int newBackgroundColour)
+{
+    QSettings settings;
+    settings.setValue("backgroundColour", newBackgroundColour);
+    emit backgroundColourChanged(newBackgroundColour);
 }
 

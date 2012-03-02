@@ -56,18 +56,23 @@ HEADERS += \
     channellistitem.h \
     userlistitem.h
 
-symbian: LIBS += -lCommuni
-
-INCLUDEPATH += $$PWD/../communi/include
-DEPENDPATH += $$PWD/../communi/include
-
-symbian {
-    # Copied from QTCREATORBUG-5589
-    # Required for S^3 SDK, else linking fails
-    LIBS += -lusrt2_2.lib
-}
-
 OTHER_FILES += \
     ReadMe.txt
 
 
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../communi/lib/ -lCommuni
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../communi/lib/ -lCommunid
+else:symbian: LIBS += -lCommuni
+
+INCLUDEPATH += $$PWD/../communi/include
+DEPENDPATH += $$PWD/../communi/include
+
+#win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../communi/lib/Communi.lib
+#else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../communi/lib/Communid.lib
+
+symbian {
+    # Copied from QTCREATORBUG-5589
+    # Required for S^3 SDK, else linking fails
+    ## Needs to be after other libraries
+    LIBS += -lusrt2_2.lib
+}

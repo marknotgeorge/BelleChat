@@ -2,7 +2,7 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
-import QMLIrc 1.0
+import BelleChat 1.0
 
 
 Page {
@@ -26,15 +26,7 @@ Page {
         }
     }
 
-    ListModel {
-        id: colourModel
-        ListElement { name: "White"}
-        ListElement { name: "Blue"}
-        ListElement { name: "Sky-blue pink"}
-    }
-
-
-    Item {
+     Item {
         id: splitViewInput
         anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
         Behavior on height { PropertyAnimation {duration: 200} }
@@ -109,21 +101,21 @@ Page {
 
             Label {
                 id: appearanceLabel
-                text: "Text Colour"
+                text: "Text Appearance"
             }
 
-            Button {
-                id: textColour
-                platformInverted: true
-                text: textColourDialog.model.get(textColourDialog.selectedIndex).name
-                onClicked: textColourDialog.open()
+            ColourPicker {
+                id: textColourPicker
+                text: "Text Colour"
+                picked: appConnectionSettings.textColour
+                onAccepted: { dirty = true }
+            }
 
-                SelectionDialog {
-                    id: textColourDialog
-                    titleText: "Select the text colour"
-                    selectedIndex: 0
-                    model: colourModel
-                }
+            ColourPicker {
+                id: backgroundColourPicker
+                text: "Background Colour"
+                picked: appConnectionSettings.backgroundColour
+                onAccepted: { dirty = true }
             }
         }
     }
@@ -134,29 +126,13 @@ Page {
         {
             appConnectionSettings.setShowTimestamp(showTimestamp.checked)
             appConnectionSettings.setAutoFetchWhois(autoFetchWhois.checked)
+            appConnectionSettings.setTextColour(textColourPicker.picked)
+            appConnectionSettings.setBackgroundColour(backgroundColourPicker.picked)
         }
 
     }
 
-    function findButtonWidth()
-    {
-        var maxWidth = 0
-        var oldSelectedIndex = textColourDialog.selectedIndex
-        textColour.visible = false
-        for (var index = 0; index < colourModel.count; index++)
-        {
-            textColourDialog.selectedIndex = index
-            if (textColour.width > maxWidth)
-                maxWidth = textColour.width
-        }
-        textColourDialog.selectedIndex = oldSelectedIndex
-        textColour.visible = true
-        return maxWidth
-    }
 
-    Component.onCompleted: {
-        textColour.width = findButtonWidth()
-    }
 }
 
 

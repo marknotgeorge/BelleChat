@@ -31,7 +31,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     //QCoreApplication::setAttribute(Qt::AA_S60DisablePartialScreenInputMode, false);
 
-    viewer.setMainQmlFile(QLatin1String("qml/BelleChat//main.qml"));
+    viewer.setMainQmlFile(QLatin1String("qml/BelleChat/main.qml"));
     viewer.showExpanded();
 
     int returnValue = app.exec();

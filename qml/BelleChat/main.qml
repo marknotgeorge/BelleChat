@@ -126,6 +126,10 @@ PageStackWindow {
 
     ConnectionSettings {
         id: appConnectionSettings
+        onHostChanged: {
+            if (connectServer.visible)
+                connectServer.text = "Connect to " + appConnectionSettings.host
+        }
     }
 
     QueryDialog {
@@ -416,6 +420,7 @@ PageStackWindow {
 
     function menuToDisconnected()
     {
+        connectionTimer.stop()
         disconnectServer.visible = false
         connectServer.text = "Connect to " + appConnectionSettings.host
         connectServer.enabled = true

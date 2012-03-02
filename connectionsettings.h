@@ -15,6 +15,10 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (QString realname READ realname WRITE setRealname NOTIFY realnameChanged)
     Q_PROPERTY (bool showTimestamp READ showTimestamp WRITE setShowTimestamp NOTIFY showTimestampChanged)
     Q_PROPERTY (bool autoFetchWhois READ autoFetchWhois WRITE setAutoFetchWhois NOTIFY autoFetchWhoisChanged)
+    Q_PROPERTY (int textColour READ textColour WRITE setTextColour NOTIFY textColourChanged)
+    Q_PROPERTY (int backgroundColour READ backgroundColour WRITE setBackgroundColour NOTIFY backgroundColourChanged)
+
+
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -27,6 +31,9 @@ public:
     Q_INVOKABLE QString realname();
     Q_INVOKABLE bool showTimestamp();
     Q_INVOKABLE bool autoFetchWhois();
+    Q_INVOKABLE int textColour();
+    Q_INVOKABLE int backgroundColour();
+
 
 signals:
     void hostChanged(QString newHost);
@@ -37,6 +44,8 @@ signals:
     void realnameChanged(QString newRealname);
     void showTimestampChanged(bool newShowTimestamp);
     void autoFetchWhoisChanged(bool newAutoFetchWhois);
+    void textColourChanged(int newTextColour);
+    void backgroundColourChanged(int newBackgroundColour);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -48,6 +57,8 @@ public slots:
     Q_INVOKABLE void setRealname(QString newRealname);
     Q_INVOKABLE void setShowTimestamp(bool newShowTimestamp);
     Q_INVOKABLE void setAutoFetchWhois(bool newAutoFetchWhois);
+    Q_INVOKABLE void setTextColour(int newTextColour);
+    Q_INVOKABLE void setBackgroundColour(int newBackgroundColour);
 
 private:
 
