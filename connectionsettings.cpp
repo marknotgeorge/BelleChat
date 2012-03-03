@@ -70,6 +70,30 @@ int ConnectionSettings::backgroundColour()
     return settings.value("backgroundColour", "1").toInt();
 }
 
+bool ConnectionSettings::textBold()
+{
+    QSettings settings;
+    return settings.value("textBold", "false").toBool();
+}
+
+bool ConnectionSettings::textItalic()
+{
+    QSettings settings;
+    return settings.value("textItalic", "false").toBool();
+}
+
+bool ConnectionSettings::textUnderline()
+{
+    QSettings settings;
+    return settings.value("textUnderline", "false").toBool();
+}
+
+bool ConnectionSettings::formatText()
+{
+    QSettings settings;
+    return settings.value("formatText", "false").toBool();
+}
+
 void ConnectionSettings::setHost(QString newHost)
 {
     QSettings settings;
@@ -147,4 +171,35 @@ void ConnectionSettings::setBackgroundColour(int newBackgroundColour)
     settings.setValue("backgroundColour", newBackgroundColour);
     emit backgroundColourChanged(newBackgroundColour);
 }
+
+void ConnectionSettings::setTextItalic(bool newTextItalic)
+{
+    QSettings settings;
+    settings.setValue("textItalic", newTextItalic);
+    emit textBoldChanged(newTextItalic);
+}
+
+void ConnectionSettings::setTextBold(bool newTextBold)
+{
+    QSettings settings;
+    settings.setValue("textBold", newTextBold);
+    emit textBoldChanged(newTextBold);
+}
+
+
+void ConnectionSettings::setTextUnderline(bool newTextUnderline)
+{
+    QSettings settings;
+    settings.setValue("textUnderline", newTextUnderline);
+    emit textBoldChanged(newTextUnderline);
+}
+
+void ConnectionSettings::setFormatText(bool newFormatText)
+{
+    QSettings settings;
+    settings.setValue("formatText", newFormatText);
+    emit formatTextChanged(newFormatText);
+}
+
+
 

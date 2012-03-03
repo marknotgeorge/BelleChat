@@ -17,6 +17,11 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool autoFetchWhois READ autoFetchWhois WRITE setAutoFetchWhois NOTIFY autoFetchWhoisChanged)
     Q_PROPERTY (int textColour READ textColour WRITE setTextColour NOTIFY textColourChanged)
     Q_PROPERTY (int backgroundColour READ backgroundColour WRITE setBackgroundColour NOTIFY backgroundColourChanged)
+    Q_PROPERTY (bool textBold READ textBold WRITE setTextBold NOTIFY textBoldChanged)
+    Q_PROPERTY (bool textItalic READ textItalic WRITE setTextItalic NOTIFY textItalicChanged)
+    Q_PROPERTY (bool textUnderline READ textUnderline WRITE setTextUnderline NOTIFY textUnderlineChanged)
+    Q_PROPERTY (bool formatText READ formatText WRITE setFormatText NOTIFY formatTextChanged)
+
 
 
 
@@ -33,6 +38,11 @@ public:
     Q_INVOKABLE bool autoFetchWhois();
     Q_INVOKABLE int textColour();
     Q_INVOKABLE int backgroundColour();
+    Q_INVOKABLE bool textBold();
+    Q_INVOKABLE bool textItalic();
+    Q_INVOKABLE bool textUnderline();
+    Q_INVOKABLE bool formatText();
+
 
 
 signals:
@@ -46,6 +56,10 @@ signals:
     void autoFetchWhoisChanged(bool newAutoFetchWhois);
     void textColourChanged(int newTextColour);
     void backgroundColourChanged(int newBackgroundColour);
+    void textBoldChanged (bool newTextBold);
+    void textItalicChanged (bool newTextItalic);
+    void textUnderlineChanged (bool newTextUnderline);
+    void formatTextChanged (bool newFormatText);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -59,6 +73,10 @@ public slots:
     Q_INVOKABLE void setAutoFetchWhois(bool newAutoFetchWhois);
     Q_INVOKABLE void setTextColour(int newTextColour);
     Q_INVOKABLE void setBackgroundColour(int newBackgroundColour);
+    Q_INVOKABLE void setTextBold(bool newTextBold);
+    Q_INVOKABLE void setTextItalic(bool newTextItalic);
+    Q_INVOKABLE void setTextUnderline(bool newTextUnderline);
+    Q_INVOKABLE void setFormatText(bool newFormatText);
 
 private:
 

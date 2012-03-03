@@ -111,7 +111,7 @@ void Session::onInputReceived(QString channel,QString input)
     else
     {
         // It's a message. Create a Message IrcCommand...
-        command = IrcCommand::createMessage(channel, input);
+        command = IrcCommand::createMessage(channel, formatInput(input));
     }
     if (command->type() == IrcCommand::Message || command->type() == IrcCommand::CtcpAction)
     {
@@ -630,6 +630,18 @@ QString Session::getTimestamp()
 {
     QString timeNow = "[" + QTime::currentTime().toString("hh:mm") + "]";
     return colorize(timeNow, "grey");
+}
+
+QString Session::formatInput(const QString &inputString)
+{
+    QString prefix = "";
+    QString suffix = "";
+
+    // Formatting code goes here...
+
+    QString formattedInput = prefix + inputString + suffix;
+
+    return formattedInput;
 }
 
 

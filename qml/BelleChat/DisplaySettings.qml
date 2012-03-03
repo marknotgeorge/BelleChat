@@ -26,7 +26,7 @@ Page {
         }
     }
 
-     Item {
+    Item {
         id: splitViewInput
         anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
         Behavior on height { PropertyAnimation {duration: 200} }
@@ -73,8 +73,9 @@ Page {
             spacing: 5
             anchors {left: parent.left; right: parent.right}
 
-            Label {
+            ListItemText {
                 id: showTimestampLabel
+                role: "Title"
                 text: "Incoming messages"
             }
 
@@ -86,36 +87,115 @@ Page {
                 onClicked: { dirty = true }
             }
 
-            Label {
+            ListItemText {
                 id: autoFetchWhoisLabel
-                text: "When opening User Page"
+                text: "When showing channel users"
+                role: "Title"
+
             }
 
             LabelledSwitch {
                 id: autoFetchWhois
                 checked: appConnectionSettings.autoFetchWhois
-                checkedLabel: "Fetch Whois info"
-                uncheckedLabel: "Don't fetch Whois info"
+                checkedLabel: "Fetch extended info"
+                uncheckedLabel: "Don't fetch extended info"
                 onClicked: { dirty = true }
             }
 
-            Label {
+            ListItemText {
                 id: appearanceLabel
-                text: "Text Appearance"
+                text: "My Message Appearance"
+                role: "Title"
+            }
+
+            LabelledSwitch {
+                id: formatTextSwitch
+                checked: appConnectionSettings.formatText
+                checkedLabel: "Formatted Text"
+                uncheckedLabel: "Plain Text"
+                onClicked: {
+                    dirty = true
+                    textColourPicker.visible = checked
+                    backgroundColourPicker.visible = checked
+                    formatRow.visible = checked
+                    sampleBackground.visible = checked
+                }
             }
 
             ColourPicker {
                 id: textColourPicker
                 text: "Text Colour"
                 picked: appConnectionSettings.textColour
-                onAccepted: { dirty = true }
+                visible: formatTextSwitch.checked
+                onAccepted: {
+                    dirty = true
+                    sampleText.color = model.get(picked).name
+                }
             }
 
             ColourPicker {
                 id: backgroundColourPicker
                 text: "Background Colour"
                 picked: appConnectionSettings.backgroundColour
-                onAccepted: { dirty = true }
+                visible: formatTextSwitch.checked
+                onAccepted: {
+                    dirty = true
+                    sampleBackground.color = model.get(picked).name
+                }
+            }
+
+            Row {
+                id: formatRow
+                spacing: platformStyle.paddingSmall
+                visible: formatTextSwitch.checked
+                CheckBox {
+                    id: textBoldCheck
+                    text: "Bold"
+                    checked: appConnectionSettings.textBold
+                    onCheckedChanged: {
+                        dirty = true;
+                        sampleText.font.bold = checked
+                    }
+                }
+
+                CheckBox {
+                    id: textItalicCheck
+                    text: "Italic"
+                    checked: appConnectionSettings.textItalic
+                    onCheckedChanged: {
+                        dirty = true
+                        sampleText.font.italic = checked
+                    }
+                }
+
+                CheckBox {
+                    id: textUnderlineCheck
+                    text: "Underline"
+                    checked: appConnectionSettings.textUnderline
+                    onCheckedChanged: {
+                        dirty = true
+                        sampleText.font.underline = checked
+                    }
+                }
+            }
+
+            Rectangle {
+                id: sampleBackground
+                anchors {left: parent.left; right: parent.right }
+                height: sampleText.height
+                color: backgroundColourPicker.model.get(backgroundColourPicker.picked).name
+                visible: formatTextSwitch.checked
+
+                Text {
+                    id: sampleText
+                    text: "Sample Text"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.pointSize: 16
+                    font.bold: textBoldCheck.checked
+                    font.italic: textItalicCheck.checked
+                    font.underline: textUnderlineCheck.checked
+                    color: textColourPicker.model.get(textColourPicker.picked).name
+                }
             }
         }
     }
@@ -128,6 +208,11 @@ Page {
             appConnectionSettings.setAutoFetchWhois(autoFetchWhois.checked)
             appConnectionSettings.setTextColour(textColourPicker.picked)
             appConnectionSettings.setBackgroundColour(backgroundColourPicker.picked)
+            appConnectionSettings.setTextBold(textBoldCheck.checked)
+            appConnectionSettings.setTextItalic(textItalicCheck.checked)
+            appConnectionSettings.setTextUnderline(textUnderlineCheck.checked)
+            appConnectionSettings.setFormatText(formatTextSwitch.checked)
+
         }
 
     }
