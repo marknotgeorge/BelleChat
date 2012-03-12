@@ -636,8 +636,26 @@ QString Session::formatInput(const QString &inputString)
 {
     QString prefix = "";
     QString suffix = "";
+    ConnectionSettings settings;
+
 
     // Formatting code goes here...
+    if(settings.formatText())
+    {
+        // Coloured text
+        prefix = QChar(3) + QString("%1,%2").arg(settings.textColour()).arg(settings.backgroundColour());
+        suffix = QChar(15); // This turns everything off.
+        // Bold...
+        if (settings.textBold())
+            prefix += QChar(2);
+        // Italic...
+        if(settings.textItalic())
+            prefix += QChar(29);
+        // Underline...
+        if(settings.textUnderline())
+            prefix += QChar(31);
+    }
+
 
     QString formattedInput = prefix + inputString + suffix;
 
