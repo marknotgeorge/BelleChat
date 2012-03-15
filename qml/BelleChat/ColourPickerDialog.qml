@@ -81,7 +81,7 @@ CommonDialog {
                         anchors.fill: parent
                         onClicked: {
                             picked = index
-                            console.log("Picked:" + picked)
+                            //console.log("Picked:" + picked)
                             dialogcpd.accept()
                         }
                     }

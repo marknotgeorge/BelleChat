@@ -94,6 +94,12 @@ bool ConnectionSettings::formatText()
     return settings.value("formatText", "false").toBool();
 }
 
+bool ConnectionSettings::showChannelList()
+{
+    QSettings settings;
+    return settings.value("showChannelList", "true").toBool();
+}
+
 void ConnectionSettings::setHost(QString newHost)
 {
     QSettings settings;
@@ -199,6 +205,13 @@ void ConnectionSettings::setFormatText(bool newFormatText)
     QSettings settings;
     settings.setValue("formatText", newFormatText);
     emit formatTextChanged(newFormatText);
+}
+
+void ConnectionSettings::setShowChannelList(bool newShowChannelList)
+{
+    QSettings settings;
+    settings.setValue("showChannelList", newShowChannelList);
+    emit showChannelListChanged(newShowChannelList);
 }
 
 

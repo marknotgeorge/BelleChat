@@ -68,25 +68,23 @@ Page {
 
         Column {
             id: layoutColumns
-            spacing: 5
             anchors {left: parent.left; right: parent.right}
 
             Label {
                 id: serverLabel
                 text: qsTr("Server")
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: serverField.visible
             }
 
             TextField {
                 id: serverField
-                height: 50
                 text: appConnectionSettings.host
                 anchors.right: parent.right
-                anchors.rightMargin: 10
+                anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
@@ -97,18 +95,17 @@ Page {
                 id: portLabel
                 text: qsTr("Port")
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: portField.visible
             }
 
             TextField {
                 id: portField
-                height: 50
                 text: appConnectionSettings.port
                 anchors.right: parent.right
-                anchors.rightMargin: 10
+                anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: platformStyle.paddingLarge
                 validator: IntValidator {bottom: 0; top: 65535;}
                 visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
@@ -121,18 +118,17 @@ Page {
                 id: nicknameLabel
                 text: qsTr("Nickname")
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: nicknameField.visible
             }
 
             TextField {
                 id: nicknameField
-                height: 50
                 text: appConnectionSettings.nickname
                 anchors.right: parent.right
-                anchors.rightMargin: 10
+                anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
@@ -143,18 +139,17 @@ Page {
                 id: passwordLabel
                 text: qsTr("Password")
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: passwordField.visible
             }
 
             TextField {
                 id: passwordField
-                height: 50
                 text: appConnectionSettings.password
                 anchors.right: parent.right
-                anchors.rightMargin: 10
+                anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: platformStyle.paddingLarge
                 echoMode: TextInput.PasswordEchoOnEdit
                 visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
@@ -166,18 +161,17 @@ Page {
                 id: usernameLabel
                 text: qsTr("Username")
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: usernameField.visible
             }
 
             TextField {
                 id: usernameField
-                height: 50
                 text: appConnectionSettings.username
                 anchors.right: parent.right
-                anchors.rightMargin: 10
+                anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;
@@ -188,18 +182,17 @@ Page {
                 id: realnameLabel
                 text: qsTr("Real name")
                 anchors.left: parent.left
-                anchors.leftMargin: 20
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: realnameField.visible
             }
 
             TextField {
                 id: realnameField
-                height: 50
                 text: appConnectionSettings.realname
                 anchors.right: parent.right
-                anchors.rightMargin: 10
+                anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
-                anchors.leftMargin: 10
+                anchors.leftMargin: platformStyle.paddingLarge
                 visible: (activeFocus||!inputContext.visible)
                 onTextChanged: {
                     dirty = true;

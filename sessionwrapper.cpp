@@ -493,7 +493,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     case Irc::RPL_LISTEND:
         qStableSort(channelList.begin(), channelList.end(), currentListItemLessThanChannel);
         context->setContextProperty("ChannelModel", QVariant::fromValue(channelList));
-        emit newChannelList();
+        emit newChannelList(channelList.count());
         break;
     }
 

@@ -8,6 +8,7 @@
 #include "connectionsettings.h"
 #include <QList>
 #include <QDeclarativeContext>
+
 #include "channellistitem.h"
 
 
@@ -26,7 +27,7 @@ public:
 signals:
     void outputString(QString channel, QString output);
     void newNamesList(QString channel, int count);
-    void newChannelList();
+    void newChannelList(int numberOfChannels);
     void channelJoined(QString channel);
     void whoIsReceived(QString user);
 

@@ -97,8 +97,7 @@ Page {
                     text: "Whois"
                     onClicked: {
                         Session.whoIs(userView.currentItem.username)
-                        var page = userDetailPageFactory.createObject(window)
-                        pageStack.push(page)
+                        whoisRequested = true
                     }
 
                 }

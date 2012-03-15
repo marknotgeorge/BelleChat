@@ -4,27 +4,27 @@ import com.nokia.symbian 1.1
 Page {
     id: page1
 
+
     TextField {
         id: inputField
-        x: 0
-        y: 530
-        height: 50
-        text: ""
         focus: true
         enabled: false
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
         anchors.left: parent.left
-        anchors.leftMargin: 0
+        anchors.right: returnButton.left
+
         placeholderText: "Tap to write..."
         inputMethodHints: Qt.ImhNoPredictiveText
         Keys.onEnterPressed: {
             var page = outputTabGroup.currentTab
-            //console.log(inputField.text);
-            Session.onInputReceived(page.channel, inputField.text);
+            var inputChannel = page.channel
+            //console.log(inputChannel, inputField.text)
+            if (inputChannel === "Server")
+                inputChannel = Session.host
+
+            Session.onInputReceived(inputChannel, inputField.text)
             inputField.text = "";
+
         }
         //Required for the simulator...
         Keys.onReturnPressed: {
@@ -38,6 +38,29 @@ Page {
             inputField.text = "";
         }
     }
+
+    Button {
+        id: returnButton
+        //anchors.left: inputField.right
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: inputField.height
+        iconSource: "icon-return.svg"
+        enabled: false
+        width: height
+        onClicked: {
+            var page = outputTabGroup.currentTab
+            var inputChannel = page.channel
+            //console.log(inputChannel, inputField.text)
+            if (inputChannel === "Server")
+                inputChannel = Session.host
+
+            Session.onInputReceived(inputChannel, inputField.text)
+            inputField.text = "";
+
+        }
+    }
+
 
     TabBarLayout {
         id: outputTabBarLayout
@@ -70,12 +93,14 @@ Page {
                 buttonUsers.enabled = false
                 partChannel.visible = false
                 inputField.enabled = false
+                returnButton.enabled = false
             }
             else
             {
                 buttonUsers.enabled = true
                 partChannel.visible = true
                 inputField.enabled = true
+                returnButton.enabled = true
             }
         }
         TabPage {
@@ -159,11 +184,11 @@ Page {
 
     function outputToTab(channel, output) {
 
-      var outputChannel
-       if (channel === Session.host)
-           outputChannel = "Server"
-      else
-          outputChannel = channel
+        var outputChannel
+        if (channel === Session.host)
+            outputChannel = "Server"
+        else
+            outputChannel = channel
 
         //console.log("Sender:", channel)
         //console.log("Output tab:", outputChannel)

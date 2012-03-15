@@ -88,6 +88,20 @@ Page {
             }
 
             ListItemText {
+                id: showChannelListLabel
+                text: "On connection to IRC server"
+                role: "Title"
+            }
+
+            LabelledSwitch {
+                id: showChannelList
+                checked: appConnectionSettings.showChannelList
+                checkedLabel: "Show list of available channels"
+                uncheckedLabel: "Don't show list of channels"
+                onClicked: { dirty = true }
+            }
+
+            ListItemText {
                 id: autoFetchWhoisLabel
                 text: "When showing channel users"
                 role: "Title"
@@ -212,12 +226,9 @@ Page {
             appConnectionSettings.setTextItalic(textItalicCheck.checked)
             appConnectionSettings.setTextUnderline(textUnderlineCheck.checked)
             appConnectionSettings.setFormatText(formatTextSwitch.checked)
-
+            appConnectionSettings.setShowChannelList(showChannelList.checked)
         }
-
     }
-
-
 }
 
 
