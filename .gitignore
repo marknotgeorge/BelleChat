@@ -20,6 +20,12 @@ Release/
 *.dll
 PROJECT
 
+# Generated files
+*.sis
+*.pkg
+*.mmp
+*.loc
+
 # Windows-specific files
 Thumbs.db
 desktop.ini
