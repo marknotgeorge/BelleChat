@@ -50,6 +50,9 @@ qtcAddDeployment()
 BUILDSTR = '\\"$$system(git describe)\\"'
 DEFINES += BUILD=\"$${BUILDSTR}\"
 
+# Create the version bumber from the git describe
+VERSION = $$system(git describe --abbrev=0)
+
 HEADERS += \
     connectionsettings.h \
     sessionwrapper.h \

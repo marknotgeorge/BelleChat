@@ -365,7 +365,7 @@ PageStackWindow {
 
         ToolButton {
             id: buttonJoin
-            iconSource: "icon-join.svg"
+            iconSource: (enabled)?"icon-channels.svg":"icon-channels-disabled.svg"
             flat:true
             visible: true
             enabled: false
@@ -379,7 +379,7 @@ PageStackWindow {
 
         ToolButton {
             id: buttonUsers
-            iconSource: "icon-users.svg"
+            iconSource: (enabled)?"icon-users.svg":"icon-users-disabled.svg"
             flat:true
             enabled: false
             onClicked: {
