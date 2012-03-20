@@ -25,6 +25,7 @@ PROJECT
 *.pkg
 *.mmp
 *.loc
+*.rss
 
 # Windows-specific files
 Thumbs.db
@@ -40,3 +41,5 @@ desktop.ini
 
 #Automatically generated makefiles
 Makefil*
+*.Debug
+*.Release
