@@ -462,8 +462,6 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
             newUser->setName(name);
             nicknameList.append(newUser);
             nicknameHash.insert(name, newUser);
-            if (settings.autoFetchWhois())
-                whoIs(name);
         }
         // Stop the list clearing when another RPL_NAMEREPLY comes in.
         newNames = false;

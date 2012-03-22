@@ -8,7 +8,7 @@ ListItem {
     property alias propername: realnameText.text
     property bool complete: false
 
-    subItemIndicator: complete
+    subItemIndicator: true
 
 
     Column {

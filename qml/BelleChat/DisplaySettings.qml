@@ -101,20 +101,7 @@ Page {
                 onClicked: { dirty = true }
             }
 
-            ListItemText {
-                id: autoFetchWhoisLabel
-                text: "When showing channel users"
-                role: "Title"
 
-            }
-
-            LabelledSwitch {
-                id: autoFetchWhois
-                checked: appConnectionSettings.autoFetchWhois
-                checkedLabel: "Fetch extended info"
-                uncheckedLabel: "Don't fetch extended info"
-                onClicked: { dirty = true }
-            }
 
             ListItemText {
                 id: appearanceLabel
@@ -219,7 +206,6 @@ Page {
         if (dirty)
         {
             appConnectionSettings.setShowTimestamp(showTimestamp.checked)
-            appConnectionSettings.setAutoFetchWhois(autoFetchWhois.checked)
             appConnectionSettings.setTextColour(textColourPicker.picked)
             appConnectionSettings.setBackgroundColour(backgroundColourPicker.picked)
             appConnectionSettings.setTextBold(textBoldCheck.checked)

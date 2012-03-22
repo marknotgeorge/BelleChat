@@ -123,7 +123,10 @@ PageStackWindow {
             appBusy.visible = false
             appBusy.running = false
             if (numberOfChannels > 0)
+            {
+                selectChannelDialog.count = numberOfChannels
                 selectChannelDialog.open()
+            }
             else
                 noChannelsDialog.open()
         }
@@ -162,15 +165,13 @@ PageStackWindow {
     ConnectionSettings {
         id: appConnectionSettings
         onHostChanged: {
-            if (connectServer.visible)
-                connectServer.text = "Connect to " + appConnectionSettings.host
         }
     }
 
     QueryDialog {
         id: aboutDialog
         titleText: "About BelleChat"
-        message: "BelleChat " + Version + "\n© 2011-12 Mark Johnson\nUses Communi written by J-P Nurmi et al.\n"
+        message: "BelleChat " + Version + "\nBuild " + Build + "\n© 2011-12 Mark Johnson\nUses Communi written by J-P Nurmi et al.\n"
         acceptButtonText: "OK"
     }
 
@@ -198,9 +199,10 @@ PageStackWindow {
 
 
     SelectionDialog {
+        property int count: 0
         id: selectChannelDialog
-        titleText: "Select Channel:"
         model: ChannelModel
+        titleText: "Select Channel (" + count + " channels):"
         delegate: ListItem {
             Column {
                 ListItemText {
@@ -336,8 +338,12 @@ PageStackWindow {
                     exit()
                 }
             }
-            onPressedChanged: {
-                exitTooltip.visible = pressed
+
+            ToolTip {
+                id: exitTooltip
+                target: buttonQuit
+                text: "Exit"
+                visible: buttonQuit.pressed
             }
         }
 
@@ -357,9 +363,13 @@ PageStackWindow {
                     connectionTimer.start()
                     Session.open()
                 }
+                onPlatformReleased: connectTooltip.visible = false
             }
-            onPressedChanged: {
-                connectTooltip.visible = pressed
+            ToolTip {
+                id: connectTooltip
+                target: buttonConnect
+                text: "Connect to server"
+                visible: buttonConnect.pressed
             }
         }
 
@@ -372,9 +382,14 @@ PageStackWindow {
             onClicked: {
                 menuJoin.open()
             }
-            onPressedChanged: {
-                channelsTooltip.visible = pressed
+            onPlatformReleased: channelsTooltip.visible = false
+            ToolTip {
+                id: channelsTooltip
+                target: buttonJoin
+                text: "Channels"
+                visible: buttonJoin.pressed
             }
+
         }
 
         ToolButton {
@@ -388,8 +403,12 @@ PageStackWindow {
                 namesListRequested = true
                 Session.onRefreshNames(currentChannel)
             }
-            onPressedChanged: {
-                usersTooltip.visible = pressed
+            onPlatformReleased: usersTooltip.visible = false
+            ToolTip {
+                id: usersTooltip
+                target: buttonUsers
+                text: "Users"
+                visible: buttonUsers.pressed
             }
         }
 
@@ -398,58 +417,22 @@ PageStackWindow {
             iconSource: "toolbar-menu"
             flat: true
             onClicked: {
-                moreTooltip.visible = false
                 menuMain.open()
             }
-            onPressedChanged: {
-                moreTooltip.visible = pressed
+            onPlatformReleased: moreTooltip.visible = false
+            ToolTip {
+                id: moreTooltip
+                target: buttonMenu
+                text: "More"
+                visible: buttonMenu.pressed
             }
         }
     }
 
-    ToolTip {
-        id: exitTooltip
-        target: buttonQuit
-        text: "Exit"
-        visible: buttonQuit.pressed
-    }
-
-    ToolTip {
-        id: connectTooltip
-        target: buttonConnect
-        text: "Connect to server"
-        visible: buttonConnect.pressed
-    }
-
-    ToolTip {
-        id: channelsTooltip
-        target: buttonJoin
-        text: "Channels"
-        visible: buttonJoin.pressed
-    }
-
-    ToolTip {
-        id: usersTooltip
-        target: buttonUsers
-        text: "Users"
-        visible: buttonUsers.pressed
-    }
-
-    ToolTip {
-        id: moreTooltip
-        target: buttonMenu
-        text: "More"
-        visible: buttonMenu.pressed
-    }
-
-
-
-
-
-
     Component.onCompleted: {
         var outputString = "Welcome to BelleChat " + Version +"!\n"
         initialPage.outputToTab("Server", outputString)
+        initialPage.outputToTab("Server", "Click the Connect button to connect to the IRC server.")
     }
 
     function joinChannel(channel)

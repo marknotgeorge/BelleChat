@@ -15,7 +15,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QmlApplicationViewer viewer;
     Session appSession;
     appSession.context = viewer.rootContext();
-    QString appVersion = BUILD;
+    QString appVersion = VERSIONNO;
+    QString appBuild = BUILD;
 
 
     qmlRegisterType<ConnectionSettings>("BelleChat",1,0,"ConnectionSettings");
@@ -23,6 +24,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QList<QObject *> users;
 
     viewer.rootContext()->setContextProperty("Version", appVersion);
+    viewer.rootContext()->setContextProperty("Build", appBuild);
     viewer.rootContext()->setContextProperty("Session", &appSession);
     viewer.rootContext()->setContextProperty("ChannelModel", QVariant::fromValue(channels));
     viewer.rootContext()->setContextProperty("UserModel", QVariant::fromValue(users));
