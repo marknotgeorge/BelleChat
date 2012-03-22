@@ -23,8 +23,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QList<QObject *> channels;
     QList<QObject *> users;
 
-    viewer.rootContext()->setContextProperty("Version", appVersion);
-    viewer.rootContext()->setContextProperty("Build", appBuild);
+    viewer.rootContext()->setContextProperty("Version", appVersion.remove('\"'));
+    viewer.rootContext()->setContextProperty("Build", appBuild.remove('\"'));
     viewer.rootContext()->setContextProperty("Session", &appSession);
     viewer.rootContext()->setContextProperty("ChannelModel", QVariant::fromValue(channels));
     viewer.rootContext()->setContextProperty("UserModel", QVariant::fromValue(users));

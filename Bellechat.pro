@@ -48,12 +48,12 @@ qtcAddDeployment()
 
 # Create a macro from the Git describe command, to use in about boxes.
 BUILDSTR = '\\"$$system(git describe)\\"'
-DEFINES += BUILD=$${BUILDSTR}
+DEFINES += BUILD=\"$${BUILDSTR}\"
 
 # Create the version number from the git describe
 VERSION = $$system(git describe --abbrev=0)
 VERSIONSTR = '\\"$$system(git describe --abbrev=0)\\"'
-DEFINES += VERSIONNO=$${VERSIONSTR}
+DEFINES += VERSIONNO=\"$${VERSIONSTR}\"
 
 HEADERS += \
     connectionsettings.h \

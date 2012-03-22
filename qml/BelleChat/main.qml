@@ -352,6 +352,7 @@ PageStackWindow {
             flat: true
             iconSource: (Session.connected)?"icon-disconnect.svg":"icon-connect.svg"
             onClicked: {
+                connectTooltip.visible = false
                 if (Session.connected)
                     queryDisconnect.open()
                 else
@@ -380,6 +381,7 @@ PageStackWindow {
             visible: true
             enabled: false
             onClicked: {
+                channelsTooltip.visible = false
                 menuJoin.open()
             }
             onPlatformReleased: channelsTooltip.visible = false
@@ -398,6 +400,7 @@ PageStackWindow {
             flat:true
             enabled: false
             onClicked: {
+                usersTooltip.visible = false
                 appBusy.visible = true
                 appBusy.running = true
                 namesListRequested = true
@@ -417,6 +420,7 @@ PageStackWindow {
             iconSource: "toolbar-menu"
             flat: true
             onClicked: {
+                moreTooltip.visible = false
                 menuMain.open()
             }
             onPlatformReleased: moreTooltip.visible = false

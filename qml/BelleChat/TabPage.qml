@@ -37,7 +37,7 @@ Page {
 
     function addOutput(output)
     {
-        //console.log(output)
+        console.log(output)
         outputModel.append({"text": output})
         outputView.currentIndex++
         outputView.positionViewAtEnd()

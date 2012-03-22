@@ -190,9 +190,9 @@ Page {
         else
             outputChannel = channel
 
-        //console.log("Sender:", channel)
-        //console.log("Output tab:", outputChannel)
-        //console.log("Message:", output)
+        console.log("Sender:", channel)
+        console.log("Output tab:", outputChannel)
+        console.log("Message:", output)
 
 
         var button = findButton(outputChannel)
