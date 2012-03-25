@@ -86,9 +86,9 @@ Page {
         anchors.left: parent.left
         anchors.topMargin: 0
         onCurrentTabChanged: {
-            currentChannel = outputTabGroup.currentTab.channel
+            Session.currentChannel = outputTabGroup.currentTab.channel
             //console.log("Current tab:" + currentChannel)
-            if(currentChannel === "Server")
+            if(Session.currentChannel === "Server")
             {
                 buttonUsers.enabled = false
                 partChannel.visible = false
@@ -190,9 +190,9 @@ Page {
         else
             outputChannel = channel
 
-        console.log("Sender:", channel)
-        console.log("Output tab:", outputChannel)
-        console.log("Message:", output)
+        //console.log("Sender:", channel)
+        //console.log("Output tab:", outputChannel)
+        //console.log("Message:", output)
 
 
         var button = findButton(outputChannel)
@@ -208,8 +208,8 @@ Page {
         if(button)
         {
             outputTabGroup.currentTab = button.tab
-            lastChannel = currentChannel
-            currentChannel = channel
+            Session.lastChannel = Session.currentChannel
+            Session.currentChannel = channel
         }
     }
 

@@ -5,8 +5,6 @@ import BelleChat 1.0
 
 PageStackWindow {
     id: window
-    property string lastChannel: "Server"
-    property string currentChannel: "Server"
     property bool userDisconnected: false
     property bool tryingToQuit: false
     property bool namesListRequested: false
@@ -111,12 +109,14 @@ PageStackWindow {
                 exit()
         }
         onChannelJoined: {
+            console.log("Channel" + channel + "joined.")
             if (initialPage.findButton(channel) === undefined)
             {
+                console.log("Opening new channel page")
                 initialPage.createTab(channel)
                 // Set lastChannel to channel...
-                lastChannel = currentChannel
-                currentChannel = channel
+                Session.lastChannel = Session.currentChannel
+                Session.currentChannel = channel
             }
         }
         onNewChannelList: {
@@ -139,27 +139,7 @@ PageStackWindow {
             connectFailedBanner.open()
             menuToDisconnected()
         }
-        onNewNamesList: {
-            // A list of names are sent when a user joins a channel. By setting namesListRequested
-            // to true only when the user pressed the Users ToolButton, showing the Users page when
-            // this list arrives is supressed.
-            if (namesListRequested)
-            {
-                // Kill the BusyIndicator...
-                appBusy.visible = false
-                appBusy.running = false
-                //console.log("Names list arrived for:" + channel)
-                if (channel === currentChannel)
-                {
-                    // Only show the page if the current tab is still selected...
-                    var page = userPageFactory.createObject(window)
-                    page.userCount = count;
-                    pageStack.push(page)
-                }
-                // Clear the namesListRequested flag...
-                namesListRequested = false;
-            }
-        }
+
     }
 
     ConnectionSettings {
@@ -247,16 +227,16 @@ PageStackWindow {
                 id: enterChannel
                 text: "Join Channel..."
                 onClicked: {
-                    showChannelDialog(lastChannel)
+                    showChannelDialog(Session.lastChannel)
                 }
             }
 
             MenuItem {
                 id: partChannel
-                text: "Leave " + currentChannel
+                text: "Leave " + Session.currentChannel
                 visible: false
                 onClicked: {
-                    leaveChannel(currentChannel)
+                    leaveChannel(Session.currentChannel)
                 }
             }
 
@@ -273,49 +253,31 @@ PageStackWindow {
         }
     }
 
-    CommonDialog {
+    QueryDialog {
         id: queryDisconnect
         titleText: "Disconnect from " + appConnectionSettings.host +"?"
-        content: Text {
-            text: "Are you sure you wish to disconnect from the server?"
-            anchors.left: parent.left
-            anchors.leftMargin: platformStyle.paddingLarge
-            anchors.right: parent.right
-            anchors.rightMargin: platformStyle.paddingLarge
-            wrapMode: Text.WordWrap
-            color: platformStyle.colorNormalLight
-        }
+        message: "Are you sure you wish to disconnect from the server?"
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
 
-        buttonTexts: ["Ok", "Cancel"]
-        onButtonClicked: {
-            if (!index) { // If 'Ok' pressed.
-                //console.log("Disconnecting from server...")
-                userDisconnected = true // Supress notification of disconnection
-                initialPage.closeAllTabs()
-                Session.close()
-            }
+        onAccepted:  { // If 'Ok' pressed.
+            //console.log("Disconnecting from server...")
+            userDisconnected = true // Supress notification of disconnection
+            initialPage.closeAllTabs()
+            Session.close()
         }
     }
 
-    CommonDialog {
+    QueryDialog {
         id: queryQuit
         titleText: "Quit BelleChat?"
-        content: Text {
-            text: "You are still connected to the server!\n Are you sure you wish to quit?"
-            anchors.left: parent.left
-            anchors.leftMargin: platformStyle.paddingLarge
-            anchors.right: parent.right
-            anchors.rightMargin: platformStyle.paddingLarge
-            wrapMode: Text.WordWrap
-            color: platformStyle.colorNormalLight
-        }
-        buttonTexts: ["Ok", "Cancel"]
-        onButtonClicked: {
-            if (!index) {
-                // Close the session
-                tryingToQuit = true
-                Session.close()
-            }
+        message: "You are still connected to the server!\n Are you sure you wish to quit?\n"
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
+        onAccepted: {
+            Session.quit(ConnectionSettings.quitMessage)
+            tryingToQuit = true
+            exit()
         }
     }
 
@@ -331,9 +293,11 @@ PageStackWindow {
                 if (Session.connected)
                 {
                     queryQuit.open()
+
                 }
                 else
                 {
+                    Session.quit(ConnectionSettings.quitMessage)
                     tryingToQuit = true
                     exit()
                 }
@@ -400,11 +364,10 @@ PageStackWindow {
             flat:true
             enabled: false
             onClicked: {
-                usersTooltip.visible = false
-                appBusy.visible = true
-                appBusy.running = true
-                namesListRequested = true
-                Session.onRefreshNames(currentChannel)
+                Session.getNicknames(Session.currentChannel)
+                var page = userPageFactory.createObject(window)
+                //page.userCount = count;
+                pageStack.push(page)
             }
             onPlatformReleased: usersTooltip.visible = false
             ToolTip {
@@ -449,8 +412,8 @@ PageStackWindow {
 
     function leaveChannel(channel)
     {
-        currentChannel = lastChannel
-        initialPage.selectTab(lastChannel)
+        Session.currentChannel = Session.lastChannel
+        initialPage.selectTab(Session.lastChannel)
         initialPage.closeTab(channel)
     }
 

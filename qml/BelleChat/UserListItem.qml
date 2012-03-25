@@ -6,10 +6,7 @@ ListItem {
     id: userListItem
     property alias username: userListText.text
     property alias propername: realnameText.text
-    property bool complete: false
-
     subItemIndicator: true
-
 
     Column {
         id: userListColumn

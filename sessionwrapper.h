@@ -8,7 +8,7 @@
 #include "connectionsettings.h"
 #include <QList>
 #include <QDeclarativeContext>
-
+#include "whoisitem.h"
 #include "channellistitem.h"
 
 
@@ -17,10 +17,14 @@
 class Session : public IrcSession
 {
     Q_OBJECT
+    Q_PROPERTY(QString currentChannel READ currentChannel WRITE setCurrentChannel NOTIFY currentChannelChanged)
+    Q_PROPERTY(QString lastChannel READ lastChannel WRITE setLastChannel NOTIFY lastChannelChanged)
+    Q_PROPERTY(int userCount READ userCount)
 
 public:
     explicit Session(QObject *parent = 0);
     QDeclarativeContext *context;
+
 
 
 
@@ -29,7 +33,9 @@ signals:
     void newNamesList(QString channel, int count);
     void newChannelList(int numberOfChannels);
     void channelJoined(QString channel);
-    void whoIsReceived(QString user);
+    void whoIsReceived(WhoIsItem *user);
+    void currentChannelChanged(QString newCurrentChannel);
+    void lastChannelChanged(QString newLastChannel);
 
 public slots:
     void onConnected();
@@ -42,15 +48,28 @@ public slots:
     Q_INVOKABLE void partChannel(QString channel);
     Q_INVOKABLE bool sessionConnected();
     Q_INVOKABLE void getChannelList(QString channel);
+    Q_INVOKABLE void getNicknames (QString channel);
     Q_INVOKABLE void whoIs(QString user);
     Q_INVOKABLE void kick(QString channel, QString user, QString reason);
+    Q_INVOKABLE QString currentChannel();
+    Q_INVOKABLE void setCurrentChannel(QString newCurrentChannel);
+    Q_INVOKABLE QString lastChannel();
+    Q_INVOKABLE void setLastChannel(QString newLastChannel);
+    Q_INVOKABLE void quit(QString quitMessage);
+    Q_INVOKABLE int userCount();
+    Q_INVOKABLE QString getRealname(QString user);
 
 
 private:
-    QList<QObject *> nicknameList;
-    QHash<QString, QObject *>nicknameHash;
+    QHash<QString, QStringList> nicknames;
+    QHash<QString, QObject *>whoisHash;
     QString password;
     QList<QObject *> channelList;
+    QString openUserList;
+    QString m_currentChannel;
+    QString m_lastChannel;
+    QStringList nicknameList;
+    bool newNames;
 
 
     // Command parsing instructions...
@@ -75,7 +94,7 @@ private:
     static IrcCommand* parseWhowas(const QString& channel, const QStringList& params);
 
     static bool currentListItemLessThanChannel(QObject *left, QObject *right);
-    static bool userListItemLessThan(QObject *left, QObject *right);
+
 
     // Message Handling functions...
 protected:
@@ -93,12 +112,16 @@ protected:
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
 
+    void handleNAMREPLY(IrcMessage* message);
+    void processWhoIs(IrcNumericMessage* message);
+
     QString prettyUser(const IrcSender& sender);
     QString prettyUser(const QString& user);
     QString colorize(const QString& str, const QString& colourName);
     QString formatPingReply(const IrcSender& sender, const QString& arg);
     QString getTimestamp();
     QString formatInput(const QString& inputString);
+    bool removeUser(QString user, QString channel);
 
 
 

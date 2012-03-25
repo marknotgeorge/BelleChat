@@ -5,7 +5,7 @@
 #include <QDeclarativeContext>
 #include "sessionwrapper.h"
 #include "channellistitem.h"
-#include "userlistitem.h"
+#include "whoisitem.h"
 #include <QtDeclarative>
 
 
@@ -20,8 +20,10 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
 
     qmlRegisterType<ConnectionSettings>("BelleChat",1,0,"ConnectionSettings");
+    qmlRegisterType<WhoIsItem>("BelleChat",1,0,"WhoIsItem");
     QList<QObject *> channels;
-    QList<QObject *> users;
+    QStringList users;
+
 
     viewer.rootContext()->setContextProperty("Version", appVersion.remove('\"'));
     viewer.rootContext()->setContextProperty("Build", appBuild.remove('\"'));
@@ -37,11 +39,6 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer.setMainQmlFile(QLatin1String("qml/BelleChat/main.qml"));
     viewer.showExpanded();
 
-    int returnValue = app.exec();
+    return app.exec();
 
-    //qDebug() << returnValue;
-
-    appSession.context = 0;
-
-    return returnValue;
 }

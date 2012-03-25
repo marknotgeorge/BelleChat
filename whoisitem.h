@@ -1,15 +1,15 @@
-#ifndef USERLISTITEM_H
-#define USERLISTITEM_H
+#ifndef WHOISITEM_H
+#define WHOISITEM_H
 
 #include <QObject>
 #include <QStringList>
 #include <QDateTime>
 
-class UserListItem : public QObject
+class WhoIsItem : public QObject
 {
     Q_OBJECT
 public:
-    explicit UserListItem(QObject *parent = 0);
+    explicit WhoIsItem(QObject *parent = 0);
 
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString user READ user WRITE setUser NOTIFY userChanged)
@@ -34,8 +34,8 @@ public:
     QDateTime onlineSince();
     void setOnlineSince(QDateTime newOnlineSince);
 
-    bool operator =(UserListItem other);
-    bool operator <(UserListItem other);
+    bool operator =(WhoIsItem other);
+    bool operator <(WhoIsItem other);
 
     
 signals:
@@ -61,4 +61,4 @@ private:
     
 };
 
-#endif // USERLISTITEM_H
+#endif // WhoIsItem_H

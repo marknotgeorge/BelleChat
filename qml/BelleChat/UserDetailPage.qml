@@ -4,6 +4,12 @@ import com.nokia.symbian 1.1
 
 Page {
     id: window
+
+    property alias detailHeading: userDetailHeadingText.text
+    property alias user: userData.text
+    property alias server: serverData.text
+    property alias channels: channelsData.text
+    property alias onlineSince: onlineSinceData.text
     tools: ToolBarLayout {
         id: settingsToolBarLayout
 
@@ -22,7 +28,7 @@ Page {
         ListItemText {
             id: userDetailHeadingText
             role: "Heading"
-            text: userView.currentItem.username + " (" + userView.currentItem.propername + ")"
+
         }
     }
     Column {
@@ -37,7 +43,6 @@ Page {
         ListItemText {
             id: userData
             role: "Subtitle"
-            text: UserModel[userView.currentIndex].user
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
         ListItemText {
@@ -48,7 +53,6 @@ Page {
         ListItemText {
             id: serverData
             role: "Subtitle"
-            text: UserModel[userView.currentIndex].server
         }
         ListItemText {
             id: channelsLabel
@@ -58,7 +62,6 @@ Page {
         ListItemText {
             id: channelsData
             role: "Subtitle"
-            text: UserModel[userView.currentIndex].channels
         }
         ListItemText {
             id: onlineSinceLabel
@@ -68,7 +71,6 @@ Page {
         ListItemText {
             id: onlineSinceData
             role: "Subtitle"
-            text: Qt.formatDateTime(UserModel[userView.currentIndex].onlineSince, Qt.TextDate)
         }
     }
 }

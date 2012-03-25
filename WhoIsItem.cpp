@@ -1,67 +1,67 @@
-#include "userlistitem.h"
+#include "whoisitem.h"
 
-UserListItem::UserListItem(QObject *parent) :
+WhoIsItem::WhoIsItem(QObject *parent) :
     QObject(parent)
 {
     m_dataComplete = false;
 }
 
-void UserListItem::setName(QString newName)
+void WhoIsItem::setName(QString newName)
 {
     m_name = newName;
 }
 
-QString UserListItem::name()
+QString WhoIsItem::name()
 {
     return m_name;
 }
 
-void UserListItem::setUser(QString newUser)
+void WhoIsItem::setUser(QString newUser)
 {
     m_user = newUser;
 }
 
-QString UserListItem::user()
+QString WhoIsItem::user()
 {
     return m_user;
 }
 
-void UserListItem::setServer(QString newServer)
+void WhoIsItem::setServer(QString newServer)
 {
     m_server = newServer;
 }
 
-QString UserListItem::server()
+QString WhoIsItem::server()
 {
     return m_server;
 }
 
-void UserListItem::setRealname(QString newRealname)
+void WhoIsItem::setRealname(QString newRealname)
 {
     m_realname = newRealname;
 }
 
-QString UserListItem::realname()
+QString WhoIsItem::realname()
 {
     return m_realname;
 }
 
-bool UserListItem::dataComplete()
+bool WhoIsItem::dataComplete()
 {
     return m_dataComplete;
 }
 
-void UserListItem::setDataComplete(bool newComplete)
+void WhoIsItem::setDataComplete(bool newComplete)
 {
     m_dataComplete = newComplete;
 }
 
-QString UserListItem::channels()
+QString WhoIsItem::channels()
 {
     return m_channels.join(" ");
 }
 
-void UserListItem::setChannels(QString newChannels)
+void WhoIsItem::setChannels(QString newChannels)
 {
     QStringList newChannelsList = newChannels.split(" ", QString::SkipEmptyParts);
 
@@ -73,22 +73,22 @@ void UserListItem::setChannels(QString newChannels)
     }
 }
 
-QDateTime UserListItem::onlineSince()
+QDateTime WhoIsItem::onlineSince()
 {
     return m_onlineSince;
 }
 
-void UserListItem::setOnlineSince(QDateTime newOnlineSince)
+void WhoIsItem::setOnlineSince(QDateTime newOnlineSince)
 {
     m_onlineSince = newOnlineSince;
 }
 
-bool UserListItem::operator =(UserListItem other)
+bool WhoIsItem::operator =(WhoIsItem other)
 {
     return name() == other.name();
 }
 
-bool UserListItem::operator <(UserListItem other)
+bool WhoIsItem::operator <(WhoIsItem other)
 {
     return name() < other.name();
 }

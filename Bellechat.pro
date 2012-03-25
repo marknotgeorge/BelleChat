@@ -40,7 +40,7 @@ SOURCES += main.cpp \
     connectionsettings.cpp \
     sessionwrapper.cpp \
     channellistitem.cpp \
-    userlistitem.cpp
+    whoisitem.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -59,7 +59,7 @@ HEADERS += \
     connectionsettings.h \
     sessionwrapper.h \
     channellistitem.h \
-    userlistitem.h
+    whoisitem.h
 
 OTHER_FILES += \
     ReadMe.txt

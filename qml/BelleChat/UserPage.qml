@@ -4,8 +4,6 @@ import com.nokia.symbian 1.1
 
 Page {
     id: window
-    property int userCount: 0
-    property bool whoisRequested: false
 
     Component {
         id: userDetailPageFactory
@@ -15,14 +13,18 @@ Page {
     Connections {
         target: Session
         onWhoIsReceived: {
-            if (whoisRequested)
+            // Check to see if the WhoIs received is still the selected
+            // user...
+            //console.log("Username: " + user.name)
+            if (user.name === userView.currentItem.username)
             {
-                if (user === userView.currentItem.username)
-                {
-                    var page = userDetailPageFactory.createObject(window)
-                    pageStack.push(page)
-                    whoisRequested = false
-                }
+                var page = userDetailPageFactory.createObject(window)
+                page.detailHeading = user.name + " (" + user.realname + ")"
+                page.user = user.user
+                page.server = user.server
+                page.channels = user.channels
+                page.onlineSince = Qt.formatDateTime(user.onlineSince, Qt.TextDate)
+                pageStack.push(page)
             }
         }
     }
@@ -44,7 +46,7 @@ Page {
         ListItemText {
             id: userHeadingText
             role: "Heading"
-            text: currentChannel + ": " + userCount + " users"
+            text: Session.currentChannel + ": " + Session.userCount + " users"
         }
     }
 
@@ -54,21 +56,11 @@ Page {
         clip: true
         model: UserModel
         delegate: UserListItem {
-            username: name
-            propername: realname
-            complete: dataComplete
+            username: modelData
+            propername: Session.getRealname(modelData)
             onPressAndHold: userContextMenu.open()
             onClicked: {
-                if (complete)
-                {
-                    var page = userDetailPageFactory.createObject(window)
-                    pageStack.push(page)
-                }
-                else
-                {
-                    whoisRequested = true
-                    Session.whoIs(userView.currentItem.username)
-                }
+                Session.whoIs(userView.currentItem.username)
             }
         }
 
@@ -97,7 +89,6 @@ Page {
                     text: "Whois"
                     onClicked: {
                         Session.whoIs(userView.currentItem.username)
-                        whoisRequested = true
                     }
 
                 }

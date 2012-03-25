@@ -100,6 +100,16 @@ bool ConnectionSettings::showChannelList()
     return settings.value("showChannelList", "true").toBool();
 }
 
+QString ConnectionSettings::quitMessage()
+{
+    QSettings settings;
+
+    // Create the default string...
+    QString appVersion = VERSIONNO;
+    QString defaultString = "BelleChat " + appVersion.remove('\"');
+    return settings.value("quitMessage", defaultString).toString();
+}
+
 void ConnectionSettings::setHost(QString newHost)
 {
     QSettings settings;
@@ -212,6 +222,13 @@ void ConnectionSettings::setShowChannelList(bool newShowChannelList)
     QSettings settings;
     settings.setValue("showChannelList", newShowChannelList);
     emit showChannelListChanged(newShowChannelList);
+}
+
+void ConnectionSettings::setQuitMessage(QString newQuitMessage)
+{
+    QSettings settings;
+    settings.setValue("quitMessage", newQuitMessage);
+    emit quitMessageChanged(newQuitMessage);
 }
 
 
