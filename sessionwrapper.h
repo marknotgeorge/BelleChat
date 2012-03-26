@@ -19,7 +19,7 @@ class Session : public IrcSession
     Q_OBJECT
     Q_PROPERTY(QString currentChannel READ currentChannel WRITE setCurrentChannel NOTIFY currentChannelChanged)
     Q_PROPERTY(QString lastChannel READ lastChannel WRITE setLastChannel NOTIFY lastChannelChanged)
-    Q_PROPERTY(int userCount READ userCount)
+    Q_PROPERTY(int userCount READ userCount NOTIFY userCountChanged)
 
 public:
     explicit Session(QObject *parent = 0);
@@ -36,6 +36,7 @@ signals:
     void whoIsReceived(WhoIsItem *user);
     void currentChannelChanged(QString newCurrentChannel);
     void lastChannelChanged(QString newLastChannel);
+    void userCountChanged(int newUserCount);
 
 public slots:
     void onConnected();

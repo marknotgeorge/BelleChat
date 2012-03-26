@@ -27,6 +27,9 @@ Page {
                 pageStack.push(page)
             }
         }
+        onUserCountChanged: {
+            userHeadingText.text = Session.currentChannel + ": " + newUserCount + " user(s)"
+        }
     }
 
     tools: ToolBarLayout {
@@ -46,7 +49,7 @@ Page {
         ListItemText {
             id: userHeadingText
             role: "Heading"
-            text: Session.currentChannel + ": " + Session.userCount + " users"
+            text: Session.currentChannel + ": " + Session.userCount + " user(s)"
         }
     }
 

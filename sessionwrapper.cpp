@@ -246,7 +246,12 @@ void Session::handleJoinMessage(IrcJoinMessage *message)
 
     // If this list is open, update the UserModel.
     if (openUserList == channel)
+    {
         context->setContextProperty("UserModel", QVariant::fromValue(nickList));
+        // Update the user count
+        emit userCountChanged(nickList.count());
+    }
+
 
     // Send output to the channel tab.
     QString joinString =  colorize(tr("*** %1 joined %2").arg(prettySender, channel),"green");
@@ -694,7 +699,10 @@ bool Session::removeUser(QString user, QString channel)
 
     // If this list is open, update it.
     if (openUserList == channel)
+    {
         context->setContextProperty("UserModel", QVariant::fromValue(nicknameList));
+        emit userCountChanged(nicknameList.count());
+    }
 
     return foundUser;
 }
