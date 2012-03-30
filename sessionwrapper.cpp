@@ -325,7 +325,6 @@ void Session::handleNoticeMessage(IrcNoticeMessage *message)
 
 void Session::handleNumericMessage(IrcNumericMessage *message)
 {
-    QTime myTime;
     QDateTime myDateTime;
     QString channel;
     QString msg;
@@ -333,7 +332,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
     //UserListItem *whoisUser;
     QString topic;
     int index;
-    ConnectionSettings settings;
+
 
     if (message->code() < 300)
         emit outputString(this->host(), tr("[INFO] %1").arg(IrcUtil::messageToHtml(MID_(1))));
@@ -426,9 +425,14 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         break;
 
     case Irc::RPL_LIST:
-        topic = P_(3);
-        index = topic.indexOf("]");
-        clitem = new ChannelListItem(P_(1),P_(2).toInt(), P_(3).remove(0, index+2));
+        // Remove the mode hieroglyphics from the start of the topic string.
+        // This ends with a ] character, so find this...
+        index = P_(3).indexOf("]");
+        topic = P_(3).remove(0, index);
+        // Remove any whitespace from the start of the string...
+        topic.remove(QRegExp("\\s+"));
+
+        clitem = new ChannelListItem(P_(1),P_(2).toInt(), topic);
         channelList.append(clitem);
         break;
 
