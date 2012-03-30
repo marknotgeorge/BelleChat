@@ -46,6 +46,13 @@ bool Session::currentListItemLessThanChannel(QObject *left, QObject *right)
     return leftChannel->channel().toLower() < rightChannel->channel().toLower();
 }
 
+bool Session::caseInsensitiveLessThan(const QString &s1, const QString &s2)
+
+{
+    return s1.toLower() < s2.toLower();
+}
+
+
 
 void Session::onInputReceived(QString channel,QString input)
 {
@@ -240,7 +247,7 @@ void Session::handleJoinMessage(IrcJoinMessage *message)
     if(updateList)
     {
         nickList.append(sender.name());
-        nickList.sort();
+        qSort(nickList.begin(), nickList.end(), caseInsensitiveLessThan);
         nicknames.insert(channel, nickList);
     }
 
@@ -403,7 +410,7 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         channel = P_(1);
 
         // Sort the list...
-        nicknameList.sort();
+        qSort(nicknameList.begin(), nicknameList.end(), caseInsensitiveLessThan);
         nicknames.insert(channel, nicknameList);
 
         // If the list's the latest one to be looked at, update it.
@@ -573,7 +580,7 @@ void Session::processWhoIs(IrcNumericMessage *message)
     switch (message->code())
     {
     case Irc::RPL_ENDOFWHOIS:
-        // Put the details in the hashtable, and send it to the UI.        
+        // Put the details in the hashtable, and send it to the UI.
         emit whoIsReceived(whoisUser);
         break;
     case Irc::RPL_WHOISOPERATOR:
@@ -945,6 +952,7 @@ void Session::quit(QString quitMessage)
 {
     IrcCommand* command;
     command = IrcCommand::createQuit(quitMessage);
+    sendCommand(command);
 }
 
 int Session::userCount()
@@ -962,6 +970,13 @@ QString Session::getRealname(QString user)
     else
         return "";
 
+}
+
+void Session::sendNames(QString channel)
+{
+    IrcCommand *command;
+    command = IrcCommand::createNames(channel);
+    sendCommand(command);
 }
 
 

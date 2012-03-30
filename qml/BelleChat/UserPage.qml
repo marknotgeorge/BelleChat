@@ -35,12 +35,39 @@ Page {
     tools: ToolBarLayout {
         id: userToolBarLayout
         ToolButton {
+            id: userBackButton
             flat: true
             iconSource: "toolbar-back"
             onClicked: {
                 pageStack.pop()
             }
+            onPressedChanged: userBackToolTip.visible = pressed
+            ToolTip {
+                id: userBackToolTip
+                text: "Back"
+                target: userBackButton
+                visible: userBackButton.pressed
+            }
         }
+
+
+
+        ToolButton {
+            id: refreshToolButton
+            flat: true
+            iconSource: "toolbar-refresh"
+            onClicked: {
+                Session.sendNames(Session.currentChannel)
+            }
+            onPressedChanged: refreshToolTip.visible = pressed
+                ToolTip {
+                    id: refreshToolTip
+                    text: "Refresh names"
+                    target: refreshToolButton
+                    visible: userBackButton.pressed
+                }
+        }
+
     }
 
     ListHeading {

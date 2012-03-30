@@ -59,6 +59,7 @@ public slots:
     Q_INVOKABLE void quit(QString quitMessage);
     Q_INVOKABLE int userCount();
     Q_INVOKABLE QString getRealname(QString user);
+    Q_INVOKABLE void sendNames(QString channel);
 
 
 private:
@@ -95,6 +96,9 @@ private:
     static IrcCommand* parseWhowas(const QString& channel, const QStringList& params);
 
     static bool currentListItemLessThanChannel(QObject *left, QObject *right);
+
+    static bool caseInsensitiveLessThan(const QString &s1, const QString &s2);
+
 
 
     // Message Handling functions...

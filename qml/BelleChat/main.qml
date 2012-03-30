@@ -43,11 +43,11 @@ PageStackWindow {
         id: connectionTimer
         interval: 15000
         onTriggered: {
-            var failureString = "Could not connect to " + appConnectionSettings.host + ".\n Please check your settings."
+            //var failureString = "Could not connect to " + appConnectionSettings.host + ".\n Please check your settings."
             Session.close()
-            connectFailedBanner.text = failureString
-            initialPage.outputToTab("Server", failureString)
-            connectFailedBanner.open()
+            //connectFailedBanner.text = failureString
+            //initialPage.outputToTab("Server", failureString)
+            //connectFailedBanner.open()
             menuToDisconnected()
         }
     }
@@ -90,6 +90,7 @@ PageStackWindow {
         onDisconnected: {
             if (!userDisconnected)
             {
+                connectionTimer.stop()
                 var failureString = "Connection to " + appConnectionSettings.host + " failed."
                 Session.close()
                 connectFailedBanner.text = failureString
@@ -302,6 +303,7 @@ PageStackWindow {
                     exit()
                 }
             }
+            onPressedChanged: exitTooltip.visible = pressed
 
             ToolTip {
                 id: exitTooltip
@@ -328,15 +330,17 @@ PageStackWindow {
                     connectionTimer.start()
                     Session.open()
                 }
-                onPlatformReleased: connectTooltip.visible = false
             }
+            onPressedChanged: connectTooltip.visible = pressed
             ToolTip {
                 id: connectTooltip
                 target: buttonConnect
-                text: "Connect to server"
+                text: (Session.connected)? "Disconnect from server" : "Connect to server"
                 visible: buttonConnect.pressed
             }
         }
+
+
 
         ToolButton {
             id: buttonJoin
@@ -348,15 +352,16 @@ PageStackWindow {
                 channelsTooltip.visible = false
                 menuJoin.open()
             }
-            onPlatformReleased: channelsTooltip.visible = false
+            onPressedChanged: channelsTooltip.visible = pressed
             ToolTip {
                 id: channelsTooltip
                 target: buttonJoin
                 text: "Channels"
                 visible: buttonJoin.pressed
             }
-
         }
+
+
 
         ToolButton {
             id: buttonUsers
@@ -369,7 +374,7 @@ PageStackWindow {
                 //page.userCount = count;
                 pageStack.push(page)
             }
-            onPlatformReleased: usersTooltip.visible = false
+            onPressedChanged: usersTooltip.visible = pressed
             ToolTip {
                 id: usersTooltip
                 target: buttonUsers
@@ -377,6 +382,8 @@ PageStackWindow {
                 visible: buttonUsers.pressed
             }
         }
+
+
 
         ToolButton {
             id: buttonMenu
@@ -386,7 +393,7 @@ PageStackWindow {
                 moreTooltip.visible = false
                 menuMain.open()
             }
-            onPlatformReleased: moreTooltip.visible = false
+            onPressedChanged: moreTooltip.visible = pressed
             ToolTip {
                 id: moreTooltip
                 target: buttonMenu
@@ -394,6 +401,8 @@ PageStackWindow {
                 visible: buttonMenu.pressed
             }
         }
+
+
     }
 
     Component.onCompleted: {
