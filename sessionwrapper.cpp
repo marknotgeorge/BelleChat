@@ -428,11 +428,8 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         // Remove the mode hieroglyphics from the start of the topic string.
         // This ends with a ] character, so find this...
         index = P_(3).indexOf("]");
-        topic = P_(3).remove(0, index);
-        // Remove any whitespace from the start of the string...
-        topic.remove(QRegExp("\\s+"));
-
-        clitem = new ChannelListItem(P_(1),P_(2).toInt(), topic);
+        topic = P_(3).remove(0, index+1);
+        clitem = new ChannelListItem(P_(1),P_(2).toInt(), topic.trimmed());
         channelList.append(clitem);
         break;
 
