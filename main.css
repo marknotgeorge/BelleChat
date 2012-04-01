@@ -1,0 +1,159 @@
+BODY {
+MARGIN: 0px; 
+PADDING: 0px;
+BACKGROUND: #808080;
+COLOR: #000000;
+TEXT-ALIGN: center;
+} 
+
+A:link {background: none; color: navy; text-decoration: underline; cursor: pointer;}
+A:visited {background: none; color: navy; text-decoration: underline; cursor: pointer;}
+A:hover {background: none; color: #b83425; text-decoration: underline; cursor: pointer;}
+A:active { background: none; color: #b83425; background: underline; cursor: pointer;}
+
+.Global {
+WIDTH: 760px;
+HEIGHT: 100%;
+MARGIN-LEFT: auto;
+MARGIN-RIGHT: auto;
+}
+
+.Global TD {
+VERTICAL-ALIGN: top;
+}
+
+.Header {
+HEIGHT: 65px;
+WIDTH: 100%;
+}
+
+.Header TD {
+VERTICAL-ALIGN: top;
+TEXT-ALIGN: left;
+PADDING: 0px 7px 0px 5px; 
+}
+
+.Left {
+BACKGROUND: url("left-header.jpg") repeat-y #ffffff;
+COLOR: inherit;
+}
+
+.Content {
+BACKGROUND: #ffffff;
+COLOR: inherit;
+}
+
+.BoxStyle {
+WIDTH: 100%;
+MARGIN-BOTTOM: 15px;
+}
+
+.MenuOff {
+	BACKGROUND: none;	
+	COLOR: #000000; 
+	CURSOR: hand; 
+	TEXT-DECORATION: none;
+	BORDER-LEFT: 1px solid #263F5C;
+	BORDER-TOP: 1px solid #263F5C;
+	BORDER-RIGHT: 1px solid #AED1DB;
+	BORDER-BOTTOM: 1px solid #AED1DB;
+	WIDTH: 100%;
+	HEIGHT: 16px;
+	PADDING-LEFT: 10px;
+	TEXT-ALIGN: left; 
+	LINE-HEIGHT: 14px;
+	FONT: bold 11px 'Trebuchet MS',Arial,Helvetica,sans-serif;
+}
+
+.MenuOn {
+	BACKGROUND: #b83425;
+	COLOR: #000000; 
+	CURSOR: hand; 
+	TEXT-DECORATION: none;
+	BORDER-LEFT: 1px solid #ecb5ae;
+	BORDER-TOP: 1px solid #ecb5ae;
+	BORDER-RIGHT: 1px solid #492525;
+	BORDER-BOTTOM: 1px solid #492525;
+	WIDTH: 100%;
+	HEIGHT: 16px;
+	PADDING-LEFT: 10px;
+	TEXT-ALIGN: left; 
+	LINE-HEIGHT: 14px;
+	FONT: bold 11px 'Trebuchet MS',Arial,Helvetica,sans-serif;
+}
+
+.MenuClick {
+	BACKGROUND: #ffffeb;
+	COLOR: #000000;
+	CURSOR: hand; 
+	TEXT-DECORATION: none;
+	BORDER-LEFT: 1px solid #000000;
+	BORDER-TOP: 1px solid #000000;
+	BORDER-RIGHT: 1px solid #AED1DB;
+	BORDER-BOTTOM: 1px solid #AED1DB;
+	WIDTH: 100%;
+	HEIGHT: 16px;
+	PADDING-LEFT: 10px;
+	TEXT-ALIGN: left; 
+	LINE-HEIGHT: 14px;
+	FONT: bold 11px 'Trebuchet MS',Arial,Helvetica,sans-serif;
+}
+
+.MenuOff A:link { color: #000000; text-decoration: none; CURSOR: hand;}
+.MenuOff A:visited { color: #000000; text-decoration: none; CURSOR: hand;}
+.MenuOff A:hover {color: #ff0000; text-decoration: none; CURSOR: hand;}
+
+.MenuOn A:link { color: #fece8b; text-decoration: none; CURSOR: hand;}
+.MenuOn A:visited { color: #fece8b; text-decoration: none; CURSOR: hand;}
+.MenuOn A:hover {color: #fece8b; text-decoration: none; CURSOR: hand;}
+
+.MenuClick A:link { color: #000000; text-decoration: none; CURSOR: hand;}
+.MenuClick A:visited { color: #000000; text-decoration: none; CURSOR: hand;}
+.MenuClick A:hover {color: #000000; text-decoration: none; CURSOR: hand;}
+
+.HeadingStyle {
+BACKGROUND: none;
+COLOR: #000000;
+FONT: bold 20px 'Trebuchet MS',arial,sans-serif;
+}
+
+P, UL {
+FONT: 13px Verdana,arial,sans-serif;
+}
+
+.Padded {
+PADDING: 15px;
+}
+
+.SmallFont {
+FONT: 13px Verdana,arial,sans-serif;
+}
+
+.MedFontBold {
+FONT: bold 15px Verdana,arial,sans-serif;
+}
+
+.SmallFont TD {
+FONT: 13px Verdana,arial,sans-serif;
+}
+
+.MedFontBold TD {
+FONT: bold 15px Verdana,arial,sans-serif;
+}
+
+.Footer {
+WIDTH: 100%;
+BACKGROUND: none;
+COLOR: #000000;
+FONT: 13px Verdana,arial,sans-serif;
+HEIGHT: 27px;
+TEXT-ALIGN: center;
+}
+
+H2 {
+BACKGROUND: none;
+COLOR: #000000;
+FONT: bold 13px 'Trebuchet MS',arial,sans-serif;
+}
+
+
