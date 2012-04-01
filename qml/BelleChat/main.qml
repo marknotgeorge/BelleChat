@@ -303,14 +303,14 @@ PageStackWindow {
                     exit()
                 }
             }
-            onPressedChanged: exitTooltip.visible = pressed
+//            onPressedChanged: exitTooltip.visible = pressed
 
-            ToolTip {
-                id: exitTooltip
-                target: buttonQuit
-                text: "Exit"
-                visible: buttonQuit.pressed
-            }
+//            ToolTip {
+//                id: exitTooltip
+//                target: buttonQuit
+//                text: "Exit"
+//                visible: buttonQuit.pressed
+//            }
         }
 
         ToolButton {
@@ -318,7 +318,7 @@ PageStackWindow {
             flat: true
             iconSource: (Session.connected)?"icon-disconnect.svg":"icon-connect.svg"
             onClicked: {
-                connectTooltip.visible = false
+//                connectTooltip.visible = false
                 if (Session.connected)
                     queryDisconnect.open()
                 else
@@ -331,13 +331,13 @@ PageStackWindow {
                     Session.open()
                 }
             }
-            onPressedChanged: connectTooltip.visible = pressed
-            ToolTip {
-                id: connectTooltip
-                target: buttonConnect
-                text: (Session.connected)? "Disconnect from server" : "Connect to server"
-                visible: buttonConnect.pressed
-            }
+//            onPressedChanged: connectTooltip.visible = pressed
+//            ToolTip {
+//                id: connectTooltip
+//                target: buttonConnect
+//                text: (Session.connected)? "Disconnect from server" : "Connect to server"
+//                visible: buttonConnect.pressed
+//            }
         }
 
 
@@ -349,16 +349,16 @@ PageStackWindow {
             visible: true
             enabled: false
             onClicked: {
-                channelsTooltip.visible = false
+//                channelsTooltip.visible = false
                 menuJoin.open()
             }
-            onPressedChanged: channelsTooltip.visible = pressed
-            ToolTip {
-                id: channelsTooltip
-                target: buttonJoin
-                text: "Channels"
-                visible: buttonJoin.pressed
-            }
+//            onPressedChanged: channelsTooltip.visible = pressed
+//            ToolTip {
+//                id: channelsTooltip
+//                target: buttonJoin
+//                text: "Channels"
+//                visible: buttonJoin.pressed
+//            }
         }
 
 
@@ -374,13 +374,13 @@ PageStackWindow {
                 //page.userCount = count;
                 pageStack.push(page)
             }
-            onPressedChanged: usersTooltip.visible = pressed
-            ToolTip {
-                id: usersTooltip
-                target: buttonUsers
-                text: "Users"
-                visible: buttonUsers.pressed
-            }
+//            onPressedChanged: usersTooltip.visible = pressed
+//            ToolTip {
+//                id: usersTooltip
+//                target: buttonUsers
+//                text: "Users"
+//                visible: buttonUsers.pressed
+//            }
         }
 
 
@@ -390,16 +390,16 @@ PageStackWindow {
             iconSource: "toolbar-menu"
             flat: true
             onClicked: {
-                moreTooltip.visible = false
+//                moreTooltip.visible = false
                 menuMain.open()
             }
-            onPressedChanged: moreTooltip.visible = pressed
-            ToolTip {
-                id: moreTooltip
-                target: buttonMenu
-                text: "More"
-                visible: buttonMenu.pressed
-            }
+//            onPressedChanged: moreTooltip.visible = pressed
+//            ToolTip {
+//                id: moreTooltip
+//                target: buttonMenu
+//                text: "More"
+//                visible: buttonMenu.pressed
+//            }
         }
 
 
@@ -449,7 +449,7 @@ PageStackWindow {
         buttonConnect.iconSource = "icon-connect.svg"
         buttonJoin.enabled = false
         buttonUsers.enabled = false
-        connectTooltip.text = "Connect to server"
+//        connectTooltip.text = "Connect to server"
     }
 
 }

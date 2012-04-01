@@ -41,13 +41,13 @@ Page {
             onClicked: {
                 pageStack.pop()
             }
-            onPressedChanged: userBackToolTip.visible = pressed
-            ToolTip {
-                id: userBackToolTip
-                text: "Back"
-                target: userBackButton
-                visible: userBackButton.pressed
-            }
+//            onPressedChanged: userBackToolTip.visible = pressed
+//            ToolTip {
+//                id: userBackToolTip
+//                text: "Back"
+//                target: userBackButton
+//                visible: userBackButton.pressed
+//            }
         }
 
 
@@ -59,13 +59,13 @@ Page {
             onClicked: {
                 Session.sendNames(Session.currentChannel)
             }
-            onPressedChanged: refreshToolTip.visible = pressed
-                ToolTip {
-                    id: refreshToolTip
-                    text: "Refresh names"
-                    target: refreshToolButton
-                    visible: userBackButton.pressed
-                }
+//            onPressedChanged: refreshToolTip.visible = pressed
+//                ToolTip {
+//                    id: refreshToolTip
+//                    text: "Refresh names"
+//                    target: refreshToolButton
+//                    visible: userBackButton.pressed
+//                }
         }
 
     }
