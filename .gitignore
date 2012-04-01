@@ -40,6 +40,8 @@ desktop.ini
 *.user
 
 #Automatically generated makefiles
-Makefil*
+Mak*
 *.Debug
 *.Release
+
+bld.inf
