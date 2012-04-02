@@ -198,6 +198,27 @@ Page {
                     dirty = true;
                 }
             }
+
+            Label {
+                id: quitMessageLabel
+                text: qsTr("Default quit message")
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                visible: quitMessageField.visible
+            }
+
+            TextField {
+                id: quitMessageField
+                text: appConnectionSettings.quitMessage
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                visible: (activeFocus||!inputContext.visible)
+                onTextChanged: {
+                    dirty = true;
+                }
+            }
         }
     }
 
@@ -223,5 +244,6 @@ Page {
         appConnectionSettings.setUsername(usernameField.text)
         appConnectionSettings.setPassword(passwordField.text)
         appConnectionSettings.setRealname(realnameField.text)
+        appConnectionSettings.setQuitMessage(quitMessageField.text)
     }
 }

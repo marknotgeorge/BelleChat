@@ -27,29 +27,12 @@ PageStackWindow {
         UserPage {}
     }
 
-    InfoBanner {
-        id: connectFailedBanner
-    }
-
     BusyIndicator {
         id: appBusy
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
         running: false
         visible: false
-    }
-
-    Timer {
-        id: connectionTimer
-        interval: 15000
-        onTriggered: {
-            //var failureString = "Could not connect to " + appConnectionSettings.host + ".\n Please check your settings."
-            Session.close()
-            //connectFailedBanner.text = failureString
-            //initialPage.outputToTab("Server", failureString)
-            //connectFailedBanner.open()
-            menuToDisconnected()
-        }
     }
 
     QueryDialog {
@@ -70,15 +53,8 @@ PageStackWindow {
             initialPage.outputToTab(channel, output)
         }
         onConnected: {
-            //connectServer.visible = false
-            buttonConnect.iconSource = "icon-disconnect.svg"
-            buttonConnect.enabled = true
-            connectionTimer.stop()
+            buttonConnect.state = "Connected"
             initialPage.outputToTab("Server", "Connected to " + appConnectionSettings.host + "!")
-            //disconnectServer.text = "Disconnect from " + appConnectionSettings.host
-            //disconnectServer.visible = true
-            buttonJoin.enabled = true
-            channelsTooltip.text = "Disconnect from server"
             if (appConnectionSettings.showChannelList)
             {
                 appBusy.visible = true
@@ -90,12 +66,9 @@ PageStackWindow {
         onDisconnected: {
             if (!userDisconnected)
             {
-                connectionTimer.stop()
                 var failureString = "Connection to " + appConnectionSettings.host + " failed."
                 Session.close()
-                connectFailedBanner.text = failureString
                 initialPage.outputToTab("Server", failureString)
-                connectFailedBanner.open()
             }
 
             userDisconnected = false;
@@ -104,7 +77,7 @@ PageStackWindow {
             {
                 initialPage.clearTab("Server")
                 initialPage.outputToTab("Server", "Disconnected from " + appConnectionSettings.host + ".")
-                menuToDisconnected()
+                buttonConnect.state = "Disconnected"
             }
             else
                 exit()
@@ -132,13 +105,10 @@ PageStackWindow {
                 noChannelsDialog.open()
         }
         onSocketError: {
-            connectionTimer.stop()
             var failureString = "Connection to " + appConnectionSettings.host + " failed."
             Session.close()
-            connectFailedBanner.text = failureString
             initialPage.outputToTab("Server", failureString)
-            connectFailedBanner.open()
-            menuToDisconnected()
+            buttonConnect.state = "Disconnected"
         }
 
     }
@@ -257,13 +227,14 @@ PageStackWindow {
     QueryDialog {
         id: queryDisconnect
         titleText: "Disconnect from " + appConnectionSettings.host +"?"
-        message: "Are you sure you wish to disconnect from the server?"
+        message: "Are you sure you wish to disconnect from the server?\n"
         acceptButtonText: "Ok"
         rejectButtonText: "Cancel"
 
         onAccepted:  { // If 'Ok' pressed.
             //console.log("Disconnecting from server...")
             userDisconnected = true // Supress notification of disconnection
+            Session.quit(appConnectionSettings.quitMessage)
             initialPage.closeAllTabs()
             Session.close()
         }
@@ -276,9 +247,22 @@ PageStackWindow {
         acceptButtonText: "Ok"
         rejectButtonText: "Cancel"
         onAccepted: {
-            Session.quit(ConnectionSettings.quitMessage)
+            Session.quit(appConnectionSettings.quitMessage)
             tryingToQuit = true
             exit()
+        }
+    }
+
+    QueryDialog {
+        id: queryCancelConnect
+        titleText: "Cancel connection?"
+        message: "Are you sure you wish to cancel the connection?\n"
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
+        onAccepted: {
+            var outputString = "Connection to " + appConnectionSettings.host + " cancelled!"
+            initialPage.outputToTab("Server", outputString)
+            Session.close()
         }
     }
 
@@ -303,41 +287,67 @@ PageStackWindow {
                     exit()
                 }
             }
-//            onPressedChanged: exitTooltip.visible = pressed
+            //            onPressedChanged: exitTooltip.visible = pressed
 
-//            ToolTip {
-//                id: exitTooltip
-//                target: buttonQuit
-//                text: "Exit"
-//                visible: buttonQuit.pressed
-//            }
+            //            ToolTip {
+            //                id: exitTooltip
+            //                target: buttonQuit
+            //                text: "Exit"
+            //                visible: buttonQuit.pressed
+            //            }
         }
 
         ToolButton {
             id: buttonConnect
+            checkable: true
+            checked: false
             flat: true
-            iconSource: (Session.connected)?"icon-disconnect.svg":"icon-connect.svg"
+            state: "Disconnected"
+            states: [
+                State {
+                    name: "Connected"
+                    PropertyChanges { target: buttonConnect; iconSource: "icon-disconnect.svg"}
+                    PropertyChanges { target: buttonConnect; checked: false }
+                    PropertyChanges { target: buttonJoin; enabled:true }
+                },
+                State {
+                    name: "Connecting"
+                    PropertyChanges { target: buttonConnect; iconSource: "icon-connect.svg"}
+                    PropertyChanges { target: buttonConnect; checked: true }
+                },
+                State {
+                    name: "Disconnected"
+                    PropertyChanges { target: buttonConnect; iconSource: "icon-connect.svg" }
+                    PropertyChanges { target: buttonConnect; checked: false}
+                    PropertyChanges { target: buttonJoin; enabled: false }
+                    PropertyChanges { target: buttonUsers; enabled: false }
+                }
+
+            ]
+
             onClicked: {
-//                connectTooltip.visible = false
-                if (Session.connected)
+                if (state === "Connected")
                     queryDisconnect.open()
-                else
+                else if (state === "Disconnected")
                 {
-                    //enabled = false
+                    state = "Connecting"
                     Session.updateConnection()
                     var connectingString = "Connecting to " + appConnectionSettings.host +"..."
                     initialPage.outputToTab("Server", connectingString)
-                    connectionTimer.start()
                     Session.open()
                 }
+                else //state === "Connecting"
+                {
+                    queryCancelConnect.open()
+                }
             }
-//            onPressedChanged: connectTooltip.visible = pressed
-//            ToolTip {
-//                id: connectTooltip
-//                target: buttonConnect
-//                text: (Session.connected)? "Disconnect from server" : "Connect to server"
-//                visible: buttonConnect.pressed
-//            }
+            //            onPressedChanged: connectTooltip.visible = pressed
+            //            ToolTip {
+            //                id: connectTooltip
+            //                target: buttonConnect
+            //                text: (Session.connected)? "Disconnect from server" : "Connect to server"
+            //                visible: buttonConnect.pressed
+            //            }
         }
 
 
@@ -349,16 +359,16 @@ PageStackWindow {
             visible: true
             enabled: false
             onClicked: {
-//                channelsTooltip.visible = false
+                //                channelsTooltip.visible = false
                 menuJoin.open()
             }
-//            onPressedChanged: channelsTooltip.visible = pressed
-//            ToolTip {
-//                id: channelsTooltip
-//                target: buttonJoin
-//                text: "Channels"
-//                visible: buttonJoin.pressed
-//            }
+            //            onPressedChanged: channelsTooltip.visible = pressed
+            //            ToolTip {
+            //                id: channelsTooltip
+            //                target: buttonJoin
+            //                text: "Channels"
+            //                visible: buttonJoin.pressed
+            //            }
         }
 
 
@@ -374,13 +384,13 @@ PageStackWindow {
                 //page.userCount = count;
                 pageStack.push(page)
             }
-//            onPressedChanged: usersTooltip.visible = pressed
-//            ToolTip {
-//                id: usersTooltip
-//                target: buttonUsers
-//                text: "Users"
-//                visible: buttonUsers.pressed
-//            }
+            //            onPressedChanged: usersTooltip.visible = pressed
+            //            ToolTip {
+            //                id: usersTooltip
+            //                target: buttonUsers
+            //                text: "Users"
+            //                visible: buttonUsers.pressed
+            //            }
         }
 
 
@@ -390,16 +400,16 @@ PageStackWindow {
             iconSource: "toolbar-menu"
             flat: true
             onClicked: {
-//                moreTooltip.visible = false
+                //                moreTooltip.visible = false
                 menuMain.open()
             }
-//            onPressedChanged: moreTooltip.visible = pressed
-//            ToolTip {
-//                id: moreTooltip
-//                target: buttonMenu
-//                text: "More"
-//                visible: buttonMenu.pressed
-//            }
+            //            onPressedChanged: moreTooltip.visible = pressed
+            //            ToolTip {
+            //                id: moreTooltip
+            //                target: buttonMenu
+            //                text: "More"
+            //                visible: buttonMenu.pressed
+            //            }
         }
 
 
@@ -439,19 +449,4 @@ PageStackWindow {
             Qt.quit()
         }
     }
-
-
-
-    function menuToDisconnected()
-    {
-        connectionTimer.stop()
-        buttonConnect.enabled = true
-        buttonConnect.iconSource = "icon-connect.svg"
-        buttonJoin.enabled = false
-        buttonUsers.enabled = false
-//        connectTooltip.text = "Connect to server"
-    }
-
 }
-
-
