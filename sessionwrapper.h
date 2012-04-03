@@ -60,6 +60,7 @@ public slots:
     Q_INVOKABLE int userCount();
     Q_INVOKABLE QString getRealname(QString user);
     Q_INVOKABLE void sendNames(QString channel);
+    Q_INVOKABLE QString removeMode(QString user);
 
 
 private:

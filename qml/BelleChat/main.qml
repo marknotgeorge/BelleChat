@@ -46,6 +46,21 @@ PageStackWindow {
         }
     }
 
+    CommonDialog {
+        id: fetchingChannelsDialog
+        titleText: "Fetching list of channels..."
+        content:
+            ProgressBar {
+            id: fcProgress
+            indeterminate: true
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: platformStyle.paddingSmall
+            anchors.right: parent.right
+            anchors.rightMargin: platformStyle.paddingSmall
+        }
+    }
+
 
     Connections {
         target: Session
@@ -57,8 +72,7 @@ PageStackWindow {
             initialPage.outputToTab("Server", "Connected to " + appConnectionSettings.host + "!")
             if (appConnectionSettings.showChannelList)
             {
-                appBusy.visible = true
-                appBusy.running = true
+                fetchingChannelsDialog.open()
                 Session.getChannelList("")
             }
 
@@ -94,8 +108,7 @@ PageStackWindow {
             }
         }
         onNewChannelList: {
-            appBusy.visible = false
-            appBusy.running = false
+            fetchingChannelsDialog.close()
             if (numberOfChannels > 0)
             {
                 selectChannelDialog.count = numberOfChannels
@@ -216,8 +229,7 @@ PageStackWindow {
                 text: "Select from list"
                 visible: true
                 onClicked: {
-                    appBusy.visible = true
-                    appBusy.running = true
+                    fetchingChannelsDialog.open()
                     Session.getChannelList("")
                 }
             }
@@ -299,26 +311,23 @@ PageStackWindow {
 
         ToolButton {
             id: buttonConnect
-            checkable: true
-            checked: false
             flat: true
             state: "Disconnected"
             states: [
                 State {
                     name: "Connected"
                     PropertyChanges { target: buttonConnect; iconSource: "icon-disconnect.svg"}
-                    PropertyChanges { target: buttonConnect; checked: false }
-                    PropertyChanges { target: buttonJoin; enabled:true }
+
+                    PropertyChanges { target: buttonJoin; enabled: true }
                 },
                 State {
                     name: "Connecting"
                     PropertyChanges { target: buttonConnect; iconSource: "icon-connect.svg"}
-                    PropertyChanges { target: buttonConnect; checked: true }
+
                 },
                 State {
                     name: "Disconnected"
                     PropertyChanges { target: buttonConnect; iconSource: "icon-connect.svg" }
-                    PropertyChanges { target: buttonConnect; checked: false}
                     PropertyChanges { target: buttonJoin; enabled: false }
                     PropertyChanges { target: buttonUsers; enabled: false }
                 }

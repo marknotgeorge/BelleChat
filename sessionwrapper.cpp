@@ -904,8 +904,10 @@ void Session::getNicknames(QString channel)
 
 void Session::whoIs(QString user)
 {
+
+
     // If the details are in the hashtable send them to the UI...
-    WhoIsItem* whoisUser = (WhoIsItem *)whoisHash.value(user,0);
+    WhoIsItem* whoisUser = (WhoIsItem *)whoisHash.value(removeMode(user),0);
     if (whoisUser)
     {
         //qDebug() << "Existing whois!";
@@ -915,7 +917,7 @@ void Session::whoIs(QString user)
     {
         // Get the details from the server.
         IrcCommand *command;
-        command = IrcCommand::createWhois(user);
+        command = IrcCommand::createWhois(removeMode(user));
         sendCommand(command);
     }
 }
@@ -978,6 +980,16 @@ void Session::sendNames(QString channel)
     IrcCommand *command;
     command = IrcCommand::createNames(channel);
     sendCommand(command);
+}
+
+QString Session::removeMode(QString user)
+{
+    // Returns a nickname string with the mode prefix
+    // @ or + removed.
+    if (user.startsWith("@")||user.startsWith("+"))
+        return user.remove(0,1);
+    else
+        return user;
 }
 
 

@@ -16,9 +16,9 @@ CommonDialog {
     content: TextField {
         id: textField
         anchors.left: parent.left
-        anchors.leftMargin: 10
+        anchors.leftMargin: platformStyle.paddingSmall
         anchors.right: parent.right
-        anchors.rightMargin: 10
+        anchors.rightMargin: platformStyle.paddingSmall
 
 
     }

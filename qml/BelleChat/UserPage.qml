@@ -16,7 +16,7 @@ Page {
             // Check to see if the WhoIs received is still the selected
             // user...
             //console.log("Username: " + user.name)
-            if (user.name === userView.currentItem.username)
+            if (user.name === Session.removeMode(userView.currentItem.username))
             {
                 var page = userDetailPageFactory.createObject(window)
                 page.detailHeading = user.name + " (" + user.realname + ")"
