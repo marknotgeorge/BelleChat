@@ -8,6 +8,7 @@ PageStackWindow {
     property bool userDisconnected: false
     property bool tryingToQuit: false
     property bool namesListRequested: false
+    property bool channelListCancelled: false
 
     initialPage: MainPage { tools: serverToolbar }
     platformSoftwareInputPanelEnabled: true
@@ -49,6 +50,7 @@ PageStackWindow {
     CommonDialog {
         id: fetchingChannelsDialog
         titleText: "Fetching list of channels..."
+        buttonTexts: ["Cancel"]
         content:
             ProgressBar {
             id: fcProgress
@@ -58,6 +60,10 @@ PageStackWindow {
             anchors.leftMargin: platformStyle.paddingSmall
             anchors.right: parent.right
             anchors.rightMargin: platformStyle.paddingSmall
+        }
+        onButtonClicked: {
+            channelListCancelled = true
+            close()
         }
     }
 
@@ -109,13 +115,17 @@ PageStackWindow {
         }
         onNewChannelList: {
             fetchingChannelsDialog.close()
-            if (numberOfChannels > 0)
+            if (!channelListCancelled)
             {
-                selectChannelDialog.count = numberOfChannels
-                selectChannelDialog.open()
+                if (numberOfChannels > 0)
+                {
+                    selectChannelDialog.count = numberOfChannels
+                    selectChannelDialog.open()
+                }
+                else
+                    noChannelsDialog.open()
             }
-            else
-                noChannelsDialog.open()
+            channelListCancelled = false
         }
         onSocketError: {
             var failureString = "Connection to " + appConnectionSettings.host + " failed."
