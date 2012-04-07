@@ -10,6 +10,7 @@
 #include <QDeclarativeContext>
 #include "whoisitem.h"
 #include "channellistitem.h"
+#include "palette.h"
 
 
 
@@ -73,6 +74,7 @@ private:
     QString m_lastChannel;
     QStringList nicknameList;
     bool newNames;
+    Palette colourPalette;
 
 
     // Command parsing instructions...

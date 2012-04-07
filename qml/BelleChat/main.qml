@@ -28,6 +28,11 @@ PageStackWindow {
         UserPage {}
     }
 
+    Component {
+        id: channelPageFactory
+        ChannelListPage {}
+    }
+
     BusyIndicator {
         id: appBusy
         anchors.horizontalCenter: parent.horizontalCenter
@@ -57,9 +62,9 @@ PageStackWindow {
             indeterminate: true
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: platformStyle.paddingSmall
+            anchors.leftMargin: platformStyle.paddingMedium
             anchors.right: parent.right
-            anchors.rightMargin: platformStyle.paddingSmall
+            anchors.rightMargin: platformStyle.paddingMedium
         }
         onButtonClicked: {
             channelListCancelled = true
@@ -119,8 +124,9 @@ PageStackWindow {
             {
                 if (numberOfChannels > 0)
                 {
-                    selectChannelDialog.count = numberOfChannels
-                    selectChannelDialog.open()
+                    var page = channelPageFactory.createObject(window)
+                    page.count = numberOfChannels
+                    pageStack.push(page)
                 }
                 else
                     noChannelsDialog.open()
@@ -214,6 +220,7 @@ PageStackWindow {
         }
     }
 
+
     Menu {
         id: menuJoin
         content: MenuLayout {
@@ -242,7 +249,7 @@ PageStackWindow {
                     fetchingChannelsDialog.open()
                     Session.getChannelList("")
                 }
-            }
+            }           
         }
     }
 
@@ -293,7 +300,7 @@ PageStackWindow {
         ToolButton {
             id: buttonQuit
             flat: true
-            iconSource: "close_stop.svg"
+            iconSource: "toolbar-back"
             onClicked: {
                 // If we're connected, we need to close the connection before
                 // we quit. Open a dialog to ask if the user is sure.

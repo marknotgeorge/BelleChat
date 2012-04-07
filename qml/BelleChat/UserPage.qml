@@ -50,8 +50,6 @@ Page {
 //            }
         }
 
-
-
         ToolButton {
             id: refreshToolButton
             flat: true
@@ -66,6 +64,14 @@ Page {
 //                    target: refreshToolButton
 //                    visible: userBackButton.pressed
 //                }
+        }
+
+        ToolButton {
+            id: moreToolButton
+            flat: true
+            iconSource: "toolbar-menu"
+            visible: false
+
         }
 
     }

@@ -8,7 +8,7 @@ Text {
     anchors.left: parent.left
     anchors.right: parent.right
     wrapMode: Text.Wrap
-    font: font.pointSize = 6
+    font.pixelSize: platformStyle.fontSizeSmall
     textFormat: Text.RichText
     text: ""
     color: platformStyle.colorNormalLight
