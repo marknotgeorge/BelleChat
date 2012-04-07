@@ -47,7 +47,7 @@ QString Palette::action()
 QString Palette::quitColour()
 {
     QSettings settings;
-    return settings.value("PaletteQuitColour", "lightblue").toString();
+    return settings.value("PaletteQuitColour", "royalblue").toString();
 }
 
 QString Palette::nickColour()

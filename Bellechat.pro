@@ -11,6 +11,17 @@ QML_IMPORT_PATH =
 symbian:TARGET.UID3 = 0xE2F428B1
 symbian:ICON = BelleChat.svg
 
+symbian {
+      DEPLOYMENT.installer_header=0xA000D7CE
+
+      vendorinfo = \
+      "%{\"marknotgeorge-EN\"}" \
+      ":\"marknotgeorge\""
+
+      my_deployment.pkg_prerules = vendorinfo
+      DEPLOYMENT += my_deployment
+  }
+
 DEFINES += COMMUNI_STATIC
 
 QT += core gui network
@@ -20,7 +31,7 @@ QT += core gui network
 # fail to install if self-signed. By default qmake uses the unprotected
 # range value if unprotected UID is defined for the application and
 # 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0x2002CCCF
+# symbian:DEPLOYMENT.installer_header = 0xA000D7CE
 
 # Allow network access on Symbian
 symbian:TARGET.CAPABILITY += NetworkServices
