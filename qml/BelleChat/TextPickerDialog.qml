@@ -3,6 +3,7 @@ import com.nokia.symbian 1.1
 
 CommonDialog {
     id: dialog
+    focus: true
 
     property alias acceptButtonText: acceptButton.text
     property alias rejectButtonText: rejectButton.text
@@ -19,8 +20,7 @@ CommonDialog {
         anchors.leftMargin: platformStyle.paddingSmall
         anchors.right: parent.right
         anchors.rightMargin: platformStyle.paddingSmall
-
-
+        focus: true
     }
 
     buttons: ToolBar {

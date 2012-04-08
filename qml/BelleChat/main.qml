@@ -334,7 +334,7 @@ PageStackWindow {
                 State {
                     name: "Connected"
                     PropertyChanges { target: buttonConnect; iconSource: "icon-disconnect.svg"}
-
+                    PropertyChanges { target: initialPage; connected: true }
                     PropertyChanges { target: buttonJoin; enabled: true }
                 },
                 State {
@@ -347,6 +347,7 @@ PageStackWindow {
                     PropertyChanges { target: buttonConnect; iconSource: "icon-connect.svg" }
                     PropertyChanges { target: buttonJoin; enabled: false }
                     PropertyChanges { target: buttonUsers; enabled: false }
+                    PropertyChanges { target: initialPage; connected: false }
                 }
 
             ]

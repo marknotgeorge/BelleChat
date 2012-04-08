@@ -6,7 +6,7 @@ import BelleChat 1.0
 Page {
     id: window
 
-    property bool dirty: false
+
     tools: ToolBarLayout {
         id: settingsToolBarLayout
 
@@ -14,40 +14,13 @@ Page {
             flat: true
             iconSource: "toolbar-back"
             onClicked: {
-                if (dirty)
-                {
-                    saveSettings()
-                }
+                saveSettings()
                 pageStack.pop()
             }
         }
     }
 
-    Item {
-        id: splitViewInput
-        anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
-        Behavior on height { PropertyAnimation {duration: 200} }
-        states: [
-                    State {
-                        name: "Visible"; when: inputContext.visible
-                        PropertyChanges { target: splitViewInput; height: inputContext.height }
-                        PropertyChanges {
-                            target: flicker
-                            interactive:false
-                        }
 
-                    },
-
-                    State {
-                        name: "Hidden"; when: !inputContext.visible
-                        PropertyChanges { target: splitViewInput; height: 0 }
-                        PropertyChanges {
-                            target: flicker
-                            interactive:true
-                        }
-                    }
-                ]
-    }
 
     ListHeading {
         id: heading
@@ -60,22 +33,28 @@ Page {
         }
     }
 
+    ScrollDecorator {
+        id: flickerScroll
+        flickableItem: flicker
+    }
+
     Flickable {
         id: flicker
-        anchors {top: heading.bottom; left: parent.left; right: parent.right; bottom: splitViewInput.top}
-        contentHeight: layoutColumns.height
+        anchors {top: heading.bottom; left: parent.left; right: parent.right; bottom: parent.bottom}
+
+        clip: true
 
 
         Column {
             id: layoutColumns
-            anchors {left: parent.left; right: parent.right}
+            anchors.fill: parent
 
             Label {
                 id: serverLabel
                 text: qsTr("Server")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: serverField.visible
+                //visible: serverField.visible
             }
 
             TextField {
@@ -85,10 +64,7 @@ Page {
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: (activeFocus||!inputContext.visible)
-                onTextChanged: {
-                    dirty = true;
-                }
+                //visible: (activeFocus||!inputContext.visible)
             }
 
             Label {
@@ -96,7 +72,7 @@ Page {
                 text: qsTr("Port")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: portField.visible
+                //visible: portField.visible
             }
 
             TextField {
@@ -107,11 +83,7 @@ Page {
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
                 validator: IntValidator {bottom: 0; top: 65535;}
-                visible: (activeFocus||!inputContext.visible)
-                onTextChanged: {
-                    dirty = true;
-                }
-
+                //visible: (activeFocus||!inputContext.visible)
             }
 
             Label {
@@ -119,7 +91,7 @@ Page {
                 text: qsTr("Nickname")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: nicknameField.visible
+                //visible: nicknameField.visible
             }
 
             TextField {
@@ -129,10 +101,7 @@ Page {
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: (activeFocus||!inputContext.visible)
-                onTextChanged: {
-                    dirty = true;
-                }
+                //visible: (activeFocus||!inputContext.visible)
             }
 
             Label {
@@ -140,7 +109,7 @@ Page {
                 text: qsTr("Password")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: passwordField.visible
+                //visible: passwordField.visible
             }
 
             TextField {
@@ -151,10 +120,7 @@ Page {
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
                 echoMode: TextInput.PasswordEchoOnEdit
-                visible: (activeFocus||!inputContext.visible)
-                onTextChanged: {
-                    dirty = true;
-                }
+                //visible: (activeFocus||!inputContext.visible)
             }
 
             Label {
@@ -162,7 +128,7 @@ Page {
                 text: qsTr("Username")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: usernameField.visible
+                //visible: usernameField.visible
             }
 
             TextField {
@@ -172,10 +138,7 @@ Page {
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: (activeFocus||!inputContext.visible)
-                onTextChanged: {
-                    dirty = true;
-                }
+                //visible: (activeFocus||!inputContext.visible)
             }
 
             Label {
@@ -183,7 +146,7 @@ Page {
                 text: qsTr("Real name")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: realnameField.visible
+                //visible: realnameField.visible
             }
 
             TextField {
@@ -193,10 +156,7 @@ Page {
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: (activeFocus||!inputContext.visible)
-                onTextChanged: {
-                    dirty = true;
-                }
+                //visible: (activeFocus||!inputContext.visible)
             }
 
             Label {
@@ -204,7 +164,7 @@ Page {
                 text: qsTr("Default quit message")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: quitMessageField.visible
+                //visible: quitMessageField.visible
             }
 
             TextField {
@@ -214,12 +174,51 @@ Page {
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                visible: (activeFocus||!inputContext.visible)
-                onTextChanged: {
-                    dirty = true;
-                }
+                //visible: (activeFocus||!inputContext.visible)
             }
         }
+
+        Timer {
+            id: adjuster
+            interval: 200
+            onTriggered: flicker.adjust()
+        }
+
+        Component.onCompleted:
+        {
+            inputContext.visibleChanged.connect(adjuster.restart)
+        }
+
+        function adjust() {
+            if (!inputContext.visible) {
+                return
+            }
+
+            var focusChild = null
+            function findFocusChild(p) {
+                if (p["activeFocus"] === true) {
+                    focusChild = p
+                } else {
+                    for (var i = 0; i < p["children"].length; i++) {
+                        findFocusChild(p["children"][i])
+                        if (focusChild !== null) {
+                            break
+                        }
+                    }
+                }
+            }
+            findFocusChild(flicker)
+
+            if (focusChild === null) {
+                return
+            }
+            var focusChildY = focusChild["y"]
+            var focusChildHeight = focusChild["height"]
+            if ((flicker.contentY + flicker.height) < (focusChildY + focusChildHeight)) {
+                flicker.contentY = focusChildY + focusChildHeight - flicker.height
+            }
+        }
+
     }
 
     QueryDialog {
@@ -231,19 +230,56 @@ Page {
 
     function saveSettings()
     {
-        // Show a message if connected to a server.
-        if (Session.connected)
+        var dirty = false
+
+        // Save the settings if they've changed
+        if (serverField.text !== appConnectionSettings.host)
         {
-            connectedQuery.open()
+            console.log("Server changed!")
+            appConnectionSettings.setHost(serverField.text)
+            dirty = true
+        }
+        if (portField.text !== appConnectionSettings.port.toString())
+        {
+            console.log("Port changed!")
+            appConnectionSettings.setPort(portField.text)
+            dirty = true
+        }
+        if (nicknameField.text !== appConnectionSettings.nickname)
+        {
+            console.log("Nickname changed!")
+            appConnectionSettings.setNickname(nicknameField.text)
+            dirty = true
+        }
+        if (usernameField.text !== appConnectionSettings.username)
+        {
+            console.log("Username changed!")
+            appConnectionSettings.setUsername(usernameField.text)
+            dirty = true
+        }
+        if (passwordField.text !== appConnectionSettings.password)
+        {
+            console.log("Password changed!")
+            appConnectionSettings.setPassword(passwordField.text)
+            dirty = true
+        }
+        if (realnameField.text !== appConnectionSettings.realname)
+        {
+            console.log("Realname changed!")
+            appConnectionSettings.setRealname(realnameField.text)
+            dirty = true
+        }
+        if (quitMessageField.text !== appConnectionSettings.quitMessage)
+        {
+            console.log("Quit message changed")
+            appConnectionSettings.setQuitMessage(quitMessageField.text)
+            dirty = true
         }
 
-        // Save the settings
-        appConnectionSettings.setHost(serverField.text)
-        appConnectionSettings.setPort(portField.text)
-        appConnectionSettings.setNickname(nicknameField.text)
-        appConnectionSettings.setUsername(usernameField.text)
-        appConnectionSettings.setPassword(passwordField.text)
-        appConnectionSettings.setRealname(realnameField.text)
-        appConnectionSettings.setQuitMessage(quitMessageField.text)
+        // If settings have changed and we're connected, show a warning
+        // dialog
+        console.log("Dirty:" + dirty)
+        if (dirty && Session.connected)
+            connectedQuery.open()
     }
 }

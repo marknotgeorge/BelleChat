@@ -3,15 +3,17 @@ import com.nokia.symbian 1.1
 
 Page {
     id: page1
+    focus: true
+
+    property alias connected: inputField.enabled
 
 
     TextField {
         id: inputField
         focus: true
-        enabled: false
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        anchors.right: returnButton.left
+        anchors.right: parent.right
 
         placeholderText: "Tap to write..."
         inputMethodHints: Qt.ImhNoPredictiveText
@@ -37,27 +39,31 @@ Page {
             Session.onInputReceived(inputChannel, inputField.text)
             inputField.text = "";
         }
-    }
+        onEnabledChanged: {
+            returnButton.enabled = enabled
+        }
 
-    Button {
-        id: returnButton
-        //anchors.left: inputField.right
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: inputField.height
-        iconSource: "icon-return.svg"
-        enabled: false
-        width: height
-        onClicked: {
-            var page = outputTabGroup.currentTab
-            var inputChannel = page.channel
-            //console.log(inputChannel, inputField.text)
-            if (inputChannel === "Server")
-                inputChannel = Session.host
 
-            Session.onInputReceived(inputChannel, inputField.text)
-            inputField.text = "";
+        Button {
+            id: returnButton
+            //anchors.left: inputField.right
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: inputField.height
+            iconSource: "icon-return.svg"
+            enabled: inputField.enabled
+            width: height
+            onClicked: {
+                var page = outputTabGroup.currentTab
+                var inputChannel = page.channel
+                //console.log(inputChannel, inputField.text)
+                if (inputChannel === "Server")
+                    inputChannel = Session.host
 
+                Session.onInputReceived(inputChannel, inputField.text)
+                inputField.text = "";
+
+            }
         }
     }
 
@@ -92,15 +98,15 @@ Page {
             {
                 buttonUsers.enabled = false
                 partChannel.visible = false
-                inputField.enabled = false
-                returnButton.enabled = false
+                //inputField.enabled = false
+                //returnButton.enabled = false
             }
             else
             {
                 buttonUsers.enabled = true
                 partChannel.visible = true
-                inputField.enabled = true
-                returnButton.enabled = true
+                //inputField.enabled = true
+                //returnButton.enabled = true
             }
         }
         TabPage {

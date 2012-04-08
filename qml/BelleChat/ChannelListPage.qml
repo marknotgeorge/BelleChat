@@ -24,10 +24,17 @@ Page {
         anchors { left: parent.left; right: parent.right; top: parent.top; }
         ListItemText {
             id: channelListHeadingText
+            anchors.fill: channelListHeading.paddingItem
             role: "Heading"
             text: Session.host + " (" + count + ") channels"
         }
     }
+
+    ScrollDecorator {
+        id: channelListScroll
+        flickableItem: channelListView
+    }
+
     ListView {
         id: channelListView
         anchors {

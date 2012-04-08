@@ -81,6 +81,7 @@ Page {
         anchors { left: parent.left; right: parent.right; top: parent.top; }
         ListItemText {
             id: userHeadingText
+            anchors.fill: userHeading.paddingItem
             role: "Heading"
             text: Session.currentChannel + ": " + Session.userCount + " user(s)"
         }
