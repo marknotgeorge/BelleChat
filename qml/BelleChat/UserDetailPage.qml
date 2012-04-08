@@ -22,59 +22,79 @@ Page {
         }
     }
 
+    ScrollDecorator {
+        id:userDetailScroll
+        flickableItem: userDetailFlickable
+    }
+
     ListHeading {
         id: userDetailHeading
         anchors { left: parent.left; right: parent.right; top: parent.top; }
         ListItemText {
+            anchors.fill: userDetailHeading.paddingItem
             id: userDetailHeadingText
             role: "Heading"
 
         }
     }
-    Column {
-        id: userDetailColumn
-        anchors {left: parent.left; right: parent.right; top: userDetailHeading.bottom; bottom: parent.bottom;}
 
-        ListItemText {
-            id: userLabel
-            role: "Title"
-            text: "User is"
+    Flickable {
+        id: userDetailFlickable
+        anchors {
+            top: userDetailHeading.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
         }
-        ListItemText {
-            id: userData
-            role: "Subtitle"
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        }
-        ListItemText {
-            id: serverLabel
-            role: "Title"
-            text: "Online via"
-        }
-        ListItemText {
-            id: serverData
-            role: "Subtitle"
-        }
-        ListItemText {
-            id: channelsLabel
-            role: "Title"
-            text: "On channels"
-        }
-        ListItemText {
-            id: channelsData
-            role: "Subtitle"
-        }
-        ListItemText {
-            id: onlineSinceLabel
-            role: "Title"
-            text: "Online since"
-        }
-        ListItemText {
-            id: onlineSinceData
-            role: "Subtitle"
+        contentHeight: userDetailColumn.height
+        clip: true
+
+
+        Column {
+            id: userDetailColumn
+            anchors.fill: parent
+            spacing: platformStyle.paddingMedium
+
+            ListItemText {
+                id: userLabel
+                role: "Title"
+                text: "User is"
+            }
+            ListItemText {
+                id: userData
+                role: "Subtitle"
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            }
+            ListItemText {
+                id: serverLabel
+                role: "Title"
+                text: "Online via"
+            }
+            ListItemText {
+                id: serverData
+                role: "Subtitle"
+            }
+            ListItemText {
+                id: channelsLabel
+                role: "Title"
+                text: "On channels"
+            }
+            ListItemText {
+                id: channelsData
+                role: "Subtitle"
+            }
+            ListItemText {
+                id: onlineSinceLabel
+                role: "Title"
+                text: "Online since"
+            }
+            ListItemText {
+                id: onlineSinceData
+                role: "Subtitle"
+            }
         }
     }
 }
-
 
 
 

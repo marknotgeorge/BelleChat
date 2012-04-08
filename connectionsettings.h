@@ -28,7 +28,7 @@ public:
     explicit ConnectionSettings(QObject *parent = 0);
     
     Q_INVOKABLE QString host();
-    Q_INVOKABLE int port();
+    Q_INVOKABLE int port();    
     Q_INVOKABLE QString nickname();
     Q_INVOKABLE QString password();
     Q_INVOKABLE QString username();

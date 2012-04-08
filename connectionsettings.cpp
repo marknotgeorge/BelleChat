@@ -22,6 +22,7 @@ int ConnectionSettings::port()
     return settings.value("port", "6667").toInt();
 }
 
+
 QString ConnectionSettings::nickname()
 {
     QSettings settings;

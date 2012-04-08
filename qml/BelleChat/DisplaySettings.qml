@@ -26,30 +26,7 @@ Page {
         }
     }
 
-    Item {
-        id: splitViewInput
-        anchors {bottom: parent.bottom; left: parent.left; right: parent.right}
-        Behavior on height { PropertyAnimation {duration: 200} }
-        states: [
-            State {
-                name: "Visible"; when: inputContext.visible
-                PropertyChanges { target: splitViewInput; height: inputContext.height }
-                PropertyChanges {
-                    target: flicker
-                    interactive:false
-                }
-            },
 
-            State {
-                name: "Hidden"; when: !inputContext.visible
-                PropertyChanges { target: splitViewInput; height: 0 }
-                PropertyChanges {
-                    target: flicker
-                    interactive:true
-                }
-            }
-        ]
-    }
 
     ListHeading {
         id: heading
@@ -62,16 +39,21 @@ Page {
         }
     }
 
+    ScrollDecorator {
+        id: flickerScroll
+        flickableItem: flicker
+    }
+
     Flickable {
         id: flicker
-        anchors {top: heading.bottom; left: parent.left; right: parent.right; bottom: splitViewInput.top}
-        contentHeight: layoutColumns.height
+        anchors {top: heading.bottom; left: parent.left; right: parent.right; bottom: parent.bottom}
+        clip:true
 
 
         Column {
             id: layoutColumns
-            spacing: 5
-            anchors {left: parent.left; right: parent.right}
+            spacing: platformStyle.paddingSmall
+            anchors.fill: parent
 
             ListItemText {
                 id: showTimestampLabel
@@ -100,8 +82,6 @@ Page {
                 uncheckedLabel: "Don't show list of channels"
                 onClicked: { dirty = true }
             }
-
-
 
             ListItemText {
                 id: appearanceLabel
