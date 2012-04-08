@@ -40,7 +40,7 @@ desktop.ini
 *.user
 
 #Automatically generated makefiles
-Mak*
+Makefile
 *.Debug
 *.Release
 
