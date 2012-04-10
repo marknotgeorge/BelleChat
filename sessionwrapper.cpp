@@ -935,7 +935,7 @@ void Session::partChannel(QString channel)
     if (!channel.isEmpty())
     {
         IrcCommand *command;
-        command = IrcCommand::createPart(channel, "Screw you guys, I'm going home!");
+        command = IrcCommand::createPart(channel, "Bye!");
         sendCommand(command);
     }
 }
