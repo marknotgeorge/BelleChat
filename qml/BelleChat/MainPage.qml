@@ -14,7 +14,7 @@ Page {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-
+        platformRightMargin: returnButton.width + platformStyle.paddingSmall
         placeholderText: "Tap to write..."
         inputMethodHints: Qt.ImhNoPredictiveText
         Keys.onEnterPressed: {

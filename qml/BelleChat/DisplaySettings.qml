@@ -48,12 +48,12 @@ Page {
         id: flicker
         anchors {top: heading.bottom; left: parent.left; right: parent.right; bottom: parent.bottom}
         clip:true
-
+        contentHeight: layoutColumns.height
 
         Column {
             id: layoutColumns
             spacing: platformStyle.paddingSmall
-            anchors.fill: parent
+            anchors { left: parent.left; right: parent.right }
 
             ListItemText {
                 id: showTimestampLabel

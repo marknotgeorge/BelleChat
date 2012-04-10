@@ -41,13 +41,13 @@ Page {
     Flickable {
         id: flicker
         anchors {top: heading.bottom; left: parent.left; right: parent.right; bottom: parent.bottom}
-
         clip: true
+        contentHeight: layoutColumns.height
 
 
         Column {
             id: layoutColumns
-            anchors.fill: parent
+            anchors { left: parent.left; right: parent.right }
 
             Label {
                 id: serverLabel
@@ -177,6 +177,8 @@ Page {
                 //visible: (activeFocus||!inputContext.visible)
             }
         }
+
+        // Virtual keyboard handling, written by Akos Polster
 
         Timer {
             id: adjuster
