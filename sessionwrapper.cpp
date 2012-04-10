@@ -298,12 +298,50 @@ void Session::handleModeMessage(IrcModeMessage *message)
 
 void Session::handleNickMessage(IrcNickMessage *message)
 {
-    const QString sender = prettyUser(message->sender());
-    const QString nick = prettyUser(message->nick());
-    QString output = colorize(tr("*** %1 changed nick to %2").arg(sender, nick),
-                              colourPalette.nickColour());
-    emit outputString(this->host(), output);
+    IrcSender sender = message->sender();
 
+    const QString oldNick = sender.name();
+    const QString newNick = message->nick();
+    QString output = colorize(tr("*** %1 changed nick to %2")
+                              .arg(prettyUser(oldNick), prettyUser(newNick)),
+                              colourPalette.nickColour());    
+    QStringList outputChannels;
+    QStringList mutualChannels;
+
+    // Obtain a list of channels to which both we and the nick changer
+    // are both joined. First get all the channels...
+    outputChannels = nicknames.keys();
+
+    foreach (QString chan, outputChannels)
+    {
+        QStringList chanList = nicknames.value(chan);
+
+        // If the channel contains the old nickname...
+        if (chanList.contains(oldNick))
+        {
+            // Add it to the list of mutual channels...
+            mutualChannels.append(chan);
+
+            // Change the old nickname to the new one...
+            int oldNickIndex = chanList.indexOf(oldNick);
+            chanList.replace(oldNickIndex, newNick);
+
+            // Put the list back in the hashtable...
+            nicknames.insert(chan, chanList);
+
+            // If this list is open, update the UserModel.
+            if (openUserList == chan)
+            {
+                context->setContextProperty("UserModel", QVariant::fromValue(chanList));
+                // Update the user count
+                emit userCountChanged(chanList.count());
+            }
+        }
+    }
+
+    // Send the output to each channel in the list...
+    foreach (QString chan, mutualChannels)
+        outputString(chan, output);
 }
 
 void Session::handleNoticeMessage(IrcNoticeMessage *message)
