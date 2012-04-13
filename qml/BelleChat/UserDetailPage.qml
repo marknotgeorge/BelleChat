@@ -18,7 +18,46 @@ Page {
             iconSource: "toolbar-back"
             onClicked: {
                 pageStack.pop()
+            }            
+        }
+
+        ToolButton {
+            id: kickButton
+            flat: true
+            iconSource: "icon-kick.svg"
+            onClicked: {
+                enterReason.open()
             }
+        }
+
+        ToolButton {
+            id: slapButton
+            flat: true
+            iconSource: "icon-fish.svg"
+            onClicked: {
+                var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
+                Session.onInputReceived(Session.currentChannel, slapString)
+                pageStack.pop(initialPage)
+            }
+        }
+
+        ToolButton {
+            flat: true
+            iconSource: "toolbar-menu"
+            visible: false
+        }
+    }
+
+    TextPickerDialog {
+        id: enterReason
+        titleText: "Enter Kick reason"
+        placeholderText: "Enter reason for kick..."
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
+        onAccepted: {
+            Session.kick(Session.currentChannel, userView.currentItem.username, text)
+            pageStack.pop(initialPage)
+
         }
     }
 

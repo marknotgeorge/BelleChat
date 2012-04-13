@@ -5,20 +5,24 @@ import com.nokia.symbian 1.1
 
 Row {
     id: window
-    spacing: 10
+    spacing: platformStyle.paddingLarge
     height: switchComponent.height
-    anchors {left: parent.left; right: parent.right }
+    anchors {
+        left: parent.left
+        leftMargin: platformStyle.paddingMedium
+        right: parent.right
+        rightMargin: platformStyle.paddingMedium
+    }
     property alias checked: switchComponent.checked
-    property string checkedLabel: ""
-    property string uncheckedLabel: ""
+    property alias text: labelComponent.text
+
     signal clicked()
 
     ListItemText {
         id: labelComponent
         role: "subtitle"
         anchors {verticalCenter: window.verticalCenter }
-        width: window.width - window.spacing - switchComponent.width
-        text: switchComponent.checked ? checkedLabel:uncheckedLabel
+        width: window.width - window.spacing - switchComponent.width - (platformStyle.paddingMedium * 2)
     }
 
     Switch {

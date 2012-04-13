@@ -64,8 +64,7 @@ Page {
             LabelledSwitch {
                 id: showTimestamp
                 checked: appConnectionSettings.showTimestamp
-                checkedLabel: "Show Timestamp"
-                uncheckedLabel: "Hide Timestamp"
+                text: "Show Timestamp"
                 onClicked: { dirty = true }
             }
 
@@ -78,8 +77,7 @@ Page {
             LabelledSwitch {
                 id: showChannelList
                 checked: appConnectionSettings.showChannelList
-                checkedLabel: "Show list of available channels"
-                uncheckedLabel: "Don't show list of channels"
+                text: "Show list of available channels"
                 onClicked: { dirty = true }
             }
 
@@ -92,8 +90,7 @@ Page {
             LabelledSwitch {
                 id: formatTextSwitch
                 checked: appConnectionSettings.formatText
-                checkedLabel: "Formatted Text"
-                uncheckedLabel: "Plain Text"
+                text: "Formatted Text"
                 onClicked: {
                     dirty = true
                     textColourPicker.visible = checked
@@ -126,11 +123,19 @@ Page {
             }
 
             Row {
-                id: formatRow
+                id: formatRow                
                 spacing: platformStyle.paddingSmall
+                anchors {
+                    left: parent.left
+                    leftMargin: platformStyle.paddingMedium
+                    right: parent.right
+                    rightMargin: platformStyle.paddingMedium
+                }
+
                 visible: formatTextSwitch.checked
                 CheckBox {
                     id: textBoldCheck
+                    width: (parent.width - (parent.spacing * 2) - (platformStyle.paddingMedium *2)) / 3
                     text: "Bold"
                     checked: appConnectionSettings.textBold
                     onCheckedChanged: {
@@ -141,6 +146,7 @@ Page {
 
                 CheckBox {
                     id: textItalicCheck
+                    width: (parent.width - (parent.spacing * 2) - (platformStyle.paddingMedium *2)) / 3
                     text: "Italic"
                     checked: appConnectionSettings.textItalic
                     onCheckedChanged: {
@@ -151,6 +157,7 @@ Page {
 
                 CheckBox {
                     id: textUnderlineCheck
+                    width: (parent.width - (parent.spacing * 2) - (platformStyle.paddingMedium *2)) / 3
                     text: "Underline"
                     checked: appConnectionSettings.textUnderline
                     onCheckedChanged: {

@@ -9,12 +9,12 @@ ListItem {
     Column {
         ListItemText {
             id: userDetailTitle
-            role: "Title"
+            role: "Title"            
         }
         ListItemText {
             id: userDetailData
             role: "Subtitle"
-            wrapMode: Text.Wrap
+            wrapMode: Text.Wrap            
         }
     }
 }

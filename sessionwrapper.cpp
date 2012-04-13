@@ -304,7 +304,7 @@ void Session::handleNickMessage(IrcNickMessage *message)
     const QString newNick = message->nick();
     QString output = colorize(tr("*** %1 changed nick to %2")
                               .arg(prettyUser(oldNick), prettyUser(newNick)),
-                              colourPalette.nickColour());    
+                              colourPalette.nickColour());
     QStringList outputChannels;
     QStringList mutualChannels;
 
@@ -563,6 +563,22 @@ void Session::handleQuitMessage(IrcQuitMessage *message)
 {
     IrcSender sender = message->sender();
     QString prettySender = prettyUser(sender.name());
+    QString output;
+
+    qDebug() << "Sender: " << sender.name();
+
+
+    if (!message->reason().isEmpty())
+    {
+        output = colorize(tr("*** %1 has quit (%2)")
+                          .arg(prettySender,
+                               IrcUtil::messageToHtml(message->reason())), colourPalette.quitColour());
+    }
+    else
+    {
+        output = colorize(tr("*** %1 has quit")
+                          .arg(prettySender), colourPalette.quitColour());
+    }
 
     // Remove the user from the hashtable.
     // First get all the channels...
@@ -570,23 +586,14 @@ void Session::handleQuitMessage(IrcQuitMessage *message)
     // Remove the user from each channel in turn...
     foreach (QString channelString, openChannels)
     {
-        removeUser(sender.name(), channelString);
-    }
+        QStringList chanList = nicknames.value(channelString);
 
-    if (!message->reason().isEmpty())
-    {
-        QString output = colorize(tr("*** %1 has quit (%2)")
-                                  .arg(prettySender,
-                                       IrcUtil::messageToHtml(message->reason())), colourPalette.quitColour());
-
-        emit outputString(this->currentChannel(), output);
-    }
-    else
-    {
-        QString output = colorize(tr("*** %1 has quit")
-                                  .arg(prettySender), colourPalette.quitColour());
-
-        emit outputString(this->currentChannel(), output);
+        qDebug() << "Testing channel " << channelString;
+        if (chanList.contains(sender.name()))
+        {
+            removeUser(sender.name(), channelString);
+            outputString(channelString, output);
+        }
     }
 }
 
@@ -654,7 +661,7 @@ void Session::processWhoIs(IrcNumericMessage *message)
     case Irc::RPL_WHOISOPERATOR:
     case Irc::RPL_WHOISHELPOP: // "is available for help"
     case Irc::RPL_WHOISSPECIAL: // "is identified to services"
-    case Irc::RPL_WHOISSECURE: // nick is using a secure connection        
+    case Irc::RPL_WHOISSECURE: // nick is using a secure connection
     case Irc::RPL_WHOISHOST: // nick is connecting from <...>
         break;
     case Irc::RPL_WHOISUSER:

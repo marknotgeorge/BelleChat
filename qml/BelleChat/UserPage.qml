@@ -89,7 +89,13 @@ Page {
 
     ListView {
         id: userView
-        anchors { left: parent.left; right: parent.right; top: userHeading.bottom; bottom: parent.bottom; }
+        anchors { left: parent.left;
+            right: parent.right;
+            top: userHeading.bottom;
+            bottom: parent.bottom;
+            leftMargin: platformStyle.paddingMedium;
+            rightMargin: platformStyle.paddingMedium;
+        }
         clip: true
         model: UserModel
         delegate: UserListItem {
@@ -113,7 +119,7 @@ Page {
             acceptButtonText: "Ok"
             rejectButtonText: "Cancel"
             onAccepted: {
-                Session.kick(currentChannel, userView.currentItem.username, text)
+                Session.kick(Session.currentChannel, userView.currentItem.username, text)
                 pageStack.pop()
             }
         }
@@ -121,14 +127,6 @@ Page {
         ContextMenu {
             id: userContextMenu
             MenuLayout {
-                MenuItem {
-                    id: menuIgnore
-                    text: "Whois"
-                    onClicked: {
-                        Session.whoIs(userView.currentItem.username)
-                    }
-
-                }
                 MenuItem{
                     id: kickUser
                     text: "Kick"
@@ -141,7 +139,7 @@ Page {
                     text: "Slap"
                     onClicked: {
                         var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
-                        Session.onInputReceived(currentChannel, slapString)
+                        Session.onInputReceived(Session.currentChannel, slapString)
                         pageStack.pop()
                     }
                 }

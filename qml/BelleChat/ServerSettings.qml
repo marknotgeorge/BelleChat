@@ -60,6 +60,7 @@ Page {
             TextField {
                 id: serverField
                 text: appConnectionSettings.host
+                inputMethodHints: Qt.ImhNoAutoUppercase || Qt.ImhUrlCharactersOnly
                 anchors.right: parent.right
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
@@ -78,6 +79,7 @@ Page {
             TextField {
                 id: portField
                 text: appConnectionSettings.port
+                inputMethodHints: Qt.ImhDigitsOnly
                 anchors.right: parent.right
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
@@ -87,7 +89,7 @@ Page {
             }
 
             Label {
-                id: nicknameLabel
+                id: nicknameLabel             
                 text: qsTr("Nickname")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
@@ -96,6 +98,7 @@ Page {
 
             TextField {
                 id: nicknameField
+                inputMethodHints: Qt.ImhNoAutoUppercase
                 text: appConnectionSettings.nickname
                 anchors.right: parent.right
                 anchors.rightMargin: platformStyle.paddingLarge
@@ -114,6 +117,7 @@ Page {
 
             TextField {
                 id: passwordField
+                inputMethodHints: Qt.ImhNoAutoUppercase
                 text: appConnectionSettings.password
                 anchors.right: parent.right
                 anchors.rightMargin: platformStyle.paddingLarge
@@ -134,6 +138,7 @@ Page {
             TextField {
                 id: usernameField
                 text: appConnectionSettings.username
+                inputMethodHints: Qt.ImhNoAutoUppercase
                 anchors.right: parent.right
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
@@ -152,6 +157,7 @@ Page {
             TextField {
                 id: realnameField
                 text: appConnectionSettings.realname
+                inputMethodHints: Qt.ImhNoAutoUppercase
                 anchors.right: parent.right
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
@@ -237,50 +243,50 @@ Page {
         // Save the settings if they've changed
         if (serverField.text !== appConnectionSettings.host)
         {
-            console.log("Server changed!")
+            //console.log("Server changed!")
             appConnectionSettings.setHost(serverField.text)
             dirty = true
         }
         if (portField.text !== appConnectionSettings.port.toString())
         {
-            console.log("Port changed!")
+            //console.log("Port changed!")
             appConnectionSettings.setPort(portField.text)
             dirty = true
         }
         if (nicknameField.text !== appConnectionSettings.nickname)
         {
-            console.log("Nickname changed!")
+            //console.log("Nickname changed!")
             appConnectionSettings.setNickname(nicknameField.text)
             dirty = true
         }
         if (usernameField.text !== appConnectionSettings.username)
         {
-            console.log("Username changed!")
+            //console.log("Username changed!")
             appConnectionSettings.setUsername(usernameField.text)
             dirty = true
         }
         if (passwordField.text !== appConnectionSettings.password)
         {
-            console.log("Password changed!")
+            //console.log("Password changed!")
             appConnectionSettings.setPassword(passwordField.text)
             dirty = true
         }
         if (realnameField.text !== appConnectionSettings.realname)
         {
-            console.log("Realname changed!")
+            //onsole.log("Realname changed!")
             appConnectionSettings.setRealname(realnameField.text)
             dirty = true
         }
         if (quitMessageField.text !== appConnectionSettings.quitMessage)
         {
-            console.log("Quit message changed")
+            //console.log("Quit message changed")
             appConnectionSettings.setQuitMessage(quitMessageField.text)
             dirty = true
         }
 
         // If settings have changed and we're connected, show a warning
         // dialog
-        console.log("Dirty:" + dirty)
+        //console.log("Dirty:" + dirty)
         if (dirty && Session.connected)
             connectedQuery.open()
     }

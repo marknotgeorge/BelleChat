@@ -49,7 +49,11 @@ Page {
 
     ListView {
         id: pageView
-        anchors.fill: parent
+        anchors {
+            fill: parent
+            leftMargin: platformStyle.paddingMedium;
+            rightMargin: platformStyle.paddingMedium;
+        }
         header: listHeader
         model: listPages
         delegate: PageListItem {
@@ -59,7 +63,6 @@ Page {
             onClicked: {
                 var pageFactory = Qt.createComponent(model.page)
                 var page = pageFactory.createObject(window)
-
                 pageStack.push(page)
             }
         }
