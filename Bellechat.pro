@@ -8,7 +8,9 @@ symbian:TARGET = BelleChat
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
 
-symbian:TARGET.UID3 = 0xE2F428B1
+# UID Supplied by Nokia...
+#symbian:TARGET.UID3 = 0xE2F428B1
+symbian:TARGET.UID3 = 0x2006280c
 symbian:ICON = BelleChat.svg
 
 symbian {
