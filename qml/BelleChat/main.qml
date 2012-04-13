@@ -151,7 +151,7 @@ PageStackWindow {
     QueryDialog {
         id: aboutDialog
         titleText: "About BelleChat"
-        message: "BelleChat " + Version + "\nBuild " + Build + "\n© 2011-12 Mark Johnson\nUses Communi written by J-P Nurmi et al.\n"
+        message: "BelleChat " + Version + "\nBuild " + Build + "\n© 2011-12 Mark Johnson\nUses Communi written by J-P Nurmi et al.\nIcons designed by Daniel Ferguson\n"
         acceptButtonText: "OK"
     }
 
