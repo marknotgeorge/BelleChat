@@ -129,6 +129,7 @@ Page {
             MenuLayout {
                 MenuItem{
                     id: kickUser
+                    visible: false
                     text: "Kick"
                     onClicked: {
                         enterReason.open()

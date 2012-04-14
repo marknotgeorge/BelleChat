@@ -16,9 +16,7 @@ symbian:ICON = BelleChat.svg
 symbian {
       DEPLOYMENT.installer_header=0xA000D7CE
 
-      vendorinfo = \
-      "%{\"marknotgeorge-EN\"}" \
-      ":\"marknotgeorge\""
+      vendorinfo = "%{\"marknotgeorge-EN\"}" ":\"marknotgeorge\""
 
       my_deployment.pkg_prerules = vendorinfo
       DEPLOYMENT += my_deployment

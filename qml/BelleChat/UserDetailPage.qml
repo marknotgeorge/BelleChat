@@ -18,33 +18,61 @@ Page {
             iconSource: "toolbar-back"
             onClicked: {
                 pageStack.pop()
-            }            
+            }
+        }
+// TODO: Implement mode handling
+/*
+       ToolButton {
+            id: opButton
+            flat: false
+            visible: true
+            checkable: true
+            checked: true
+            text: "Op"
+            onCheckedChanged: {
+                kickUser.visible = checked
+            }
+
         }
 
         ToolButton {
-            id: kickButton
-            flat: true
-            iconSource: "icon-kick.svg"
-            onClicked: {
-                enterReason.open()
-            }
-        }
+            id: voiceButton
+            flat: false
+            checkable: true
+            checked: false
+            visible: true
+            text: "Voice"
 
-        ToolButton {
-            id: slapButton
-            flat: true
-            iconSource: "icon-fish.svg"
-            onClicked: {
-                var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
-                Session.onInputReceived(Session.currentChannel, slapString)
-                pageStack.pop(initialPage)
-            }
         }
-
+*/
         ToolButton {
             flat: true
             iconSource: "toolbar-menu"
-            visible: false
+            visible: true
+            onClicked: actionMenu.open()
+        }
+    }
+
+    Menu {
+        id: actionMenu
+        content: MenuLayout {
+            MenuItem{
+                id: kickUser
+                visible: false
+                text: "Kick"
+                onClicked: {
+                    enterReason.open()
+                }
+            }
+            MenuItem {
+                id: slapUser
+                text: "Slap"
+                onClicked: {
+                    var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
+                    Session.onInputReceived(Session.currentChannel, slapString)
+                    pageStack.pop(initialPage)
+                }
+            }
         }
     }
 
@@ -134,6 +162,7 @@ Page {
         }
     }
 }
+
 
 
 
