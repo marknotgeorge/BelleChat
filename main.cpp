@@ -6,6 +6,7 @@
 #include "sessionwrapper.h"
 #include "channellistitem.h"
 #include "whoisitem.h"
+
 #include <QtDeclarative>
 
 
@@ -20,7 +21,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
 
     qmlRegisterType<ConnectionSettings>("BelleChat",1,0,"ConnectionSettings");
-    qmlRegisterType<WhoIsItem>("BelleChat",1,0,"WhoIsItem");
+    qmlRegisterType<WhoIsItem>("BelleChat",1,0,"WhoIsItem");    
     QList<QObject *> channels;
     QStringList users;
 

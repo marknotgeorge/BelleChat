@@ -2,6 +2,7 @@ import QtQuick 1.1
 import com.nokia.symbian 1.1
 import com.nokia.extras 1.1
 import BelleChat 1.0
+import "HelpText.js" as HelpText
 
 PageStackWindow {
     id: window
@@ -31,6 +32,11 @@ PageStackWindow {
     Component {
         id: channelPageFactory
         ChannelListPage {}
+    }
+
+    Component {
+        id: infoPageFactory
+        InfoPage {}
     }
 
     BusyIndicator {
@@ -162,8 +168,18 @@ PageStackWindow {
                 id: menuItemSettings
                 text: "Settings"
                 onClicked: {
-                    var settingsPage = settingsPageFactory.createObject(initialPage);
+                    var settingsPage = settingsPageFactory.createObject(initialPage)
                     pageStack.push(settingsPage)
+                }
+            }
+
+            MenuItem {
+                id: menuItemHelp
+                text: "Help"
+                onClicked: {
+                    var helpPage = infoPageFactory.createObject(initialPage)
+                    helpPage.text = HelpText.mainHelp
+                    pageStack.push(helpPage)
                 }
             }
 
@@ -175,37 +191,7 @@ PageStackWindow {
                 }
             }
         }
-    }
-
-
-    SelectionDialog {
-        property int count: 0
-        id: selectChannelDialog
-        model: ChannelModel
-        titleText: "Select Channel (" + count + " channels):"
-        delegate: ListItem {
-            Column {
-                ListItemText {
-                    role: "Title"
-                    text: channel + " (" + users + ")"
-                }
-                Text {
-                    text: topic
-                    color: platformStyle.colorNormalLight
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                }
-            }
-            onClicked: {
-                selectChannelDialog.selectedIndex = index
-                selectChannelDialog.accept()
-            }
-        }
-        onAccepted: {
-            var channel = model[selectedIndex].channel
-            //console.log("Channel:", channel)
-            joinChannel(channel)
-        }
-    }
+    }    
 
     TextPickerDialog {
         id: enterChannelDialog
@@ -243,7 +229,7 @@ PageStackWindow {
 
             MenuItem {
                 id: selectChannelFromList
-                text: "Select from list"
+                text: "List Channels"
                 visible: true
                 onClicked: {
                     fetchingChannelsDialog.open()

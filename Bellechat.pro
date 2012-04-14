@@ -77,7 +77,9 @@ HEADERS += \
     palette.h
 
 OTHER_FILES += \
-    ReadMe.txt
+    ReadMe.txt \
+    HelpText.js
+
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../communi/lib/ -lCommuni
