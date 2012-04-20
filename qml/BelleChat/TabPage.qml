@@ -1,6 +1,8 @@
 // import QtQuick 1.0 // to target S60 5th Edition or Maemo 5
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import com.nokia.extras 1.1
+
 
 
 
@@ -12,6 +14,18 @@ Page {
         id: outputModel
     }
 
+    Component {
+        id: infoBannerFactory
+        InfoBanner {}
+    }
+
+    QueryDialog {
+        id: linkFailureDialog
+        titleText: "Link failed"
+        message: "Unable to open link."
+        acceptButtonText: "Ok"
+    }
+
 
     ListView {
         id: outputView
@@ -21,7 +35,13 @@ Page {
             id: outputDelegate
             text: model.text
             onLinkActivated: {
-                Qt.openUrlExternally(link)
+                var banner = infoBannerFactory.createObject(window)
+                banner.text = "Opening " + link + "..."
+                banner.iconSource = "icon-globe.svg"
+                banner.open()
+                if (!Qt.openUrlExternally(link)) {
+                    linkFailureDialog.message = "Unable to open link " + link + "\n"
+                }
             }
 
         }
