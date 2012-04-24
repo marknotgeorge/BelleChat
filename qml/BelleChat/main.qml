@@ -10,6 +10,7 @@ PageStackWindow {
     property bool tryingToQuit: false
     property bool namesListRequested: false
     property bool channelListCancelled: false
+    property bool openServerSettings: false
 
     initialPage: MainPage { tools: serverToolbar }
     platformSoftwareInputPanelEnabled: true
@@ -37,6 +38,11 @@ PageStackWindow {
     Component {
         id: infoPageFactory
         InfoPage {}
+    }
+
+    Component {
+        id: startPageFactory
+        StartPage {}
     }
 
     BusyIndicator {
@@ -191,7 +197,7 @@ PageStackWindow {
                 }
             }
         }
-    }    
+    }
 
     TextPickerDialog {
         id: enterChannelDialog
@@ -235,7 +241,7 @@ PageStackWindow {
                     fetchingChannelsDialog.open()
                     Session.getChannelList("")
                 }
-            }           
+            }
         }
     }
 
@@ -432,6 +438,13 @@ PageStackWindow {
         var outputString = "Welcome to BelleChat " + Version +"!\n"
         initialPage.outputToTab("Server", outputString)
         initialPage.outputToTab("Server", "Click the Connect button to connect to the IRC server.")
+
+        // Open the StartPage
+        if (!appConnectionSettings.supressStartPage)
+        {
+            var page = startPageFactory.createObject(initialPage)
+            pageStack.push(page)
+        }
     }
 
     function joinChannel(channel)

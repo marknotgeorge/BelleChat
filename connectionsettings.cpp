@@ -111,6 +111,13 @@ QString ConnectionSettings::quitMessage()
     return settings.value("quitMessage", defaultString).toString();
 }
 
+bool ConnectionSettings::supressStartPage()
+{
+    QSettings settings;
+
+    return settings.value("supressStartPage", "false").toBool();
+}
+
 void ConnectionSettings::setHost(QString newHost)
 {
     QSettings settings;
@@ -230,6 +237,13 @@ void ConnectionSettings::setQuitMessage(QString newQuitMessage)
     QSettings settings;
     settings.setValue("quitMessage", newQuitMessage);
     emit quitMessageChanged(newQuitMessage);
+}
+
+void ConnectionSettings::setSupressStartPage(bool newSupressStartPage)
+{
+    QSettings settings;
+    settings.setValue("supressStartPage", newSupressStartPage);
+    emit supressStartPageChanged(newSupressStartPage);
 }
 
 

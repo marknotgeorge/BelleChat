@@ -23,6 +23,7 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool formatText READ formatText WRITE setFormatText NOTIFY formatTextChanged)
     Q_PROPERTY (bool showChannelList READ showChannelList WRITE setShowChannelList NOTIFY showChannelListChanged)
     Q_PROPERTY (QString quitMessage READ quitMessage WRITE setQuitMessage NOTIFY quitMessageChanged)
+    Q_PROPERTY (bool supressStartPage READ supressStartPage WRITE setSupressStartPage NOTIFY supressStartPageChanged)
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -43,6 +44,7 @@ public:
     Q_INVOKABLE bool formatText();
     Q_INVOKABLE bool showChannelList();
     Q_INVOKABLE QString quitMessage();
+    Q_INVOKABLE bool supressStartPage();
 
 
 
@@ -63,6 +65,7 @@ signals:
     void formatTextChanged (bool newFormatText);
     void showChannelListChanged (bool newShowChannelList);
     void quitMessageChanged(QString newQuitMessage);
+    void supressStartPageChanged (bool newSupressStartPage);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -82,6 +85,7 @@ public slots:
     Q_INVOKABLE void setFormatText(bool newFormatText);
     Q_INVOKABLE void setShowChannelList(bool newShowChannelList);
     Q_INVOKABLE void setQuitMessage(QString newQuitMessage);
+    Q_INVOKABLE void setSupressStartPage(bool newSupressStartPage);
 
 private:
 
