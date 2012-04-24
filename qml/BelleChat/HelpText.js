@@ -30,7 +30,7 @@ var startPageText =
         "<h1>Before you start...</h1>"
         + "<p> Welcome to BelleChat, an Internet Relay Chat (IRC) client for Symbian smartphones. "
         + "<h2>Selecting a server</h2>"
-        + "<p>You now need to choose a server to connect to, of which there are thousands throughout the world. A list of servers can be found <a href= \"http://http://irc.netsplit.de/networks/\">here</a>."
+        + "<p>You now need to choose a server to connect to, of which there are thousands throughout the world. A list of servers, and other IRC-related help, can be found at the <a href= \"http://www.irchelp.org/\">IRC help archives</a>."
         + "<h2>Now what?</h2>"
         + "<p>Now that you have the details of a server, you need to enter them on the Server Settings page. Click the OK icon to proceed to the Server settings page."
 

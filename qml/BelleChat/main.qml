@@ -196,6 +196,26 @@ PageStackWindow {
                     aboutDialog.open()
                 }
             }
+
+            MenuItem {
+                id: menuItemExit
+                text: "Exit"
+                onClicked: {
+                    // If we're connected, we need to close the connection before
+                    // we quit. Open a dialog to ask if the user is sure.
+                    if (Session.connected)
+                    {
+                        queryQuit.open()
+
+                    }
+                    else
+                    {
+                        Session.quit(ConnectionSettings.quitMessage)
+                        tryingToQuit = true
+                        exit()
+                    }
+                }
+            }
         }
     }
 
