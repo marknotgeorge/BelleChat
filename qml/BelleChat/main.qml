@@ -64,23 +64,39 @@ PageStackWindow {
         }
     }
 
-    CommonDialog {
+    QueryDialog {
+        id: connectionTimeoutDialog
+        acceptButtonText: "Ok"
+        titleText: "Unable to connect."
+        message: "Cannot connect to " + Session.host + ". Please check server settings and your Internet connection.\n"
+    }
+
+    WaitDialog {
         id: fetchingChannelsDialog
         titleText: "Fetching list of channels..."
-        buttonTexts: ["Cancel"]
-        content:
-            ProgressBar {
-            id: fcProgress
-            indeterminate: true
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: platformStyle.paddingMedium
-            anchors.right: parent.right
-            anchors.rightMargin: platformStyle.paddingMedium
-        }
         onButtonClicked: {
             channelListCancelled = true
             close()
+        }
+    }
+
+    WaitDialog {
+        id: connectingDialog
+        titleText: "Connecting to " + Session.host + "..."
+        onButtonClicked: {
+            var outputString = "Connection to " + appConnectionSettings.host + " cancelled!"
+            initialPage.outputToTab("Server", outputString)
+            Session.close()
+        }
+    }
+
+    Timer {
+        id: connectionTimer
+        interval: 15000
+        onTriggered: {
+            Session.close()
+            connectingDialog.close()
+            connectionTimeoutDialog.open()
         }
     }
 
@@ -92,6 +108,8 @@ PageStackWindow {
         }
         onConnected: {
             buttonConnect.state = "Connected"
+            connectingDialog.close()
+            connectionTimer.stop()
             initialPage.outputToTab("Server", "Connected to " + appConnectionSettings.host + "!")
             if (appConnectionSettings.showChannelList)
             {
@@ -107,6 +125,8 @@ PageStackWindow {
                 Session.close()
                 initialPage.outputToTab("Server", failureString)
             }
+            connectionTimer.stop()
+            connectingDialog.close()
 
             userDisconnected = false;
             initialPage.closeAllTabs()
@@ -148,8 +168,11 @@ PageStackWindow {
         onSocketError: {
             var failureString = "Connection to " + appConnectionSettings.host + " failed."
             Session.close()
+            connectionTimer.stop()
+            connectingDialog.close()
             initialPage.outputToTab("Server", failureString)
             buttonConnect.state = "Disconnected"
+            connectionTimeoutDialog.open()
         }
 
     }
@@ -304,7 +327,15 @@ PageStackWindow {
             var outputString = "Connection to " + appConnectionSettings.host + " cancelled!"
             initialPage.outputToTab("Server", outputString)
             Session.close()
+            connectionTimer.stop()
         }
+    }
+
+    QueryDialog {
+        id: noServerErrorDialog
+        titleText: "No server entered!"
+        message: "Enter a valid server in Server Settings before you try to connect.\n"
+        acceptButtonText: "Ok"
     }
 
     ToolBarLayout {
@@ -369,11 +400,20 @@ PageStackWindow {
                     queryDisconnect.open()
                 else if (state === "Disconnected")
                 {
-                    state = "Connecting"
                     Session.updateConnection()
-                    var connectingString = "Connecting to " + appConnectionSettings.host +"..."
-                    initialPage.outputToTab("Server", connectingString)
-                    Session.open()
+                    if (Session.host === "")
+                    {
+                        noServerErrorDialog.open()
+                    }
+                    else
+                    {
+                        state = "Connecting"
+                        var connectingString = "Connecting to " + appConnectionSettings.host +"..."
+                        initialPage.outputToTab("Server", connectingString)
+                        Session.open()
+                        connectingDialog.open()
+                        connectionTimer.start()
+                    }
                 }
                 else //state === "Connecting"
                 {

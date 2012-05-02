@@ -7,13 +7,13 @@ ConnectionSettings::ConnectionSettings(QObject *parent) :
     QObject(parent)
 {
     QCoreApplication::setOrganizationName("marknotgeorge");
-    QCoreApplication::setApplicationName("QMLIrc");
+    QCoreApplication::setApplicationName("BelleChat");
 }
 
 QString ConnectionSettings::host()
 {
     QSettings settings;
-    return settings.value("host", "irc.server.com").toString();
+    return settings.value("host", "").toString();
 }
 
 int ConnectionSettings::port()
