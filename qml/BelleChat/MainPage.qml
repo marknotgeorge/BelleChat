@@ -166,8 +166,9 @@ Page {
         if (button)
         {
             //console.log("Closing tab ", channel)
-            // If the channel isn't the server, leave the channel
-            if (channel !== Session.host)
+            // If the channel isn't the server and it begins with #,
+            // (and is therefore a channel, leave it.
+            if ((channel !== Session.host) && (channel.charAt(0) === '#'))
                 Session.partChannel(channel)
 
             // Destroy the OutputFlickable (button.tab) and the TabButton
@@ -206,6 +207,7 @@ Page {
             var page = button.tab
             page.addOutput(output)
         }
+
     }
 
     function selectTab(channel)

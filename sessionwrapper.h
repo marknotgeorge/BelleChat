@@ -21,6 +21,7 @@ class Session : public IrcSession
     Q_PROPERTY(QString currentChannel READ currentChannel WRITE setCurrentChannel NOTIFY currentChannelChanged)
     Q_PROPERTY(QString lastChannel READ lastChannel WRITE setLastChannel NOTIFY lastChannelChanged)
     Q_PROPERTY(int userCount READ userCount NOTIFY userCountChanged)
+    Q_PROPERTY(bool isAway READ isAway WRITE setIsAway NOTIFY isAwayChanged)
 
 public:
     explicit Session(QObject *parent = 0);
@@ -38,6 +39,8 @@ signals:
     void currentChannelChanged(QString newCurrentChannel);
     void lastChannelChanged(QString newLastChannel);
     void userCountChanged(int newUserCount);
+    void queryReceived(QString sender, QString message);
+    void isAwayChanged(bool newIsAway);
 
 public slots:
     void onConnected();
@@ -62,6 +65,9 @@ public slots:
     Q_INVOKABLE QString getRealname(QString user);
     Q_INVOKABLE void sendNames(QString channel);
     Q_INVOKABLE QString removeMode(QString user);
+    Q_INVOKABLE bool isAway();
+    Q_INVOKABLE void markAway(bool newIsAway);
+    Q_INVOKABLE void setIsAway(bool newIsAway);
 
 
 private:
@@ -72,6 +78,7 @@ private:
     QString openUserList;
     QString m_currentChannel;
     QString m_lastChannel;
+    bool m_isAway;
     QStringList nicknameList;
     bool newNames;
     Palette colourPalette;
@@ -130,6 +137,7 @@ protected:
     QString getTimestamp();
     QString formatInput(const QString& inputString);
     bool removeUser(QString user, QString channel);
+
 
 
 

@@ -123,7 +123,7 @@ Page {
             }
 
             Row {
-                id: formatRow                
+                id: formatRow
                 spacing: platformStyle.paddingSmall
                 anchors {
                     left: parent.left
@@ -186,6 +186,48 @@ Page {
                 }
             }
         }
+        // Virtual keyboard handling, written by Akos Polster
+
+        Timer {
+            id: adjuster
+            interval: 200
+            onTriggered: flicker.adjust()
+        }
+
+        Component.onCompleted:
+        {
+            inputContext.visibleChanged.connect(adjuster.restart)
+        }
+
+        function adjust() {
+            if (!inputContext.visible) {
+                return
+            }
+
+            var focusChild = null
+            function findFocusChild(p) {
+                if (p["activeFocus"] === true) {
+                    focusChild = p
+                } else {
+                    for (var i = 0; i < p["children"].length; i++) {
+                        findFocusChild(p["children"][i])
+                        if (focusChild !== null) {
+                            break
+                        }
+                    }
+                }
+            }
+            findFocusChild(flicker)
+
+            if (focusChild === null) {
+                return
+            }
+            var focusChildY = focusChild["y"]
+            var focusChildHeight = focusChild["height"]
+            if ((flicker.contentY + flicker.height) < (focusChildY + focusChildHeight)) {
+                flicker.contentY = focusChildY + focusChildHeight - flicker.height
+            }
+        }
     }
 
     function saveSettings()
@@ -199,9 +241,11 @@ Page {
             appConnectionSettings.setTextItalic(textItalicCheck.checked)
             appConnectionSettings.setTextUnderline(textUnderlineCheck.checked)
             appConnectionSettings.setFormatText(formatTextSwitch.checked)
-            appConnectionSettings.setShowChannelList(showChannelList.checked)
+            appConnectionSettings.setShowChannelList(showChannelList.checked)            
         }
     }
+
+
 }
 
 

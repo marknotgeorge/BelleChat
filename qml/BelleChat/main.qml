@@ -45,6 +45,8 @@ PageStackWindow {
         StartPage {}
     }
 
+
+
     BusyIndicator {
         id: appBusy
         anchors.horizontalCenter: parent.horizontalCenter
@@ -71,6 +73,7 @@ PageStackWindow {
         message: "Cannot connect to " + Session.host + ". Please check server settings and your Internet connection.\n"
     }
 
+
     WaitDialog {
         id: fetchingChannelsDialog
         titleText: "Fetching list of channels..."
@@ -92,7 +95,7 @@ PageStackWindow {
 
     Timer {
         id: connectionTimer
-        interval: 15000
+        interval: appConnectionSettings.timeoutInterval * 1000
         onTriggered: {
             Session.close()
             connectingDialog.close()
@@ -174,6 +177,19 @@ PageStackWindow {
             buttonConnect.state = "Disconnected"
             connectionTimeoutDialog.open()
         }
+        onQueryReceived: {
+            var button = initialPage.findButton(sender)
+            if(button)
+                initialPage.outputToTab(sender, message)
+            else
+            {
+                initialPage.createTab(sender)
+                initialPage.outputToTab(sender, message)
+            }
+        }
+        onIsAwayChanged: {
+            awayMenu.text = (newIsAway)? "Clear Away":"Set Away"
+        }
 
     }
 
@@ -188,6 +204,18 @@ PageStackWindow {
         titleText: "About BelleChat"
         message: "BelleChat " + Version + "\nBuild " + Build + "\n© 2011-12 Mark Johnson\nUses Communi written by J-P Nurmi et al.\nIcons designed by Daniel Ferguson\n"
         acceptButtonText: "OK"
+    }
+
+    TextPickerDialog {
+        id: awayMessageDialog
+        titleText: "Away message"
+        placeholderText: "Set away message..."
+        text: appConnectionSettings.awayMessage
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
+        onAccepted: {
+            Session.markAway(true)
+        }
     }
 
     Menu {
@@ -259,6 +287,21 @@ PageStackWindow {
     Menu {
         id: menuJoin
         content: MenuLayout {
+            MenuItem {
+                id: awayMenu
+                text: (Session.isAway)?"Clear Away":"Set Away"
+                onClicked:
+                {
+
+                    if (Session.isAway)
+                        Session.markAway(false)
+                    else
+                    {
+                        awayMessageDialog.open()
+                    }
+                }
+            }
+
             MenuItem {
                 id: enterChannel
                 text: "Join Channel..."

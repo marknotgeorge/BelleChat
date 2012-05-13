@@ -31,6 +31,8 @@ Session::Session(QObject *parent) :
     m_currentChannel = "Server";
     m_lastChannel = "Server";
     newNames = true;
+    m_isAway = false;
+
 }
 
 void Session::onConnected()
@@ -459,7 +461,12 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
                                                  colourPalette.serverReply()));
         break;
     case Irc::RPL_UNAWAY:
+        setIsAway(false);
+        emit outputString(this->host(), colorize(tr("*** %1").arg(P_(1)),
+                                                 colourPalette.serverReply()));
+        break;
     case Irc::RPL_NOWAWAY:
+        setIsAway(true);
         emit outputString(this->host(), colorize(tr("*** %1").arg(P_(1)),
                                                  colourPalette.serverReply()));
         break;
@@ -540,8 +547,11 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
 {
     ConnectionSettings settings;
     const QString sender = prettyUser(message->sender());
+    const QString senderName = message->sender().name();
     const QString msg = IrcUtil::messageToHtml(message->message());
     QString timestamp = "";
+
+    qDebug() << message->toString();
     if (settings.showTimestamp())
     {
         timestamp = getTimestamp();
@@ -555,6 +565,13 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
                                                       .arg(sender,
                                                            msg.split(" ").value(0).toLower()),
                                                       colourPalette.serverReply()));
+    else if (message->target() == nickName())
+    {
+        // This is a private message.
+        if (!isAway())
+            emit queryReceived(senderName, tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp));
+    }
+
     else
         emit outputString(message->target(), tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp));
 }
@@ -1057,6 +1074,39 @@ QString Session::removeMode(QString user)
     else
         return user;
 }
+
+bool Session::isAway()
+{
+    return m_isAway;
+}
+
+void Session::markAway(bool newIsAway)
+{
+    ConnectionSettings settings;
+    IrcCommand *command;
+    qDebug() << newIsAway;
+    if (newIsAway)
+    {
+        // Set the AWAY message...
+        command = IrcCommand::createAway(settings.awayMessage());
+    }
+    else
+    {
+        // Clear the AWAY message...
+        command = IrcCommand::createAway();
+    }
+    // Send the command...
+    sendCommand(command);
+}
+
+void Session::setIsAway(bool newIsAway)
+{
+    m_isAway = newIsAway;
+    emit isAwayChanged(newIsAway);
+}
+
+
+
 
 
 

@@ -118,6 +118,20 @@ bool ConnectionSettings::supressStartPage()
     return settings.value("supressStartPage", "false").toBool();
 }
 
+QString ConnectionSettings::awayMessage()
+{
+    QSettings settings;
+    return settings.value("awayMessage", "I'm away right now. BRB").toString();
+}
+
+int ConnectionSettings::timeoutInterval()
+{
+    QSettings settings;
+    return settings.value("timeoutInterval", "15").toInt();
+}
+
+
+
 void ConnectionSettings::setHost(QString newHost)
 {
     QSettings settings;
@@ -245,6 +259,32 @@ void ConnectionSettings::setSupressStartPage(bool newSupressStartPage)
     settings.setValue("supressStartPage", newSupressStartPage);
     emit supressStartPageChanged(newSupressStartPage);
 }
+
+void ConnectionSettings::setAwayMessage(QString newAwayMessage)
+{
+    QSettings settings;
+    settings.setValue("awayMessage", newAwayMessage);
+    emit awayMessageChanged(newAwayMessage);
+}
+
+void ConnectionSettings::setTimeoutInterval(int newTimeoutInterval)
+{
+    QSettings settings;
+    settings.setValue("timeoutInterval", newTimeoutInterval);
+    emit timeoutIntervalChanged(QString::number(newTimeoutInterval));
+}
+
+void ConnectionSettings::setTimeoutInterval(QString newTimeoutIntervalString)
+{
+    QSettings settings;
+    settings.setValue("timeoutInterval", newTimeoutIntervalString);
+    emit timeoutIntervalChanged(newTimeoutIntervalString);
+}
+
+
+
+
+
 
 
 

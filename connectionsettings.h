@@ -24,6 +24,8 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool showChannelList READ showChannelList WRITE setShowChannelList NOTIFY showChannelListChanged)
     Q_PROPERTY (QString quitMessage READ quitMessage WRITE setQuitMessage NOTIFY quitMessageChanged)
     Q_PROPERTY (bool supressStartPage READ supressStartPage WRITE setSupressStartPage NOTIFY supressStartPageChanged)
+    Q_PROPERTY (QString awayMessage READ awayMessage WRITE setAwayMessage NOTIFY awayMessageChanged)
+    Q_PROPERTY (int timeoutInterval READ timeoutInterval WRITE setTimeoutInterval NOTIFY timeoutIntervalChanged)
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -45,6 +47,8 @@ public:
     Q_INVOKABLE bool showChannelList();
     Q_INVOKABLE QString quitMessage();
     Q_INVOKABLE bool supressStartPage();
+    Q_INVOKABLE QString awayMessage();
+    Q_INVOKABLE int timeoutInterval();
 
 
 
@@ -65,7 +69,9 @@ signals:
     void formatTextChanged (bool newFormatText);
     void showChannelListChanged (bool newShowChannelList);
     void quitMessageChanged(QString newQuitMessage);
-    void supressStartPageChanged (bool newSupressStartPage);
+    void supressStartPageChanged(bool newSupressStartPage);
+    void awayMessageChanged(QString newAwayMessage);
+    void timeoutIntervalChanged(QString newTimeoutInterval);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -86,6 +92,9 @@ public slots:
     Q_INVOKABLE void setShowChannelList(bool newShowChannelList);
     Q_INVOKABLE void setQuitMessage(QString newQuitMessage);
     Q_INVOKABLE void setSupressStartPage(bool newSupressStartPage);
+    Q_INVOKABLE void setAwayMessage(QString newAwayMessage);
+    Q_INVOKABLE void setTimeoutInterval(int newTimeoutInterval);
+    Q_INVOKABLE void setTimeoutInterval(QString newTimeoutIntervalString);
 
 private:
 

@@ -182,6 +182,27 @@ Page {
                 anchors.leftMargin: platformStyle.paddingLarge
                 //visible: (activeFocus||!inputContext.visible)
             }
+
+            Label {
+                id: timeoutIntervalLabel
+                text: qsTr("Connection timeout (seconds)")
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+            }
+
+            TextField {
+                id: timeoutIntervalField
+                text: appConnectionSettings.timeoutInterval
+                inputMethodHints: Qt.ImhDigitsOnly
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                validator: IntValidator {bottom: 0; top: 65535;}
+                //visible: (activeFocus||!inputContext.visible)
+            }
+
+
         }
 
         // Virtual keyboard handling, written by Akos Polster
@@ -281,6 +302,12 @@ Page {
         {
             //console.log("Quit message changed")
             appConnectionSettings.setQuitMessage(quitMessageField.text)
+            dirty = true
+        }
+        if (timeoutIntervalField.text !== appConnectionSettings.timeoutInterval.toString())
+        {
+
+            appConnectionSettings.setTimeoutInterval(timeoutIntervalField.text)
             dirty = true
         }
 
