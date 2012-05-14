@@ -20,8 +20,8 @@ Page {
                 pageStack.pop()
             }
         }
-// TODO: Implement mode handling
-/*
+        // TODO: Implement mode handling
+        /*
        ToolButton {
             id: opButton
             flat: false
@@ -48,15 +48,33 @@ Page {
         ToolButton {
             id: slapButton
             flat: true
-            visible: true
+            visible: (Session.removeMode(userView.currentItem.username) !== Session.nickName)
             iconSource: "icon-fish.svg"
             onClicked: {
-                var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
+                var slapString = "/me slapped " + Session.removeMode(userView.currentItem.username) + " with a wet kipper!"
                 Session.onInputReceived(Session.currentChannel, slapString)
                 pageStack.pop(initialPage)
             }
-
         }
+
+        ToolButton {
+            id: queryButton
+            flat: true
+            visible: (Session.removeMode(userView.currentItem.username) !== Session.nickName)
+            iconSource: "icon-query.svg"
+            onClicked: {
+                var user = Session.removeMode(userView.currentItem.username)
+                var button = initialPage.findButton(user)
+                if (button)
+                    initialPage.selectTab(user)
+                else
+                    initialPage.createTab(user)
+                pageStack.pop(initialPage)
+            }
+        }
+
+
+
 
         ToolButton {
             flat: true

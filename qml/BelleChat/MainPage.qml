@@ -101,12 +101,25 @@ Page {
                 //inputField.enabled = false
                 //returnButton.enabled = false
             }
-            else
+            else if (Session.currentChannel.charAt(0) === '#')
             {
+                // currentTab is a channel...
                 buttonUsers.enabled = true
                 partChannel.visible = true
+                enterChannel.visible = true
+                selectChannelFromList.visible = true
+                closeQuery.visible = false
                 //inputField.enabled = true
                 //returnButton.enabled = true
+            }
+            else
+            {
+                // currentTab is a query tab
+                buttonUsers.enabled = false
+                partChannel.visible = false
+                enterChannel.visible = false
+                selectChannelFromList.visible = false
+                closeQuery.visible = true
             }
         }
         TabPage {

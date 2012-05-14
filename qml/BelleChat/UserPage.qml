@@ -101,9 +101,13 @@ Page {
         delegate: UserListItem {
             username: modelData
             propername: Session.getRealname(modelData)
-            onPressAndHold: userContextMenu.open()
+            onPressAndHold: {
+                // Only show the context menu if the user's not us...
+                if (Session.removeMode(userView.currentItem.username) !== Session.nickName)
+                    userContextMenu.open()
+            }
             onClicked: {
-                Session.whoIs(userView.currentItem.username)
+                Session.whoIs(Session.removeMode(userView.currentItem.username))
             }
         }
 
@@ -139,8 +143,23 @@ Page {
                     id: slapUser
                     text: "Slap"
                     onClicked: {
-                        var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
+                        var slapString = "/me slapped "
+                                + Session.removeMode(userView.currentItem.username)
+                                + " with a wet kipper!"
                         Session.onInputReceived(Session.currentChannel, slapString)
+                        pageStack.pop()
+                    }
+                }
+                MenuItem {
+                    id: queryUser
+                    text: "Query"
+                    onClicked: {
+                        var user = Session.removeMode(userView.currentItem.username)
+                        var button = initialPage.findButton(user)
+                        if (button)
+                            initialPage.selectTab(user)
+                        else
+                            initialPage.createTab(user)
                         pageStack.pop()
                     }
                 }

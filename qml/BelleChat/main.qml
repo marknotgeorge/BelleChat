@@ -320,6 +320,15 @@ PageStackWindow {
             }
 
             MenuItem {
+                id: closeQuery
+                text: "Close tab " + Session.currentChannel
+                visible: false
+                onClicked: {
+                    leaveChannel(Session.currentChannel)
+                }
+            }
+
+            MenuItem {
                 id: selectChannelFromList
                 text: "List Channels"
                 visible: true
