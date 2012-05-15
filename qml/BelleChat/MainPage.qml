@@ -252,6 +252,16 @@ Page {
         }
     }
 
+    function dropToBottom()
+    {
+        // Drops the ListView in the currently selected Tab
+        // to the bottom.
+        var button = findButton(Session.currentChannel)
+        if (button) {
+            var page = button.tab
+            page.dropToBottom()
+        }
+    }
 }
 
 

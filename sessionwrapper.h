@@ -41,6 +41,7 @@ signals:
     void userCountChanged(int newUserCount);
     void queryReceived(QString sender, QString message);
     void isAwayChanged(bool newIsAway);
+    void channelRequiresKey(QString channel);
 
 public slots:
     void onConnected();
@@ -50,6 +51,7 @@ public slots:
     Q_INVOKABLE void updateConnection();
     void onPassword(QString *password);
     Q_INVOKABLE void joinChannel(QString channel);
+    Q_INVOKABLE void joinProtectedChannel(QString channel, QString key);
     Q_INVOKABLE void partChannel(QString channel);
     Q_INVOKABLE bool sessionConnected();
     Q_INVOKABLE void getChannelList(QString channel);

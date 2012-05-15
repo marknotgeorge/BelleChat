@@ -10,6 +10,7 @@ Page {
     id: window
     property string channel: ""
 
+
     ListModel {
         id: outputModel
     }
@@ -66,6 +67,11 @@ Page {
     function clear()
     {
         outputModel.clear()
+    }
+
+    function dropToBottom()
+    {
+        outputView.positionViewAtEnd()
     }
 
 }

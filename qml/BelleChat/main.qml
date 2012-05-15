@@ -15,6 +15,13 @@ PageStackWindow {
     initialPage: MainPage { tools: serverToolbar }
     platformSoftwareInputPanelEnabled: true
 
+    onOrientationChangeFinished: {
+        // This should fix a bug where the output ListView is not at the bottom
+        // after an orientation change.
+        initialPage.dropToBottom()
+
+    }
+
     Component {
         id: serverSettingsFactory
         ServerSettings {}
@@ -100,6 +107,18 @@ PageStackWindow {
             Session.close()
             connectingDialog.close()
             connectionTimeoutDialog.open()
+        }
+    }
+
+    TextPickerDialog {
+        id: channelKeyDialog
+        property string channel: ""
+        placeholderText: "Enter the key..."
+        acceptButtonText: "Ok"
+        rejectButtonText: "Cancel"
+        onAccepted: {
+            // Try to join the protected channel...
+            Session.joinProtectedChannel(channel, text)
         }
     }
 
@@ -190,6 +209,14 @@ PageStackWindow {
         onIsAwayChanged: {
             awayMenu.text = (newIsAway)? "Clear Away":"Set Away"
         }
+        onChannelRequiresKey: {
+            // A key is needed to join a protected channel.
+            // Open a TextPickerDialog to collect the key.
+            channelKeyDialog.channel = channel
+            channelKeyDialog.titleText = channel + " is a protected channel."
+            channelKeyDialog.open()
+        }
+
 
     }
 

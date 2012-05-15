@@ -391,6 +391,13 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
 
     switch (message->code())
     {
+    case Irc::ERR_BADCHANNELKEY:
+        // This code is received when a join attempt on a protected channel fails
+        // due to a missing or wrong key.
+        //
+        // Tell the UI a key is required.
+        emit channelRequiresKey(P_(1));
+        break;
     case Irc::RPL_MOTDSTART:
     case Irc::RPL_MOTD:
         emit outputString(this->host(),
@@ -950,6 +957,16 @@ void Session::joinChannel(QString channel)
     {
         IrcCommand *command;
         command = IrcCommand::createJoin(channel);
+        sendCommand(command);
+    }
+}
+
+void Session::joinProtectedChannel(QString channel, QString key)
+{
+    if (!channel.isEmpty())
+    {
+        IrcCommand *command;
+        command = IrcCommand::createJoin(channel, key);
         sendCommand(command);
     }
 }
