@@ -1126,6 +1126,19 @@ void Session::setIsAway(bool newIsAway)
     emit isAwayChanged(newIsAway);
 }
 
+bool Session::validChannelName(QString channel)
+{
+    QRegExp channelRegExp("[#&+!]*", Qt::CaseInsensitive, QRegExp::Wildcard);
+    // TODO: Find a better regular expression!
+
+    bool valid = channelRegExp.exactMatch(channel);
+
+    qDebug() << valid;
+
+    return valid;
+
+}
+
 
 
 

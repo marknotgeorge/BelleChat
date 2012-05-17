@@ -103,7 +103,7 @@ Page {
                 enterChannel.visible = true
                 selectChannelFromList.visible = true
             }
-            else if (Session.currentChannel.charAt(0) === '#')
+            else if (Session.validChannelName(Session.currentChannel))
             {
                 // currentTab is a channel...
                 buttonUsers.enabled = true

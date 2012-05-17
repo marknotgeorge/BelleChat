@@ -70,6 +70,7 @@ public slots:
     Q_INVOKABLE bool isAway();
     Q_INVOKABLE void markAway(bool newIsAway);
     Q_INVOKABLE void setIsAway(bool newIsAway);
+    Q_INVOKABLE bool validChannelName(QString channel);
 
 
 private:
