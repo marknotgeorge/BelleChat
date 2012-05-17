@@ -557,6 +557,7 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
     const QString senderName = message->sender().name();
     const QString msg = IrcUtil::messageToHtml(message->message());
     QString timestamp = "";
+    QString output;
 
     qDebug() << message->toString();
     if (settings.showTimestamp())
@@ -564,23 +565,26 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
         timestamp = getTimestamp();
     }
 
+    // First format the message...
     if (message->isAction())
-        emit outputString(message->target(),
-                          colorize(tr("*** %1 %2").arg(sender, msg), colourPalette.action()));
+        output = colorize(tr("*** %1 %2").arg(sender, msg), colourPalette.action());
     else if (message->isRequest())
-        emit outputString(message->target(), colorize(tr("*** %1 requested %2")
-                                                      .arg(sender,
-                                                           msg.split(" ").value(0).toLower()),
-                                                      colourPalette.serverReply()));
-    else if (message->target() == nickName())
+        output = colorize(tr("*** %1 requested %2")
+                          .arg(sender, msg.split(" ").value(0).toLower()),
+                          colourPalette.serverReply());
+    else
+        output = tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp);
+
+    // Now send it to the UI...
+    if (message->target() == nickName())
     {
         // This is a private message.
         if (!isAway())
-            emit queryReceived(senderName, tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp));
+            emit queryReceived(senderName, output);
     }
-
     else
-        emit outputString(message->target(), tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp));
+        // It's a channel message...
+        emit outputString(message->target(), output);
 }
 
 void Session::handleQuitMessage(IrcQuitMessage *message)

@@ -100,6 +100,8 @@ Page {
                 partChannel.visible = false
                 //inputField.enabled = false
                 //returnButton.enabled = false
+                enterChannel.visible = true
+                selectChannelFromList.visible = true
             }
             else if (Session.currentChannel.charAt(0) === '#')
             {
