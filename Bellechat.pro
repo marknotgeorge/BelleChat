@@ -6,7 +6,8 @@ DEPLOYMENTFOLDERS = folder_01
 symbian:TARGET = BelleChat
 
 # Additional import path used to resolve QML modules in Creator's code model
-QML_IMPORT_PATH =
+# This needs to be the path to where Communi is installed
+QML_IMPORT_PATH = ../communi/imports/Communi
 
 # UID Supplied by Nokia...
 #symbian:TARGET.UID3 = 0xE2F428B1
@@ -38,8 +39,8 @@ symbian:TARGET.CAPABILITY += NetworkServices
 
 # If your application uses the Qt Mobility libraries, uncomment the following
 # lines and add the respective components to the MOBILITY variable.
-# CONFIG += mobility
-# MOBILITY +=
+CONFIG += mobility
+MOBILITY += systeminfo
 
 # Speed up launching on MeeGo/Harmattan when using applauncherd daemon
 # CONFIG += qdeclarative-boostable

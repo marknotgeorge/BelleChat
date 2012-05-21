@@ -130,6 +130,30 @@ int ConnectionSettings::timeoutInterval()
     return settings.value("timeoutInterval", "15").toInt();
 }
 
+bool ConnectionSettings::autoJoinChannels()
+{
+    QSettings settings;
+    return settings.value("autoJoinChannels", "false").toBool();
+}
+
+QString ConnectionSettings::autoJoinChanList()
+{
+    QSettings settings;
+    return settings.value("autoJoinChanList", "#").toString();
+}
+
+bool ConnectionSettings::allowUserInfo()
+{
+    QSettings settings;
+    return settings.value("allowUserInfo", "false").toBool();
+}
+
+QString ConnectionSettings::userInfo()
+{
+    QSettings settings;
+    return settings.value("userInfo", "I'm not even supposed to be here today!").toString();
+}
+
 
 
 void ConnectionSettings::setHost(QString newHost)
@@ -280,6 +304,37 @@ void ConnectionSettings::setTimeoutInterval(QString newTimeoutIntervalString)
     settings.setValue("timeoutInterval", newTimeoutIntervalString);
     emit timeoutIntervalChanged(newTimeoutIntervalString);
 }
+
+void ConnectionSettings::setAutoJoinChannels(bool newAutoJoinChannels)
+{
+    QSettings settings;
+    settings.setValue("autoJoinChannels", newAutoJoinChannels);
+    emit autoJoinChannelsChanged(newAutoJoinChannels);
+}
+
+void ConnectionSettings::setAutoJoinChanList(QString newAutoJoinChanList)
+{
+    QSettings settings;
+    settings.setValue("autoJoinChanList", newAutoJoinChanList);
+    emit autoJoinChanListChanged(newAutoJoinChanList);
+
+}
+
+void ConnectionSettings::setAllowUserInfo(bool newAllowUserInfo)
+{
+    QSettings settings;
+    settings.setValue("allowUserInfo", newAllowUserInfo);
+    emit allowUserInfoChanged(newAllowUserInfo);
+}
+
+void ConnectionSettings::setUserInfo(QString newUserInfo)
+{
+    QSettings settings;
+    settings.setValue("userInfo", newUserInfo);
+    emit userInfoChanged(newUserInfo);
+}
+
+
 
 
 

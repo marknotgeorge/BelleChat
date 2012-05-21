@@ -9,6 +9,7 @@ WhoIsItem::WhoIsItem(QObject *parent) :
 void WhoIsItem::setName(QString newName)
 {
     m_name = newName;
+    emit whoIsItemChanged();
 }
 
 QString WhoIsItem::name()
@@ -19,6 +20,7 @@ QString WhoIsItem::name()
 void WhoIsItem::setUser(QString newUser)
 {
     m_user = newUser;
+    emit whoIsItemChanged();
 }
 
 QString WhoIsItem::user()
@@ -29,6 +31,7 @@ QString WhoIsItem::user()
 void WhoIsItem::setServer(QString newServer)
 {
     m_server = newServer;
+    emit whoIsItemChanged();
 }
 
 QString WhoIsItem::server()
@@ -39,6 +42,7 @@ QString WhoIsItem::server()
 void WhoIsItem::setRealname(QString newRealname)
 {
     m_realname = newRealname;
+    whoIsItemChanged();
 }
 
 QString WhoIsItem::realname()
@@ -54,6 +58,7 @@ bool WhoIsItem::dataComplete()
 void WhoIsItem::setDataComplete(bool newComplete)
 {
     m_dataComplete = newComplete;
+    emit whoIsItemChanged();
 }
 
 QString WhoIsItem::channels()
@@ -65,12 +70,14 @@ void WhoIsItem::setChannels(QString newChannels)
 {
     QStringList newChannelsList = newChannels.split(" ", QString::SkipEmptyParts);
 
+
     foreach(QString channel, newChannelsList)
     {
         // Check to see if channel is already there before adding...
         if (!m_channels.contains(channel))
             m_channels.append(channel);
     }
+    emit whoIsItemChanged();
 }
 
 QDateTime WhoIsItem::onlineSince()
@@ -81,7 +88,31 @@ QDateTime WhoIsItem::onlineSince()
 void WhoIsItem::setOnlineSince(QDateTime newOnlineSince)
 {
     m_onlineSince = newOnlineSince;
+    emit whoIsItemChanged();
 }
+
+QString WhoIsItem::clientVersion()
+{
+    return m_clientVersion;
+}
+
+void WhoIsItem::setClientVersion(QString newClientVersion)
+{
+    m_clientVersion = newClientVersion;
+    emit whoIsItemChanged();
+}
+
+QString WhoIsItem::userInfo()
+{
+    return m_userInfo;
+}
+
+void WhoIsItem::setUserInfo(QString newUserInfo)
+{
+    m_userInfo = newUserInfo;
+    emit whoIsItemChanged();
+}
+
 
 bool WhoIsItem::operator =(WhoIsItem other)
 {

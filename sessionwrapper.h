@@ -29,7 +29,6 @@ public:
 
 
 
-
 signals:
     void outputString(QString channel, QString output);
     void newNamesList(QString channel, int count);
@@ -42,6 +41,7 @@ signals:
     void queryReceived(QString sender, QString message);
     void isAwayChanged(bool newIsAway);
     void channelRequiresKey(QString channel);
+    void displayError(QString errorString);
 
 public slots:
     void onConnected();
@@ -70,7 +70,11 @@ public slots:
     Q_INVOKABLE bool isAway();
     Q_INVOKABLE void markAway(bool newIsAway);
     Q_INVOKABLE void setIsAway(bool newIsAway);
-    Q_INVOKABLE bool validChannelName(QString channel);
+    Q_INVOKABLE bool isValidChannelName(QString channel);
+    Q_INVOKABLE void autoJoinChannels();
+    Q_INVOKABLE void sendCtcpRequest(QString target, QString request);
+    Q_INVOKABLE WhoIsItem* getWhoIs(QString user);
+
 
 
 private:
@@ -129,7 +133,7 @@ protected:
     void handleQuitMessage(IrcQuitMessage* message);
     void handleTopicMessage(IrcTopicMessage* message);
     void handleUnknownMessage(IrcMessage* message);
-
+    void handleRequestMessage(IrcPrivateMessage *message);
     void handleNAMREPLY(IrcMessage* message);
     void processWhoIs(IrcNumericMessage* message);
 

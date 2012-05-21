@@ -202,7 +202,30 @@ Page {
                 //visible: (activeFocus||!inputContext.visible)
             }
 
+            LabelledSwitch {
+                id: autoJoinChannelsSwitch
+                text: qsTr("Join channels on connection")
+                checked: appConnectionSettings.autoJoinChannels
+            }
 
+            Label {
+                id: autoJoinChanListLabel
+                text: qsTr("Channels to join (separate with space)")
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                visible: autoJoinChannelsSwitch.checked
+            }
+
+            TextField {
+                id: autoJoinChanListField
+                text: appConnectionSettings.autoJoinChanList
+                visible: autoJoinChannelsSwitch.checked
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                //visible: (activeFocus||!inputContext.visible)
+            }
         }
 
         // Virtual keyboard handling, written by Akos Polster
@@ -310,6 +333,21 @@ Page {
             appConnectionSettings.setTimeoutInterval(timeoutIntervalField.text)
             dirty = true
         }
+
+        if (autoJoinChannelsSwitch.checked !== appConnectionSettings.autoJoinChannels)
+        {
+
+            appConnectionSettings.setAutoJoinChannels(autoJoinChannelsSwitch.checked)
+            dirty = true
+        }
+
+
+        if(autoJoinChanListField.text !== appConnectionSettings.autoJoinChanList)
+        {
+            appConnectionSettings.setAutoJoinChanList(autoJoinChanListField.text)
+            dirty = true
+        }
+
 
         // If settings have changed and we're connected, show a warning
         // dialog

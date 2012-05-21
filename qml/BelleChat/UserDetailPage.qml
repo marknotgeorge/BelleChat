@@ -1,15 +1,14 @@
 // import QtQuick 1.0 // to target S60 5th Edition or Maemo 5
 import QtQuick 1.1
 import com.nokia.symbian 1.1
+import BelleChat 1.0
 
 Page {
     id: window
 
-    property alias detailHeading: userDetailHeadingText.text
-    property alias user: userData.text
-    property alias server: serverData.text
-    property alias channels: channelsData.text
-    property alias onlineSince: onlineSinceData.text
+    property WhoIsItem userItem
+
+
     tools: ToolBarLayout {
         id: settingsToolBarLayout
 
@@ -17,7 +16,7 @@ Page {
             flat: true
             iconSource: "toolbar-back"
             onClicked: {
-                pageStack.pop()
+                pageStack.pop(initialPage)
             }
         }
         // TODO: Implement mode handling
@@ -48,81 +47,81 @@ Page {
         ToolButton {
             id: slapButton
             flat: true
-            visible: (Session.removeMode(userView.currentItem.username) !== Session.nickName)
+            visible: (Session.removeMode(userItem.name) !== Session.nickName)
             iconSource: "icon-fish.svg"
             onClicked: {
-                var slapString = "/me slapped " + Session.removeMode(userView.currentItem.username) + " with a wet kipper!"
+                var slapString = "/me slapped " + userItem.name + " with a wet kipper!"
                 Session.onInputReceived(Session.currentChannel, slapString)
                 pageStack.pop(initialPage)
             }
         }
-
         ToolButton {
             id: queryButton
             flat: true
-            visible: (Session.removeMode(userView.currentItem.username) !== Session.nickName)
+            visible: (Session.removeMode(userItem.name) !== Session.nickName)
             iconSource: "icon-query.svg"
             onClicked: {
-                var user = Session.removeMode(userView.currentItem.username)
-                var button = initialPage.findButton(user)
+                var user = Session.removeMode(userItem.name)
+                var button = initialPage.findButton(userItem.name)
                 if (button)
-                    initialPage.selectTab(user)
+                    initialPage.selectTab(userItem.name)
                 else
-                    initialPage.createTab(user)
+                    initialPage.createTab(userItem.name)
                 pageStack.pop(initialPage)
             }
         }
-
-
-
-
         ToolButton {
             flat: true
             iconSource: "toolbar-menu"
-            visible: false
-            onClicked: actionMenu.open()
+            visible: true
+            onClicked: ctcpMenu.open()
         }
-
-
     }
 
-
     Menu {
-        id: actionMenu
-        content: MenuLayout {
-            MenuItem{
-                id: kickUser
-                visible: false
-                enabled: false
-                text: "Kick"
+        id: ctcpMenu
+        MenuLayout {
+            MenuItem {
+                id: pingUser
+                text: "Ping " + userItem.name
                 onClicked: {
-                    enterReason.open()
+                    ctcpRequest("PING")
+                    pageStack.pop(initialPage)
                 }
             }
             MenuItem {
-                id: slapUser
-                text: "Slap"
+                id: timeUser
+                text: "Get " + userItem.name + "'s local time"
                 onClicked: {
-                    var slapString = "/me slapped " + userView.currentItem.username + " with a wet kipper!"
-                    Session.onInputReceived(Session.currentChannel, slapString)
+                    ctcpRequest("TIME")
+                    pageStack.pop(initialPage)
+                }
+            }
+            MenuItem {
+                id: versionUser
+                text: "Get " + userItem.name + "'s client version"
+                onClicked: {
+                    ctcpRequest("VERSION")
+                    pageStack.pop(initialPage)
+                }
+            }
+            MenuItem {
+                id: infoUser
+                text: "Get " + userItem.name + "'s info"
+                onClicked: {
+                    ctcpRequest("USERINFO")
                     pageStack.pop(initialPage)
                 }
             }
         }
     }
 
-    TextPickerDialog {
-        id: enterReason
-        titleText: "Enter Kick reason"
-        placeholderText: "Enter reason for kick..."
-        acceptButtonText: "Ok"
-        rejectButtonText: "Cancel"
-        onAccepted: {
-            Session.kick(Session.currentChannel, userView.currentItem.username, text)
-            pageStack.pop(initialPage)
 
-        }
+    function ctcpRequest(request)
+    {
+        Session.sendCtcpRequest(userItem.name, request)
     }
+
 
     ScrollDecorator {
         id:userDetailScroll
@@ -136,7 +135,7 @@ Page {
             anchors.fill: userDetailHeading.paddingItem
             id: userDetailHeadingText
             role: "Heading"
-
+            text: userItem.name + "(" + userItem.realname + ")"
         }
     }
 
@@ -151,7 +150,6 @@ Page {
         contentHeight: userDetailColumn.height
         clip: true
 
-
         Column {
             id: userDetailColumn
             anchors.fill: parent
@@ -161,38 +159,73 @@ Page {
                 id: userLabel
                 role: "Title"
                 text: "User is"
+                visible: userData.text.length
             }
             ListItemText {
                 id: userData
                 role: "Subtitle"
+                text: userItem.user
+                width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
             }
             ListItemText {
                 id: serverLabel
                 role: "Title"
                 text: "Online via"
+                visible: serverData.text.length
             }
             ListItemText {
                 id: serverData
                 role: "Subtitle"
+                text: userItem.server
             }
             ListItemText {
                 id: channelsLabel
                 role: "Title"
                 text: "On channels"
+                visible: channelsData.text.length
             }
-            ListItemText {
+            Label {
                 id: channelsData
-                role: "Subtitle"
+                width: parent.width
+                wrapMode: Text.Wrap
+                text: userItem.channels
             }
             ListItemText {
                 id: onlineSinceLabel
                 role: "Title"
                 text: "Online since"
+                visible: onlineSinceData.text.length
             }
             ListItemText {
                 id: onlineSinceData
                 role: "Subtitle"
+                text: Qt.formatDateTime(userItem.onlineSince)
+            }
+            ListItemText {
+                id: clientVersionLabel
+                role: "Title"
+                text: "Client information"
+                visible: clientVersionData.text.length
+            }
+            ListItemText {
+                id: clientVersionData
+                role: "Subtitle"
+                text: userItem.clientVersion
+            }
+            ListItemText {
+                id: userInfoLabel
+                role: "Title"
+                text: "User information"
+                visible: userInfoData.text.length
+            }
+            Text {
+                id: userInfoData
+                width: parent.width
+                color: platformStyle.colorNormalLight
+                font.pixelSize: platformStyle.fontSizeSmall
+                wrapMode: Text.Wrap
+                text: userItem.userInfo
             }
         }
     }

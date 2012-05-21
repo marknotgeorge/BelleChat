@@ -26,6 +26,10 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool supressStartPage READ supressStartPage WRITE setSupressStartPage NOTIFY supressStartPageChanged)
     Q_PROPERTY (QString awayMessage READ awayMessage WRITE setAwayMessage NOTIFY awayMessageChanged)
     Q_PROPERTY (int timeoutInterval READ timeoutInterval WRITE setTimeoutInterval NOTIFY timeoutIntervalChanged)
+    Q_PROPERTY (bool autoJoinChannels READ autoJoinChannels WRITE setAutoJoinChannels NOTIFY autoJoinChannelsChanged)
+    Q_PROPERTY (QString autoJoinChanList READ autoJoinChanList WRITE setAutoJoinChanList NOTIFY autoJoinChanListChanged)
+    Q_PROPERTY (bool allowUserInfo READ allowUserInfo WRITE setAllowUserInfo NOTIFY allowUserInfoChanged)
+    Q_PROPERTY (QString userInfo READ userInfo WRITE setUserInfo NOTIFY userInfoChanged)
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -49,6 +53,10 @@ public:
     Q_INVOKABLE bool supressStartPage();
     Q_INVOKABLE QString awayMessage();
     Q_INVOKABLE int timeoutInterval();
+    Q_INVOKABLE bool autoJoinChannels();
+    Q_INVOKABLE QString autoJoinChanList();
+    Q_INVOKABLE bool allowUserInfo();
+    Q_INVOKABLE QString userInfo();
 
 
 
@@ -72,6 +80,10 @@ signals:
     void supressStartPageChanged(bool newSupressStartPage);
     void awayMessageChanged(QString newAwayMessage);
     void timeoutIntervalChanged(QString newTimeoutInterval);
+    void autoJoinChannelsChanged(bool newAutoJoinChannels);
+    void autoJoinChanListChanged(QString newAutoJoinChanList);
+    void allowUserInfoChanged(bool newAllowUserInfo);
+    void userInfoChanged(QString newUserInfo);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -95,6 +107,10 @@ public slots:
     Q_INVOKABLE void setAwayMessage(QString newAwayMessage);
     Q_INVOKABLE void setTimeoutInterval(int newTimeoutInterval);
     Q_INVOKABLE void setTimeoutInterval(QString newTimeoutIntervalString);
+    Q_INVOKABLE void setAutoJoinChannels(bool newAutoJoinChannels);
+    Q_INVOKABLE void setAutoJoinChanList(QString newAutoJoinChanList);
+    Q_INVOKABLE void setAllowUserInfo(bool newAllowUserInfo);
+    Q_INVOKABLE void setUserInfo(QString newUserInfo);
 
 private:
 

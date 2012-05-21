@@ -29,6 +29,11 @@ Page {
             page: "DisplaySettings.qml"
             icon: "icon-device.svg"
         }
+        ListElement {
+            title: "User Info"
+            page: "UserInfoSettings.qml"
+            icon: "icon-userinfo.svg"
+        }
     }
 
 

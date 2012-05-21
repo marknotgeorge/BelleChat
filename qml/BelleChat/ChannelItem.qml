@@ -20,6 +20,7 @@ ListItem {
         ListItemText {
             id: channelListTopic
             role: "SubTitle"
+            width: parent.width
             elide: Text.ElideRight
         }
     }

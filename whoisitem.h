@@ -11,13 +11,15 @@ class WhoIsItem : public QObject
 public:
     explicit WhoIsItem(QObject *parent = 0);
 
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString user READ user WRITE setUser NOTIFY userChanged)
-    Q_PROPERTY(QString server READ server WRITE setServer NOTIFY serverChanged)
-    Q_PROPERTY(QString realname READ realname WRITE setRealname NOTIFY realnameChanged)
-    Q_PROPERTY(bool dataComplete READ dataComplete WRITE setDataComplete NOTIFY dataCompleteChanged)
-    Q_PROPERTY(QString channels READ channels WRITE setChannels NOTIFY channelsChanged)
-    Q_PROPERTY(QDateTime onlineSince READ onlineSince WRITE setOnlineSince NOTIFY onlineSinceChanged)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY whoIsItemChanged)
+    Q_PROPERTY(QString user READ user WRITE setUser NOTIFY whoIsItemChanged)
+    Q_PROPERTY(QString server READ server WRITE setServer NOTIFY whoIsItemChanged)
+    Q_PROPERTY(QString realname READ realname WRITE setRealname NOTIFY whoIsItemChanged)
+    Q_PROPERTY(bool dataComplete READ dataComplete WRITE setDataComplete NOTIFY whoIsItemChanged)
+    Q_PROPERTY(QString channels READ channels WRITE setChannels NOTIFY whoIsItemChanged)
+    Q_PROPERTY(QDateTime onlineSince READ onlineSince WRITE setOnlineSince NOTIFY whoIsItemChanged)
+    Q_PROPERTY(QString clientVersion READ clientVersion WRITE setClientVersion NOTIFY whoIsItemChanged)
+    Q_PROPERTY(QString userInfo READ userInfo WRITE setUserInfo NOTIFY whoIsItemChanged)
 
     void setName(QString newName);
     QString name();
@@ -33,19 +35,17 @@ public:
     void setChannels(QString newChannels);
     QDateTime onlineSince();
     void setOnlineSince(QDateTime newOnlineSince);
+    QString clientVersion();
+    void setClientVersion(QString newClientVersion);
+    QString userInfo();
+    void setUserInfo(QString newUserInfo);
 
     bool operator =(WhoIsItem other);
     bool operator <(WhoIsItem other);
 
     
 signals:
-    void nameChanged();
-    void userChanged();
-    void serverChanged();
-    void realnameChanged();
-    void dataCompleteChanged();
-    void channelsChanged();
-    void onlineSinceChanged();
+    void whoIsItemChanged();
     
 public slots:
 
@@ -57,8 +57,8 @@ private:
     bool m_dataComplete;
     QStringList m_channels; // Stored as a list so it's easier to filter duplicates
     QDateTime m_onlineSince;
-
-    
+    QString m_clientVersion;
+    QString m_userInfo;
 };
 
 #endif // WhoIsItem_H

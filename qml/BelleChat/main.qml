@@ -52,6 +52,13 @@ PageStackWindow {
         StartPage {}
     }
 
+    Component {
+        id: errorBannerFactory
+        InfoBanner {
+            iconSource: "icon-error.svg"
+        }
+    }
+
 
 
     BusyIndicator {
@@ -138,6 +145,10 @@ PageStackWindow {
                 fetchingChannelsDialog.open()
                 Session.getChannelList("")
             }
+            if (appConnectionSettings.autoJoinChannels)
+            {
+                Session.autoJoinChannels()
+            }
 
         }
         onDisconnected: {
@@ -215,6 +226,13 @@ PageStackWindow {
             channelKeyDialog.channel = channel
             channelKeyDialog.titleText = channel + " is a protected channel."
             channelKeyDialog.open()
+        }
+        onDisplayError: {
+            // Display an InfoBanner with an error icon
+            var banner = errorBannerFactory.createObject(window)
+
+            banner.text = errorString
+            banner.open()
         }
 
 

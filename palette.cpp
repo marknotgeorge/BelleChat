@@ -62,6 +62,12 @@ QString Palette::timestampColour()
     return settings.value("PaletteTimestampColour", "grey").toString();
 }
 
+QString Palette::ctcpReplyColour()
+{
+    QSettings settings;
+    return settings.value("PaletteCtcpReplyColour", "orange").toString();
+}
+
 void Palette::setMotd(QString newMotd)
 {
     QSettings settings;
@@ -123,6 +129,13 @@ void Palette::setTimestampColour(QString newTimestampColour)
     QSettings settings;
     settings.setValue("PaletteTimestampColour", newTimestampColour);
     emit timestampColourChanged(newTimestampColour);
+}
+
+void Palette::setCtcpReplyColour(QString newCtcpReplyColour)
+{
+    QSettings settings;
+    settings.setValue("PaletteCtcpReplyColour", newCtcpReplyColour);
+    emit ctcpReplyColourChanged(newCtcpReplyColour);
 }
 
 

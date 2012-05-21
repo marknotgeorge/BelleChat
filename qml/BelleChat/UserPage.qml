@@ -2,6 +2,7 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 
+
 Page {
     id: window
 
@@ -18,12 +19,7 @@ Page {
             //console.log("Username: " + user.name)
             if (user.name === Session.removeMode(userView.currentItem.username))
             {
-                var page = userDetailPageFactory.createObject(window)
-                page.detailHeading = user.name + " (" + user.realname + ")"
-                page.user = user.user
-                page.server = user.server
-                page.channels = user.channels
-                page.onlineSince = Qt.formatDateTime(user.onlineSince, Qt.TextDate)
+                var page = userDetailPageFactory.createObject(window, {userItem: user})
                 pageStack.push(page)
             }
         }
@@ -141,7 +137,7 @@ Page {
                 }
                 MenuItem {
                     id: slapUser
-                    text: "Slap"
+                    text: "Slap " + Session.removeMode(userView.currentItem.username)
                     onClicked: {
                         var slapString = "/me slapped "
                                 + Session.removeMode(userView.currentItem.username)
@@ -152,7 +148,7 @@ Page {
                 }
                 MenuItem {
                     id: queryUser
-                    text: "Query"
+                    text: "Query " + Session.removeMode(userView.currentItem.username)
                     onClicked: {
                         var user = Session.removeMode(userView.currentItem.username)
                         var button = initialPage.findButton(user)
@@ -163,8 +159,54 @@ Page {
                         pageStack.pop()
                     }
                 }
+                MenuItem {
+                    id: ctcpUser
+                    text: "User Information"
+                    platformSubItemIndicator: true
+                    onClicked: ctcpMenu.open()
+                }
+            }
+        }
+        ContextMenu {
+            id: ctcpMenu
+            MenuLayout {
+                MenuItem {
+                    id: pingUser
+                    text: "Ping " + Session.removeMode(userView.currentItem.username)
+                    onClicked: {
+                        var timeStamp = new Time()
+                        var requestString = "PING " + Qt.formatTime(timeStamp)
+                        ctcpRequest(requestString)
+                    }
+                }
+                MenuItem {
+                    id: timeUser
+                    text: "Get " + Session.removeMode(userView.currentItem.username) + "'s local time"
+                    onClicked: ctcpRequest("TIME")
+                }
+                MenuItem {
+                    id: versionUser
+                    text: "Get " + Session.removeMode(userView.currentItem.username) + "'s client version"
+                    onClicked:
+                    {
+                        ctcpRequest("VERSION")
+                    }
+                }
+                MenuItem {
+                    id: infoUser
+                    text: "Get " + Session.removeMode(userView.currentItem.username) + "'s info"
+                    onClicked: ctcpRequest("USERINFO")
+                }
             }
         }
     }
+
+    function ctcpRequest(request)
+    {
+        var user = Session.removeMode(userView.currentItem.username)
+        Session.sendCtcpRequest(user, request)
+        pageStack.pop()
+    }
 }
+
 

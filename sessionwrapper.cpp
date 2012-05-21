@@ -12,6 +12,9 @@
 #include <QtAlgorithms>
 #include "connectionsettings.h"
 #include "sessionwrapper.h"
+#include <QSystemDeviceInfo>
+
+QTM_USE_NAMESPACE
 
 // Definitions used in handleNumericMessage...
 #define P_(x) message->parameters().value(x)
@@ -160,7 +163,7 @@ void Session::updateConnection()
 
 void Session::onMessageReceived(IrcMessage *message)
 {
-    //qDebug() << message->type;
+    //qDebug() << message->toString();
     switch (message->type())
     {
     case IrcMessage::Invite:
@@ -348,17 +351,53 @@ void Session::handleNickMessage(IrcNickMessage *message)
 
 void Session::handleNoticeMessage(IrcNoticeMessage *message)
 {
+    WhoIsItem *user;
     if (message->isReply())
     {
         const QStringList params = message->message().split(" ", QString::SkipEmptyParts);
         const QString cmd = params.value(0);
         const QString arg = params.value(1);
+        const QString prettySender = prettyUser(message->sender());
+        const QString output = QStringList(params.mid(1)).join(" ");
+        const QString sender = message->sender().name();
+
+
+        // First get hold of a UserListItem...
+        if (whoisHash.contains(sender))
+            user = (WhoIsItem *)whoisHash.value(sender);
+        else
+        {
+            //qDebug() << "New whois!";
+            user = new WhoIsItem();
+            user->setName(sender);
+            // Put the user in the hashtable...
+            whoisHash.insert(sender, user);
+        }
+
         if (cmd.toUpper() == "PING")
             emit outputString(this->host(), formatPingReply(message->sender(), arg));
+
         else if (cmd.toUpper() == "TIME")
-            emit outputString(this->host(), tr("! %1 time is %2").arg(prettyUser(message->sender()), QStringList(params.mid(1)).join(" ")));
+            emit outputString(this->currentChannel(),
+                              colorize(tr("! %1 time is %2").arg(prettySender, output),
+                                       colourPalette.ctcpReplyColour()));
+
         else if (cmd.toUpper() == "VERSION")
-            emit outputString(this->host(), tr("! %1 version is %2").arg(prettyUser(message->sender()), QStringList(params.mid(1)).join(" ")));
+        {
+            emit outputString(this->currentChannel(),
+                              colorize(tr("! %1 version is %2").arg(prettySender, output),
+                                       colourPalette.ctcpReplyColour()));
+            if (user)
+                user->setClientVersion(output);
+        }
+        else if (cmd.toUpper() == "USERINFO")
+        {
+            emit outputString(this->currentChannel(),
+                              colorize(tr("! %1 is %2").arg(prettySender, output),
+                                       colourPalette.ctcpReplyColour()));
+            if (user)
+                user->setUserInfo(output);
+        }
     }
     else
     {
@@ -384,10 +423,14 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         emit outputString(this->host(),
                           colorize(tr("[INFO] %1").arg(IrcUtil::messageToHtml(MID_(1))),
                                    colourPalette.info()));
-    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
+    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_") &&
+            message->code() != Irc::ERR_BADCHANNELKEY)
+    {
         emit outputString(this->host(),
                           colorize(tr("[ERROR] %1").arg(IrcUtil::messageToHtml(MID_(1))),
                                    colourPalette.info()));
+        emit displayError(MID_(1));
+    }
 
     switch (message->code())
     {
@@ -566,26 +609,102 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
     }
 
     // First format the message...
-    if (message->isAction())
-        output = colorize(tr("*** %1 %2").arg(sender, msg), colourPalette.action());
-    else if (message->isRequest())
-        output = colorize(tr("*** %1 requested %2")
-                          .arg(sender, msg.split(" ").value(0).toLower()),
-                          colourPalette.serverReply());
-    else
-        output = tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp);
 
-    // Now send it to the UI...
-    if (message->target() == nickName())
+    if (message->isRequest())
+        // Requests require special handling...
+        handleRequestMessage(message);
+    else
     {
-        // This is a private message.
-        if (!isAway())
-            emit queryReceived(senderName, output);
+
+        if (message->isAction())
+            output = colorize(tr("*** %1 %2").arg(sender, msg), colourPalette.action());
+
+        else
+            output = tr("%3&lt;%1&gt; %2").arg(sender, msg, timestamp);
+
+        // Now send it to the UI...
+        if (message->target() == nickName())
+        {
+            // This is a private message.
+            if (!isAway())
+                emit queryReceived(senderName, output);
+        }
+        else
+            // It's a channel message...
+            emit outputString(message->target(), output);
+    }
+}
+
+void Session::handleRequestMessage(IrcPrivateMessage *message)
+{
+    const QString sender = prettyUser(message->sender());
+    const QString senderName = message->sender().name();
+    const QString msg = IrcUtil::messageToHtml(message->message());
+    QString output;
+    QString reply;
+    QString upperMessage = message->message().toUpper();
+    // Get the device info for the phone model...
+    QSystemDeviceInfo *deviceInfo = new QSystemDeviceInfo(this);
+    IrcCommand *command;
+    ConnectionSettings settings;
+
+    // First output the request...
+    output = colorize(tr("*** %1 requested %2")
+                      .arg(sender, msg.split(" ").value(0).toLower()),
+                      colourPalette.serverReply());
+    emit outputString(this->host(), output);
+    qDebug() << upperMessage;
+
+    // Formulate the reply...
+    if(upperMessage == "VERSION")
+    {
+        QString ver = VERSIONNO;
+        reply = "VERSION BelleChat:" + ver + ":" + deviceInfo->model();
+        qDebug() << reply;
+
+    }
+    else if (upperMessage == "SOURCE")
+    {
+        reply = "SOURCE https://github.com/marknotgeorge/BelleChat";
+    }
+    else if (upperMessage == "USERINFO" && settings.allowUserInfo())
+    {
+        reply = "USERINFO " + settings.userInfo();
+    }
+    else if (upperMessage == "CLIENTINFO")
+    {
+        reply = "CLIENTINFO VERSION SOURCE TIME PING";
+        if (settings.allowUserInfo())
+            reply = reply + " USERINFO";
+    }
+    else if (upperMessage == "TIME")
+    {
+        // Do nothing. It's handled by Communi...
+    }
+    else if (upperMessage.startsWith("PING"))
+    {
+        // Do nothing. It's handled by Communi...
     }
     else
-        // It's a channel message...
-        emit outputString(message->target(), output);
+    {
+        reply = "ERRMSG I don't understand that request.";
+    }
+
+    // Send the reply and echo it to UI...
+    if (!reply.isEmpty())
+    {
+        command = IrcCommand::createCtcpReply(senderName, reply);
+        if(command)
+        {
+            QString replyString = colorize(tr("*** Reply to %1: %2")
+                                           .arg(sender, reply),
+                                           colourPalette.serverReply());
+            outputString(this->host(), replyString);
+            sendCommand(command);
+        }
+    }
 }
+
 
 void Session::handleQuitMessage(IrcQuitMessage *message)
 {
@@ -1126,7 +1245,7 @@ void Session::setIsAway(bool newIsAway)
     emit isAwayChanged(newIsAway);
 }
 
-bool Session::validChannelName(QString channel)
+bool Session::isValidChannelName(QString channel)
 {
     QRegExp channelRegExp("[#&+!]*", Qt::CaseInsensitive, QRegExp::Wildcard);
     // TODO: Find a better regular expression!
@@ -1138,6 +1257,42 @@ bool Session::validChannelName(QString channel)
     return valid;
 
 }
+
+void Session::autoJoinChannels()
+{
+    ConnectionSettings settings;
+
+    QString chanList = settings.autoJoinChanList();
+
+    QStringList channelsToJoin = chanList.split(" ");
+
+    foreach (QString chanString, channelsToJoin)
+    {
+        if (isValidChannelName(chanString))
+        {
+            IrcCommand *command;
+            command = IrcCommand::createJoin(chanString);
+            sendCommand(command);
+        }
+        else
+        {
+            emit displayError(tr("%1 is not a valid channel name!").arg(chanString));
+        }
+    }
+}
+
+void Session::sendCtcpRequest(QString target, QString request)
+{
+    IrcCommand *command;
+    command = IrcCommand::createCtcpRequest(target, request);
+    sendCommand(command);
+}
+
+WhoIsItem *Session::getWhoIs(QString user)
+{
+    return (WhoIsItem *)whoisHash.value(user);
+}
+
 
 
 

@@ -16,6 +16,7 @@ class Palette : public QObject
     Q_PROPERTY (QString quitColour READ quitColour WRITE setQuitColour NOTIFY quitColourChanged)
     Q_PROPERTY (QString nickColour READ nickColour WRITE setNickColour NOTIFY nickColourChanged)
     Q_PROPERTY (QString timestampColour READ timestampColour WRITE setTimestampColour NOTIFY timestampColourChanged)
+    Q_PROPERTY (QString ctcpReplyColour READ ctcpReplyColour WRITE setCtcpReplyColour NOTIFY ctcpReplyColourChanged)
 
 
 public:
@@ -31,6 +32,7 @@ signals:
     void quitColourChanged(QString newQuitColour);
     void nickColourChanged(QString newNickColour);
     void timestampColourChanged(QString newTimestampColourChanged);
+    void ctcpReplyColourChanged(QString newCtcpReply);
 
 public slots:
     QString motd();
@@ -42,6 +44,7 @@ public slots:
     QString quitColour();
     QString nickColour();
     QString timestampColour();
+    QString ctcpReplyColour();
 
     void setMotd(QString newMotd);
     void setInfo(QString newInfo);
@@ -52,6 +55,7 @@ public slots:
     void setQuitColour(QString newQuitColour);
     void setNickColour(QString newNickColour);
     void setTimestampColour(QString newTimestampColour);
+    void setCtcpReplyColour(QString newCtcpReplyColour);
 
 private:
 
