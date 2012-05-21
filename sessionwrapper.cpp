@@ -375,7 +375,9 @@ void Session::handleNoticeMessage(IrcNoticeMessage *message)
         }
 
         if (cmd.toUpper() == "PING")
-            emit outputString(this->host(), formatPingReply(message->sender(), arg));
+            emit outputString(this->currentChannel(),
+                              colorize(formatPingReply(message->sender(), arg),
+                              colourPalette.ctcpReplyColour()));
 
         else if (cmd.toUpper() == "TIME")
             emit outputString(this->currentChannel(),
@@ -659,7 +661,8 @@ void Session::handleRequestMessage(IrcPrivateMessage *message)
     if(upperMessage == "VERSION")
     {
         QString ver = VERSIONNO;
-        reply = "VERSION BelleChat:" + ver + ":" + deviceInfo->model();
+        reply = "VERSION BelleChat:" + ver.remove('\"') + ":" +
+                deviceInfo->manufacturer() + " " + deviceInfo->model();
         qDebug() << reply;
 
     }
@@ -1291,6 +1294,11 @@ void Session::sendCtcpRequest(QString target, QString request)
 WhoIsItem *Session::getWhoIs(QString user)
 {
     return (WhoIsItem *)whoisHash.value(user);
+}
+
+QString Session::getTimeString()
+{
+    return QString::number(QDateTime::currentDateTime().toTime_t());
 }
 
 

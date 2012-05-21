@@ -74,6 +74,7 @@ public slots:
     Q_INVOKABLE void autoJoinChannels();
     Q_INVOKABLE void sendCtcpRequest(QString target, QString request);
     Q_INVOKABLE WhoIsItem* getWhoIs(QString user);
+    Q_INVOKABLE QString getTimeString();
 
 
 

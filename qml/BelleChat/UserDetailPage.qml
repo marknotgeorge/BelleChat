@@ -85,7 +85,8 @@ Page {
                 id: pingUser
                 text: "Ping " + userItem.name
                 onClicked: {
-                    ctcpRequest("PING")
+                    var requestString = "PING " + Session.getTimeString()
+                    ctcpRequest(requestString)
                     pageStack.pop(initialPage)
                 }
             }
@@ -156,6 +157,15 @@ Page {
             spacing: platformStyle.paddingMedium
 
             ListItemText {
+                id:noInfoAvailable
+                role: "Title"
+                text: "No information available"
+                visible: !(userLabel.visible || serverLabel.visible ||
+                           channelsLabel.visible || onlineSinceLabel.visible ||
+                           clientVersionLabel.visible || userInfoLabel.visible)
+            }
+
+            ListItemText {
                 id: userLabel
                 role: "Title"
                 text: "User is"
@@ -167,6 +177,7 @@ Page {
                 text: userItem.user
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                visible: text.length
             }
             ListItemText {
                 id: serverLabel
@@ -178,18 +189,20 @@ Page {
                 id: serverData
                 role: "Subtitle"
                 text: userItem.server
+                visible: text.length
             }
             ListItemText {
                 id: channelsLabel
                 role: "Title"
                 text: "On channels"
-                visible: channelsData.text.length
+                visible: channelsData.text.length                
             }
             Label {
                 id: channelsData
                 width: parent.width
                 wrapMode: Text.Wrap
                 text: userItem.channels
+                visible: text.length
             }
             ListItemText {
                 id: onlineSinceLabel
@@ -201,6 +214,7 @@ Page {
                 id: onlineSinceData
                 role: "Subtitle"
                 text: Qt.formatDateTime(userItem.onlineSince)
+                visible: text.length
             }
             ListItemText {
                 id: clientVersionLabel
@@ -212,6 +226,7 @@ Page {
                 id: clientVersionData
                 role: "Subtitle"
                 text: userItem.clientVersion
+                visible: text.length
             }
             ListItemText {
                 id: userInfoLabel
@@ -226,6 +241,7 @@ Page {
                 font.pixelSize: platformStyle.fontSizeSmall
                 wrapMode: Text.Wrap
                 text: userItem.userInfo
+                visible: text.length
             }
         }
     }

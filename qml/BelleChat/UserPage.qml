@@ -174,8 +174,8 @@ Page {
                     id: pingUser
                     text: "Ping " + Session.removeMode(userView.currentItem.username)
                     onClicked: {
-                        var timeStamp = new Time()
-                        var requestString = "PING " + Qt.formatTime(timeStamp)
+                        var timeStamp = new Date()
+                        var requestString = "PING " + Session.getTimeString()
                         ctcpRequest(requestString)
                     }
                 }
