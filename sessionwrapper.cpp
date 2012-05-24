@@ -920,6 +920,11 @@ bool Session::removeUser(QString user, QString channel)
     // Put the list back in the hashtable...
     nicknames.insert(channel, nicknameList);
 
+    // Remove if the user is in the WhoIs table, delete the entry...
+    WhoIsItem *itemToRemove = (WhoIsItem *)whoisHash.value(user);
+    if (itemToRemove)
+        delete itemToRemove;
+
 
     // If this list is open, update it.
     if (openUserList == channel)
