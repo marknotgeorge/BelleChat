@@ -85,6 +85,7 @@ Page {
 
     ListView {
         id: userView
+        property string currentUser
         anchors { left: parent.left;
             right: parent.right;
             top: userHeading.bottom;
@@ -98,8 +99,11 @@ Page {
             username: modelData
             propername: Session.getRealname(modelData)
             onPressAndHold: {
+                // Fix the current user so the context menu doesn't change as
+                // users join and leave the list.
+                currentUser = Session.removeMode(userView.currentItem.username)
                 // Only show the context menu if the user's not us...
-                if (Session.removeMode(userView.currentItem.username) !== Session.nickName)
+                if (currentUser !== Session.nickName)
                     userContextMenu.open()
             }
             onClicked: {
@@ -137,10 +141,10 @@ Page {
                 }
                 MenuItem {
                     id: slapUser
-                    text: "Slap " + Session.removeMode(userView.currentItem.username)
+                    text: "Slap " + userView.currentUser
                     onClicked: {
                         var slapString = "/me slapped "
-                                + Session.removeMode(userView.currentItem.username)
+                                + Session.removeMode(userView.currentUser)
                                 + " with a wet kipper!"
                         Session.onInputReceived(Session.currentChannel, slapString)
                         pageStack.pop()
@@ -148,9 +152,9 @@ Page {
                 }
                 MenuItem {
                     id: queryUser
-                    text: "Query " + Session.removeMode(userView.currentItem.username)
+                    text: "Query " + userView.currentUser
                     onClicked: {
-                        var user = Session.removeMode(userView.currentItem.username)
+                        var user = userView.currentUser
                         var button = initialPage.findButton(user)
                         if (button)
                             initialPage.selectTab(user)
@@ -172,7 +176,7 @@ Page {
             MenuLayout {
                 MenuItem {
                     id: pingUser
-                    text: "Ping " + Session.removeMode(userView.currentItem.username)
+                    text: "Ping " + userView.currentUser
                     onClicked: {
                         var timeStamp = new Date()
                         var requestString = "PING " + Session.getTimeString()
@@ -181,12 +185,12 @@ Page {
                 }
                 MenuItem {
                     id: timeUser
-                    text: "Get " + Session.removeMode(userView.currentItem.username) + "'s local time"
+                    text: "Get " + Session.removeMode(userView.currentUser) + "'s local time"
                     onClicked: ctcpRequest("TIME")
                 }
                 MenuItem {
                     id: versionUser
-                    text: "Get " + Session.removeMode(userView.currentItem.username) + "'s client version"
+                    text: "Get " + Session.removeMode(userView.currentUser) + "'s client version"
                     onClicked:
                     {
                         ctcpRequest("VERSION")
@@ -194,7 +198,7 @@ Page {
                 }
                 MenuItem {
                     id: infoUser
-                    text: "Get " + Session.removeMode(userView.currentItem.username) + "'s info"
+                    text: "Get " + Session.removeMode(userView.currentUser) + "'s info"
                     onClicked: ctcpRequest("USERINFO")
                 }
             }
@@ -203,7 +207,7 @@ Page {
 
     function ctcpRequest(request)
     {
-        var user = Session.removeMode(userView.currentItem.username)
+        var user = Session.removeMode(userView.currentUser)
         Session.sendCtcpRequest(user, request)
         pageStack.pop()
     }
