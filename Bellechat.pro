@@ -15,13 +15,22 @@ symbian:TARGET.UID3 = 0x2006280c
 symbian:ICON = BelleChat.svg
 
 symbian {
-      DEPLOYMENT.installer_header=0xA000D7CE
+     # DEPLOYMENT.installer_header=0xA000D7CE
 
       vendorinfo = "%{\"marknotgeorge-EN\"}" ":\"marknotgeorge\""
 
       my_deployment.pkg_prerules = vendorinfo
+
+    my_deployment.pkg_prerules += \
+        "; Dependency to Symbian Qt Quick components" \
+        "(0x200346DE), 1, 1, 0, {\"Qt Quick components\"}"
+
+
+
       DEPLOYMENT += my_deployment
   }
+
+
 
 DEFINES += COMMUNI_STATIC
 
