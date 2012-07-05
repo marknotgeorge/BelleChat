@@ -210,7 +210,7 @@ Page {
 
             Label {
                 id: autoJoinChanListLabel
-                text: qsTr("Channels to join (separate with space)")
+                text: qsTr("Channels to join\n Format: channel [key], channel [key], ...")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
                 visible: autoJoinChannelsSwitch.checked

@@ -104,6 +104,7 @@ PageStackWindow {
             var outputString = "Connection to " + appConnectionSettings.host + " cancelled!"
             initialPage.outputToTab("Server", outputString)
             Session.close()
+            buttonConnect.state = "Disconnected"
         }
     }
 

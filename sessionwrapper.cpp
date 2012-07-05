@@ -377,7 +377,7 @@ void Session::handleNoticeMessage(IrcNoticeMessage *message)
         if (cmd.toUpper() == "PING")
             emit outputString(this->currentChannel(),
                               colorize(formatPingReply(message->sender(), arg),
-                              colourPalette.ctcpReplyColour()));
+                                       colourPalette.ctcpReplyColour()));
 
         else if (cmd.toUpper() == "TIME")
             emit outputString(this->currentChannel(),
@@ -1272,21 +1272,57 @@ void Session::autoJoinChannels()
 
     QString chanList = settings.autoJoinChanList();
 
-    QStringList channelsToJoin = chanList.split(" ");
-
-    foreach (QString chanString, channelsToJoin)
+    // See if we're using the new style "channel1 key1, channel2 key2 style...
+    if (chanList.contains(","))
     {
-        if (isValidChannelName(chanString))
+
+        QStringList channelsToJoin = chanList.split(",");
+        qDebug() << channelsToJoin;
+
+        foreach (QString chanString, channelsToJoin)
         {
-            IrcCommand *command;
-            command = IrcCommand::createJoin(chanString);
-            sendCommand(command);
-        }
-        else
-        {
-            emit displayError(tr("%1 is not a valid channel name!").arg(chanString));
+            QStringList chanAndKey = chanString.split(" ", QString::SkipEmptyParts);
+            qDebug() << chanAndKey;
+
+            if (isValidChannelName(chanAndKey[0]))
+            {
+                IrcCommand *command;
+                if (chanAndKey.count() == 1)
+                    // channel has no key...
+                    command = IrcCommand::createJoin(chanAndKey[0]);
+                else
+                    // channel has key...
+                    command = IrcCommand::createJoin(chanAndKey[0], chanAndKey[1]);
+                sendCommand(command);
+            }
+            else
+            {
+                qDebug() << chanAndKey[0];
+                emit displayError(tr("%1 is not a valid channel name!").arg(chanAndKey[0]));
+
+            }
         }
     }
+    else
+    {
+        // We must be using the old style channel list...
+        QStringList channelsToJoin = chanList.split(" ");
+
+        foreach (QString chanString, channelsToJoin)
+        {
+            if (isValidChannelName(chanString))
+            {
+                IrcCommand *command;
+                command = IrcCommand::createJoin(chanString);
+                sendCommand(command);
+            }
+            else
+            {
+                emit displayError(tr("%1 is not a valid channel name!").arg(chanString));
+            }
+        }
+    }
+
 }
 
 void Session::sendCtcpRequest(QString target, QString request)
