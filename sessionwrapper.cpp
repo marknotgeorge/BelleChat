@@ -13,6 +13,7 @@
 #include "connectionsettings.h"
 #include "sessionwrapper.h"
 #include <QSystemDeviceInfo>
+#include "sleeper.h"
 
 QTM_USE_NAMESPACE
 
@@ -24,12 +25,15 @@ QTM_USE_NAMESPACE
 Session::Session(QObject *parent) :
     IrcSession(parent)
 {
-    //connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
+    connect(this, SIGNAL(connected()), this, SLOT(onConnected()));
     connect(this, SIGNAL(messageReceived(IrcMessage*)), this, SLOT(onMessageReceived(IrcMessage*)));
     //connect(parent, SIGNAL(sendInputString(QString, QString)), this, SLOT(onInputReceived(QString, QString)));
     //connect(parent, SIGNAL(refreshNames(QString)), this, SLOT(onRefreshNames(QString)));
     connect(this, SIGNAL(password(QString*)), this, SLOT(onPassword(QString*)));
     //connect(parent, SIGNAL(updateSettings(Connection*)), this, SLOT(onUpdateConnection(Connection*)));
+
+    // Connect up the ident server slots and strings
+    connect(&identServer, SIGNAL(newConnection()), this, SLOT(onIdentNewConnection()));
 
     m_currentChannel = "Server";
     m_lastChannel = "Server";
@@ -1340,6 +1344,55 @@ WhoIsItem *Session::getWhoIs(QString user)
 QString Session::getTimeString()
 {
     return QString::number(QDateTime::currentDateTime().toTime_t());
+}
+
+void Session::open()
+{
+    ConnectionSettings settings;
+
+    // Listen on port 113 for an ident request...
+    if (settings.respondToIdent())
+    {
+        if(!identServer.isListening())
+        {
+            qDebug() << "Opening ident port...";
+            identServer.listen(QHostAddress::Any, 113);
+            // Wait a couple of seconds...
+            //Sleeper snooze;
+            //snooze.sleep(2);
+        }
+    }
+
+    IrcSession::open();
+}
+
+void Session::onIdentNewConnection()
+{
+    // The host has opened a TCP socket. Connect the signal to the slot to read the data.
+    qDebug() << "TCP Socket opened...";
+    identSocket = identServer.nextPendingConnection();
+    connect(identSocket, SIGNAL(readyRead()), this, SLOT(onIdentReadyRead()));
+}
+
+void Session::onIdentReadyRead()
+{
+    // An ident request has been received from the IRC server.
+    // This function creates a response.
+    char buffer[1024] = {0};
+
+    // Read the request...
+    identSocket->read(buffer, identSocket->bytesAvailable());
+    qDebug() << "Ident: " << buffer;
+    QString bufferString = QString::fromLatin1(buffer);
+
+    // Create a response...
+    QString responseString = bufferString + " : USERID : UNIX : " + nickName();
+    qDebug() << "Response: " << responseString;
+    identSocket->write(responseString.toUtf8());
+
+    // Close the socket and the server...
+    identSocket->close();
+    identServer.close();
 }
 
 

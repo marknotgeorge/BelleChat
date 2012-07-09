@@ -203,11 +203,16 @@ Page {
             }
 
             LabelledSwitch {
+                id: respondToIdentSwitch
+                text: qsTr("Respond to ident request")
+                checked: appConnectionSettings.respondToIdent
+            }
+
+            LabelledSwitch {
                 id: autoJoinChannelsSwitch
                 text: qsTr("Join channels on connection")
                 checked: appConnectionSettings.autoJoinChannels
             }
-
             Label {
                 id: autoJoinChanListLabel
                 text: qsTr("Channels to join\n Format: channel [key], channel [key], ...")
@@ -333,7 +338,12 @@ Page {
             appConnectionSettings.setTimeoutInterval(timeoutIntervalField.text)
             dirty = true
         }
+        if (respondToIdentSwitch.checked !== appConnectionSettings.respondToIdent)
+        {
 
+            appConnectionSettings.setRespondToIdent(respondToIdentSwitch.checked)
+            dirty = true
+        }
         if (autoJoinChannelsSwitch.checked !== appConnectionSettings.autoJoinChannels)
         {
 

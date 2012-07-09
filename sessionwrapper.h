@@ -11,6 +11,8 @@
 #include "whoisitem.h"
 #include "channellistitem.h"
 #include "palette.h"
+#include <QTcpServer>
+#include <QTcpSocket>
 
 
 
@@ -75,6 +77,10 @@ public slots:
     Q_INVOKABLE void sendCtcpRequest(QString target, QString request);
     Q_INVOKABLE WhoIsItem* getWhoIs(QString user);
     Q_INVOKABLE QString getTimeString();
+    Q_INVOKABLE void open();
+
+    void onIdentNewConnection();
+    void onIdentReadyRead();
 
 
 
@@ -90,6 +96,8 @@ private:
     QStringList nicknameList;
     bool newNames;
     Palette colourPalette;
+    QTcpServer identServer;
+    QTcpSocket *identSocket;
 
 
     // Command parsing instructions...
@@ -145,6 +153,8 @@ protected:
     QString getTimestamp();
     QString formatInput(const QString& inputString);
     bool removeUser(QString user, QString channel);
+
+
 
 
 

@@ -154,6 +154,12 @@ QString ConnectionSettings::userInfo()
     return settings.value("userInfo", "I'm not even supposed to be here today!").toString();
 }
 
+bool ConnectionSettings::respondToIdent()
+{
+    QSettings settings;
+    return settings.value("respondToIdent", "false").toBool();
+}
+
 
 
 void ConnectionSettings::setHost(QString newHost)
@@ -332,6 +338,13 @@ void ConnectionSettings::setUserInfo(QString newUserInfo)
     QSettings settings;
     settings.setValue("userInfo", newUserInfo);
     emit userInfoChanged(newUserInfo);
+}
+
+void ConnectionSettings::setRespondToIdent(bool newRespondToIdent)
+{
+    QSettings settings;
+    settings.setValue("respondToIdent", newRespondToIdent);
+    emit respondToIdentChanged(newRespondToIdent);
 }
 
 

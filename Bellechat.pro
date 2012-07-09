@@ -9,9 +9,10 @@ symbian:TARGET = BelleChat
 # This needs to be the path to where Communi is installed
 QML_IMPORT_PATH = ../communi/imports/Communi
 
-# UID Supplied by Nokia...
-#symbian:TARGET.UID3 = 0xE2F428B1
-symbian:TARGET.UID3 = 0x2006280c
+# UIDs. Use this one when compiling self-signed...
+symbian:TARGET.UID3 = 0xE2F428B1
+# Use this one when compuling using the developer cert/key pair...
+#symbian:TARGET.UID3 = 0x2006280c
 symbian:ICON = BelleChat.svg
 
 symbian {
@@ -62,7 +63,8 @@ SOURCES += main.cpp \
     sessionwrapper.cpp \
     channellistitem.cpp \
     whoisitem.cpp \
-    palette.cpp
+    palette.cpp \
+    sleeper.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -82,7 +84,8 @@ HEADERS += \
     sessionwrapper.h \
     channellistitem.h \
     whoisitem.h \
-    palette.h
+    palette.h \
+    sleeper.h
 
 OTHER_FILES += \
     ReadMe.txt \

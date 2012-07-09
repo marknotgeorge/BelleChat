@@ -30,6 +30,7 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (QString autoJoinChanList READ autoJoinChanList WRITE setAutoJoinChanList NOTIFY autoJoinChanListChanged)
     Q_PROPERTY (bool allowUserInfo READ allowUserInfo WRITE setAllowUserInfo NOTIFY allowUserInfoChanged)
     Q_PROPERTY (QString userInfo READ userInfo WRITE setUserInfo NOTIFY userInfoChanged)
+    Q_PROPERTY (bool respondToIdent READ respondToIdent WRITE setRespondToIdent NOTIFY respondToIdentChanged)
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -57,6 +58,7 @@ public:
     Q_INVOKABLE QString autoJoinChanList();
     Q_INVOKABLE bool allowUserInfo();
     Q_INVOKABLE QString userInfo();
+    Q_INVOKABLE bool respondToIdent();
 
 
 
@@ -84,6 +86,7 @@ signals:
     void autoJoinChanListChanged(QString newAutoJoinChanList);
     void allowUserInfoChanged(bool newAllowUserInfo);
     void userInfoChanged(QString newUserInfo);
+    void respondToIdentChanged(bool newRespondToIdent);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -111,6 +114,7 @@ public slots:
     Q_INVOKABLE void setAutoJoinChanList(QString newAutoJoinChanList);
     Q_INVOKABLE void setAllowUserInfo(bool newAllowUserInfo);
     Q_INVOKABLE void setUserInfo(QString newUserInfo);
+    Q_INVOKABLE void setRespondToIdent(bool newRespondToIdent);
 
 private:
 
