@@ -15,8 +15,7 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
         platformRightMargin: returnButton.width + platformStyle.paddingSmall
-        placeholderText: "Tap to write..."
-        inputMethodHints: Qt.ImhNoPredictiveText
+        placeholderText: "Tap to write..."        
         Keys.onEnterPressed: {
             var page = outputTabGroup.currentTab
             var inputChannel = page.channel

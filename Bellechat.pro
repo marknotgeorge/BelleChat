@@ -10,9 +10,9 @@ symbian:TARGET = BelleChat
 QML_IMPORT_PATH = ../communi/imports/Communi
 
 # UIDs. Use this one when compiling self-signed...
-symbian:TARGET.UID3 = 0xE2F428B1
+#symbian:TARGET.UID3 = 0xE2F428B1
 # Use this one when compuling using the developer cert/key pair...
-#symbian:TARGET.UID3 = 0x2006280c
+symbian:TARGET.UID3 = 0x2006280c
 symbian:ICON = BelleChat.svg
 
 symbian {

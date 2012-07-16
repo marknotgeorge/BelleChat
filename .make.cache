@@ -6,4 +6,4 @@
 #                make sis target.
 #  Version     : 
 # ==============================================================================
-QT_SIS_TARGET ?= DEBUG-armv5
+QT_SIS_TARGET ?= RELEASE-armv5

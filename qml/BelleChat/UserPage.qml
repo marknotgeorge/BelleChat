@@ -37,13 +37,13 @@ Page {
             onClicked: {
                 pageStack.pop()
             }
-//            onPressedChanged: userBackToolTip.visible = pressed
-//            ToolTip {
-//                id: userBackToolTip
-//                text: "Back"
-//                target: userBackButton
-//                visible: userBackButton.pressed
-//            }
+            //            onPressedChanged: userBackToolTip.visible = pressed
+            //            ToolTip {
+            //                id: userBackToolTip
+            //                text: "Back"
+            //                target: userBackButton
+            //                visible: userBackButton.pressed
+            //            }
         }
 
         ToolButton {
@@ -53,13 +53,13 @@ Page {
             onClicked: {
                 Session.sendNames(Session.currentChannel)
             }
-//            onPressedChanged: refreshToolTip.visible = pressed
-//                ToolTip {
-//                    id: refreshToolTip
-//                    text: "Refresh names"
-//                    target: refreshToolButton
-//                    visible: userBackButton.pressed
-//                }
+            //            onPressedChanged: refreshToolTip.visible = pressed
+            //                ToolTip {
+            //                    id: refreshToolTip
+            //                    text: "Refresh names"
+            //                    target: refreshToolButton
+            //                    visible: userBackButton.pressed
+            //                }
         }
 
         ToolButton {
@@ -86,6 +86,7 @@ Page {
     ListView {
         id: userView
         property string currentUser
+        property bool currentUserIsOp
         anchors { left: parent.left;
             right: parent.right;
             top: userHeading.bottom;
@@ -101,9 +102,14 @@ Page {
             onPressAndHold: {
                 // Fix the current user so the context menu doesn't change as
                 // users join and leave the list.
-                currentUser = Session.removeMode(userView.currentItem.username)
+                var userNow = userView.currentItem.username
+                userView.currentUser = Session.removeMode(userNow)
+                if (userNow.charAt === '@')
+                    userView.currentUserIsOp = true
+                else
+                    userView.currentUserIsOp = false
                 // Only show the context menu if the user's not us...
-                if (currentUser !== Session.nickName)
+                if (userView.currentUser !== Session.nickName)
                     userContextMenu.open()
             }
             onClicked: {
@@ -116,28 +122,14 @@ Page {
             flickableItem: userView
         }
 
-        TextPickerDialog {
-            id: enterReason
-            titleText: "Enter Kick reason"
-            placeholderText: "Enter reason for kick..."
-            acceptButtonText: "Ok"
-            rejectButtonText: "Cancel"
-            onAccepted: {
-                Session.kick(Session.currentChannel, userView.currentItem.username, text)
-                pageStack.pop()
-            }
-        }
 
         ContextMenu {
             id: userContextMenu
             MenuLayout {
                 MenuItem{
-                    id: kickUser
-                    visible: false
-                    text: "Kick"
-                    onClicked: {
-                        enterReason.open()
-                    }
+                    id: ignoreUser
+                    text: qsTr("Ignore ") + userView.currentUser
+                    visible: false // !userview.currentUserIsOp
                 }
                 MenuItem {
                     id: slapUser
@@ -210,7 +202,8 @@ Page {
         var user = Session.removeMode(userView.currentUser)
         Session.sendCtcpRequest(user, request)
         pageStack.pop()
-    }
+    }    
+
 }
 
 
