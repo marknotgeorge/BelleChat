@@ -2,6 +2,7 @@
 import QtQuick 1.1
 import com.nokia.symbian 1.1
 import BelleChat 1.0
+import "HelpText.js" as HelpText
 
 Page {
     id: window
@@ -16,6 +17,16 @@ Page {
             onClicked: {
                 saveSettings()
                 pageStack.pop()
+            }
+        }
+        ToolButton {
+            id: helpButton
+            flat: true
+            iconSource: "toolbar-menu"
+            onClicked: {
+                var helpPage = infoPageFactory.createObject(initialPage)
+                helpPage.text = HelpText.serverHelp
+                pageStack.push(helpPage)
             }
         }
     }
@@ -204,7 +215,7 @@ Page {
 
             LabelledSwitch {
                 id: respondToIdentSwitch
-                text: qsTr("Respond to ident request")
+                text: qsTr("Respond to IDENT request")
                 checked: appConnectionSettings.respondToIdent
             }
 
