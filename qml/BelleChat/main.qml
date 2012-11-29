@@ -138,9 +138,23 @@ PageStackWindow {
         }
         onConnected: {
             buttonConnect.state = "Connected"
-            connectingDialog.close()
+            //connectingDialog.close()
             connectionTimer.stop()
             initialPage.outputToTab("Server", "Connected to " + appConnectionSettings.host + "!")
+            if (appConnectionSettings.sendNsPassword)
+            {
+                // Sends a NickServ password if one is required by the server.
+
+                // Get the correct password...
+                var pw
+                if(appConnectionSettings.nsPWIsServerPW)
+                    pw = appConnectionSettings.password
+                else
+                    pw = appConnectionSettings.nsPassword
+
+                Session.sendNickServPassword(pw)
+            }
+
             if (appConnectionSettings.showChannelList)
             {
                 fetchingChannelsDialog.open()
@@ -509,7 +523,7 @@ PageStackWindow {
                         var connectingString = "Connecting to " + appConnectionSettings.host +"..."
                         initialPage.outputToTab("Server", connectingString)
                         Session.open()
-                        connectingDialog.open()
+                        // connectingDialog.open()
                         connectionTimer.start()
                     }
                 }

@@ -160,6 +160,26 @@ bool ConnectionSettings::respondToIdent()
     return settings.value("respondToIdent", "false").toBool();
 }
 
+bool ConnectionSettings::sendNsPassword()
+{
+    QSettings settings;
+    return settings.value("sendNsPassword", "false").toBool();
+}
+
+bool ConnectionSettings::nsPWIsServerPW()
+{
+    QSettings settings;
+    return settings.value("nsPWIsServerPW", true).toBool();
+}
+
+QString ConnectionSettings::nsPassword()
+{
+    QSettings settings;
+    return settings.value("nsPassword", "password").toString();
+}
+
+
+
 
 
 void ConnectionSettings::setHost(QString newHost)
@@ -345,6 +365,27 @@ void ConnectionSettings::setRespondToIdent(bool newRespondToIdent)
     QSettings settings;
     settings.setValue("respondToIdent", newRespondToIdent);
     emit respondToIdentChanged(newRespondToIdent);
+}
+
+void ConnectionSettings::setSendNsPassword(bool newSendNsPassword)
+{
+    QSettings settings;
+    settings.setValue("sendNsPassword", newSendNsPassword);
+    emit sendNsPasswordChanged(newSendNsPassword);
+}
+
+void ConnectionSettings::setNsPWIsServerPW(bool newNsPWIsServerPW)
+{
+    QSettings settings;
+    settings.setValue("nsPWIsServerPW", newNsPWIsServerPW);
+    emit nsPWIsServerPWChanged(newNsPWIsServerPW);
+}
+
+void ConnectionSettings::setNsPassword(QString newNsPassword)
+{
+    QSettings settings;
+    settings.setValue("nsPassword", newNsPassword);
+    emit nsPasswordChanged(newNsPassword);
 }
 
 

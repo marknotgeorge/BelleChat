@@ -240,8 +240,34 @@ Page {
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
+                echoMode: TextInput.PasswordEchoOnEdit
                 //visible: (activeFocus||!inputContext.visible)
             }
+
+            LabelledSwitch {
+                id: sendNsPasswordSwitch
+                text: qsTr("Send NickServ Password")
+                checked: appConnectionSettings.sendNsPassword
+            }
+
+            LabelledSwitch {
+                id: nsPWIsServerPWSwitch
+                text: qsTr("NickServ password is same as server password")
+                checked: appConnectionSettings.nsPWIsServerPW
+            }
+
+            TextField {
+                id: nsPasswordField
+                text: appConnectionSettings.nsPassword
+                visible: !(nsPWIsServerPWSwitch.checked)
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                inputMethodHints: Qt.ImhNoAutoUppercase
+                //visible: (activeFocus||!inputContext.visible)
+            }
+
         }
 
         // Virtual keyboard handling, written by Akos Polster
@@ -366,6 +392,26 @@ Page {
         if(autoJoinChanListField.text !== appConnectionSettings.autoJoinChanList)
         {
             appConnectionSettings.setAutoJoinChanList(autoJoinChanListField.text)
+            dirty = true
+        }
+
+        if (sendNsPasswordSwitch.checked !== appConnectionSettings.sendNsPassword)
+        {
+
+            appConnectionSettings.setSendNsPassword(sendNsPasswordSwitch.checked)
+            dirty = true
+        }
+
+        if (nsPWIsServerPWSwitch.checked !== appConnectionSettings.nsPWIsServerPW)
+        {
+
+            appConnectionSettings.setNsPWIsServerPW(nsPWIsServerPWSwitch.checked)
+            dirty = true
+        }
+
+        if(nsPasswordField.text !== appConnectionSettings.nsPassword)
+        {
+            appConnectionSettings.setNsPassword(nsPasswordField.text)
             dirty = true
         }
 

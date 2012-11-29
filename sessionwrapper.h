@@ -78,6 +78,7 @@ public slots:
     Q_INVOKABLE WhoIsItem* getWhoIs(QString user);
     Q_INVOKABLE QString getTimeString();
     Q_INVOKABLE void open();
+    Q_INVOKABLE void sendNickServPassword(QString password);
 
     void onIdentNewConnection();
     void onIdentReadyRead();

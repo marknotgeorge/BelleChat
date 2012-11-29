@@ -31,6 +31,9 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool allowUserInfo READ allowUserInfo WRITE setAllowUserInfo NOTIFY allowUserInfoChanged)
     Q_PROPERTY (QString userInfo READ userInfo WRITE setUserInfo NOTIFY userInfoChanged)
     Q_PROPERTY (bool respondToIdent READ respondToIdent WRITE setRespondToIdent NOTIFY respondToIdentChanged)
+    Q_PROPERTY (bool sendNsPassword READ sendNsPassword WRITE setSendNsPassword NOTIFY sendNsPasswordChanged)
+    Q_PROPERTY (bool nsPWIsServerPW READ nsPWIsServerPW WRITE setNsPWIsServerPW NOTIFY nsPWIsServerPWChanged)
+    Q_PROPERTY (QString nsPassword READ nsPassword WRITE setNsPassword NOTIFY nsPasswordChanged)
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -59,6 +62,9 @@ public:
     Q_INVOKABLE bool allowUserInfo();
     Q_INVOKABLE QString userInfo();
     Q_INVOKABLE bool respondToIdent();
+    Q_INVOKABLE bool sendNsPassword();
+    Q_INVOKABLE bool nsPWIsServerPW();
+    Q_INVOKABLE QString nsPassword();
 
 
 
@@ -87,6 +93,9 @@ signals:
     void allowUserInfoChanged(bool newAllowUserInfo);
     void userInfoChanged(QString newUserInfo);
     void respondToIdentChanged(bool newRespondToIdent);
+    void sendNsPasswordChanged(bool newSendNsPassword);
+    void nsPWIsServerPWChanged(bool newNsPWisServerPW);
+    void nsPasswordChanged(QString newNsPassword);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -115,6 +124,9 @@ public slots:
     Q_INVOKABLE void setAllowUserInfo(bool newAllowUserInfo);
     Q_INVOKABLE void setUserInfo(QString newUserInfo);
     Q_INVOKABLE void setRespondToIdent(bool newRespondToIdent);
+    Q_INVOKABLE void setSendNsPassword(bool newSendNsPassword);
+    Q_INVOKABLE void setNsPWIsServerPW(bool newNsPWIsServerPW);
+    Q_INVOKABLE void setNsPassword(QString newNsPassword);
 
 private:
 

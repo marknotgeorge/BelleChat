@@ -608,7 +608,7 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
     QString timestamp = "";
     QString output;
 
-    qDebug() << message->toString();
+    //qDebug() << message->toString();
     if (settings.showTimestamp())
     {
         timestamp = getTimestamp();
@@ -1364,6 +1364,17 @@ void Session::open()
     }
 
     IrcSession::open();
+}
+
+void Session::sendNickServPassword(QString password)
+{
+    // Send a NickServ IDENTIFY message...
+    QString message = "IDENTIFY " + password;
+
+    IrcCommand *command;
+    command = IrcCommand::createMessage("NickServ", message);
+
+    sendCommand(command);
 }
 
 void Session::onIdentNewConnection()
