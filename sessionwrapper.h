@@ -30,7 +30,11 @@ public:
     QDeclarativeContext *context;
 
 
-
+private:
+    QString colorCodeToName(int code, const QString &defaultColor);
+    QStringList parseColours(QString noFlag);
+    QString formatFragment(QString source);
+    QString formatString(QString source);
 signals:
     void outputString(QString channel, QString output);
     void newNamesList(QString channel, int count);
@@ -79,6 +83,7 @@ public slots:
     Q_INVOKABLE QString getTimeString();
     Q_INVOKABLE void open();
     Q_INVOKABLE void sendNickServPassword(QString password);
+    Q_INVOKABLE void pressReturn();
 
     void onIdentNewConnection();
     void onIdentReadyRead();

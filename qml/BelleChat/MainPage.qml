@@ -31,16 +31,20 @@ Page {
         Keys.onReturnPressed: {
             var page = outputTabGroup.currentTab
             var inputChannel = page.channel
+
             //console.log(inputChannel, inputField.text)
             if (inputChannel === "Server")
                 inputChannel = Session.host
 
-            Session.onInputReceived(inputChannel, inputField.text)
+            Session.onInputReceived(inputChannel, inputText)
             inputField.text = "";
+
         }
         onEnabledChanged: {
             returnButton.enabled = enabled
         }
+
+
 
 
         Button {
@@ -60,8 +64,9 @@ Page {
                     inputChannel = Session.host
 
                 Session.onInputReceived(inputChannel, inputField.text)
-                inputField.text = "";
+                inputField.text = ""
 
+                //Session.pressReturn()
             }
         }
     }

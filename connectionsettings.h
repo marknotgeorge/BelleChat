@@ -34,6 +34,8 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool sendNsPassword READ sendNsPassword WRITE setSendNsPassword NOTIFY sendNsPasswordChanged)
     Q_PROPERTY (bool nsPWIsServerPW READ nsPWIsServerPW WRITE setNsPWIsServerPW NOTIFY nsPWIsServerPWChanged)
     Q_PROPERTY (QString nsPassword READ nsPassword WRITE setNsPassword NOTIFY nsPasswordChanged)
+    Q_PROPERTY (bool showMircColours READ showMircColours WRITE setShowMircColours NOTIFY showMircColoursChanged)
+
 
 public:
     explicit ConnectionSettings(QObject *parent = 0);
@@ -65,6 +67,7 @@ public:
     Q_INVOKABLE bool sendNsPassword();
     Q_INVOKABLE bool nsPWIsServerPW();
     Q_INVOKABLE QString nsPassword();
+    Q_INVOKABLE bool showMircColours();
 
 
 
@@ -96,6 +99,7 @@ signals:
     void sendNsPasswordChanged(bool newSendNsPassword);
     void nsPWIsServerPWChanged(bool newNsPWisServerPW);
     void nsPasswordChanged(QString newNsPassword);
+    void showMircColoursChanged(bool newShowMircColours);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -127,6 +131,7 @@ public slots:
     Q_INVOKABLE void setSendNsPassword(bool newSendNsPassword);
     Q_INVOKABLE void setNsPWIsServerPW(bool newNsPWIsServerPW);
     Q_INVOKABLE void setNsPassword(QString newNsPassword);
+    Q_INVOKABLE void setShowMircColours(bool newShowMircColours);
 
 private:
 

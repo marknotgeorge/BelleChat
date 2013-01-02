@@ -169,13 +169,19 @@ bool ConnectionSettings::sendNsPassword()
 bool ConnectionSettings::nsPWIsServerPW()
 {
     QSettings settings;
-    return settings.value("nsPWIsServerPW", true).toBool();
+    return settings.value("nsPWIsServerPW", "true").toBool();
 }
 
 QString ConnectionSettings::nsPassword()
 {
     QSettings settings;
     return settings.value("nsPassword", "password").toString();
+}
+
+bool ConnectionSettings::showMircColours()
+{
+    QSettings settings;
+    return settings.value("showMircColours", "true").toBool();
 }
 
 
@@ -386,6 +392,13 @@ void ConnectionSettings::setNsPassword(QString newNsPassword)
     QSettings settings;
     settings.setValue("nsPassword", newNsPassword);
     emit nsPasswordChanged(newNsPassword);
+}
+
+void ConnectionSettings::setShowMircColours(bool newShowMircColours)
+{
+    QSettings settings;
+    settings.setValue("showMircColours", newShowMircColours);
+    emit showMircColoursChanged(newShowMircColours);
 }
 
 

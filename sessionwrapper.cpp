@@ -14,6 +14,8 @@
 #include "sessionwrapper.h"
 #include <QSystemDeviceInfo>
 #include "sleeper.h"
+#include <QKeyEvent>
+#include <QCoreApplication>
 
 QTM_USE_NAMESPACE
 
@@ -604,11 +606,11 @@ void Session::handlePrivateMessage(IrcPrivateMessage *message)
     ConnectionSettings settings;
     const QString sender = prettyUser(message->sender());
     const QString senderName = message->sender().name();
-    const QString msg = IrcUtil::messageToHtml(message->message());
+    const QString msg = formatString(message->message());
     QString timestamp = "";
     QString output;
 
-    //qDebug() << message->toString();
+    qDebug() << message->message();
     if (settings.showTimestamp())
     {
         timestamp = getTimestamp();
@@ -1377,6 +1379,13 @@ void Session::sendNickServPassword(QString password)
     sendCommand(command);
 }
 
+void Session::pressReturn()
+{
+    QKeyEvent *event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier, "Return", false);
+    QCoreApplication::postEvent (this, event);
+
+}
+
 void Session::onIdentNewConnection()
 {
     // The host has opened a TCP socket. Connect the signal to the slot to read the data.
@@ -1406,6 +1415,253 @@ void Session::onIdentReadyRead()
     identServer.close();
 }
 
+QString Session::colorCodeToName(int code, const QString& defaultColor)
+{
+    switch (code)
+    {
+    case 0:  return QLatin1String("white");
+    case 1:  return QLatin1String("black");
+    case 2:  return QLatin1String("navy");
+    case 3:  return QLatin1String("green");
+    case 4:  return QLatin1String("red");
+    case 5:  return QLatin1String("maroon");
+    case 6:  return QLatin1String("purple");
+    case 7:  return QLatin1String("orange");
+    case 8:  return QLatin1String("yellow");
+    case 9:  return QLatin1String("lime");
+    case 10: return QLatin1String("darkcyan");
+    case 11: return QLatin1String("cyan");
+    case 12: return QLatin1String("blue");
+    case 13: return QLatin1String("magenta");
+    case 14: return QLatin1String("gray");
+    case 15: return QLatin1String("lightgray");
+    default: return defaultColor;
+    }
+}
+
+QStringList Session::parseColours (QString noFlag)
+{
+    QStringList returnList;
+    QString colours;
+    QRegExp rx(QLatin1String("(\\d{1,2})(?:,(\\d{1,2}))?"));
+    int idx = rx.indexIn(noFlag);
+    if (!idx)
+    {
+        bool ok = false;
+        QStringList styles;
+        noFlag.remove(idx, rx.matchedLength());
+
+        // foreground
+        int code = rx.cap(1).toInt(&ok);
+        if (ok)
+            styles += QString(QLatin1String("color:%1")).arg(colorCodeToName(code, QLatin1String("black")));
+
+        // background
+        code = rx.cap(2).toInt(&ok);
+        if (ok)
+            styles += QString(QLatin1String("background-color:%1")).arg(colorCodeToName(code, QLatin1String("transparent")));
+
+        // Override black-on-black text...
+        if(styles[0]== "color:black")
+            if (styles[1] == "background-color:black" || styles[1] == "background-colour:transparent")
+                styles[0] = "colour:white";
+
+        colours = styles.join(";");
+        returnList[0] = colours;
+        returnList[1] = noFlag;
+    }
+    return returnList;
+}
+
+
+
+
+// New code to format mIRC strings, given that the Communi code doesn't
+// handle non-terminated formatting codes.
+
+QString Session::formatString(QString source)
+{
+    QString message = source;
+    QRegExp formatCodes("\\x03|\\x02|\\x16|\\x09|\\x13|\\x15|\\x1f");
+
+    QStringList pieces;
+    int position = 0;
+    int lastMatch = position;
+
+    // Chop the string into pieces beginning with a formatting character...
+    while (position < message.length())
+    {
+        if (formatCodes.exactMatch(message.at(position)))
+        {
+            int newMatch = position;
+            if (newMatch > lastMatch)
+            {
+                QString fragment = message.mid(lastMatch, ((newMatch)- lastMatch));
+                if (!fragment.isEmpty())
+                    pieces.append(fragment);
+            }
+
+            lastMatch = newMatch;
+        }
+        position++;
+    }
+
+    // Format each part of the string, and join them back together...
+
+    QString returnString;
+
+    // These indicate if we've seen an opening flag...
+    bool boldFlag = false;
+    bool italicFlag = false;
+    bool underlineFlag = false;
+    bool colourFlag = false;
+    bool strikethruFlag = false;
+
+    foreach (QString fragment, pieces)
+    {
+        ConnectionSettings settings;
+        QString formatted;
+        QStringList parsedColourFragment;
+        QString noFlag = fragment.mid(1);
+
+
+        switch (fragment.at(0).unicode())
+        {
+        case '\x02': // Bold...
+            if (settings.showMircColours())
+            {
+                if (!boldFlag)  // Must be an opening code...
+                {
+                    formatted = QString("<span style='font-weight: bold'>%1").arg(noFlag);
+                    boldFlag = true;
+                }
+                else            // Must be a closing flag...
+                {
+                    formatted = "</span>";
+                    boldFlag = false;
+                }
+            }
+            else
+            {
+                formatted = noFlag;
+            }
+            break;
+
+        case '\x03': // Coloured...
+            parsedColourFragment = parseColours(noFlag);
+            if(settings.showMircColours())
+            {
+                if (!parsedColourFragment[0].isEmpty())     // We must have an opening flag...
+                {
+                    if (colourFlag) // There's no closing flag, so we must add one...
+                    {
+                        formatted = QString("</span><span style='%1'>%2").arg(parsedColourFragment[0]).arg(parsedColourFragment[1]);
+                    }
+                    else
+                    {
+                        formatted = QString("<span style='%1'>%2").arg(parsedColourFragment[0]).arg(parsedColourFragment[1]);
+                        colourFlag = true;
+                    }
+                }
+                else // There's no colour information, so this must be a closing flag...
+                {
+                    if (colourFlag)
+                        formatted = "</span>";
+                    colourFlag = false;
+                }
+            }
+            else
+            {
+                formatted = parsedColourFragment[1];
+            }
+            break;
+        case '\x09': // Italic...
+            if (settings.showMircColours())
+            {
+                if (!italicFlag)  // Must be an opening code...
+                {
+                    formatted = QString("<span style='font-style: italic'>%1").arg(noFlag);
+                    italicFlag = true;
+                }
+                else            // Must be a closing flag...
+                {
+                    formatted = "</span>";
+                    italicFlag = false;
+                }
+            }
+            else
+            {
+                formatted = noFlag;
+            }
+            break;
+        case '\x13': // Strikethru...
+            if (settings.showMircColours())
+            {
+                if (!strikethruFlag)  // Must be an opening code...
+                {
+                    formatted = QString("<span style='text-decoration: line-through'>%1").arg(noFlag);
+                    strikethruFlag = true;
+                }
+                else            // Must be a closing flag...
+                {
+                    formatted = "</span>";
+                    strikethruFlag = false;
+                }
+            }
+            else
+            {
+                formatted = noFlag;
+            }
+            break;
+        case '\x15': // Underline...
+        case '\x1f':
+            if(!noFlag.isEmpty())
+                formatted = QString("<span style='text-decoration: underline'>%1</span>").arg(noFlag);
+            if (settings.showMircColours())
+            {
+                if (!underlineFlag)  // Must be an opening code...
+                {
+                    formatted = QString("<span style='text-decoration: underline'>%1").arg(noFlag);
+                    underlineFlag = true;
+                }
+                else            // Must be a closing flag...
+                {
+                    formatted = "</span>";
+                    underlineFlag = false;
+                }
+            }
+            else
+            {
+                formatted = noFlag;
+            }
+            break;
+        default:
+            if(!noFlag.isEmpty())
+                formatted = noFlag;
+            break;
+        }
+
+        returnString.append(formatted);
+    }
+
+    // Make sure any open flags are closed...
+    if (boldFlag)
+        returnString.append("</span>");
+    if (colourFlag)
+        returnString.append("</span>");
+    if (italicFlag)
+        returnString.append("</span>");
+    if (strikethruFlag)
+        returnString.append("</span>");
+    if (underlineFlag)
+        returnString.append("</span>");
+
+
+    qDebug() << pieces;
+    qDebug() << returnString;
+
+    return returnString;
+}
 
 
 
