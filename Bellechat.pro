@@ -64,7 +64,8 @@ SOURCES += main.cpp \
     channellistitem.cpp \
     whoisitem.cpp \
     palette.cpp \
-    sleeper.cpp
+    sleeper.cpp \
+    colourpackage.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -85,7 +86,8 @@ HEADERS += \
     channellistitem.h \
     whoisitem.h \
     palette.h \
-    sleeper.h
+    sleeper.h \
+    colourpackage.h
 
 OTHER_FILES += \
     ReadMe.txt \

@@ -13,6 +13,7 @@
 #include "palette.h"
 #include <QTcpServer>
 #include <QTcpSocket>
+#include "colourpackage.h"
 
 
 
@@ -32,7 +33,7 @@ public:
 
 private:
     QString colorCodeToName(int code, const QString &defaultColor);
-    QStringList parseColours(QString noFlag);
+    ColourPackage* parseColours(QString noFlag);
     QString formatFragment(QString source);
     QString formatString(QString source);
 signals:
