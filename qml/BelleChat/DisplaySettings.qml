@@ -58,39 +58,46 @@ Page {
             ListItemText {
                 id: showTimestampLabel
                 role: "Title"
-                text: "Incoming messages"
+                text: qsTr("Incoming messages")
             }
 
             LabelledSwitch {
                 id: showTimestamp
                 checked: appConnectionSettings.showTimestamp
-                text: "Show Timestamp"
+                text: qsTr("Show Timestamp")
+                onClicked: { dirty = true }
+            }
+
+            LabelledSwitch {
+                id: showMircColours
+                checked: appConnectionSettings.showMircColours
+                text: qsTr("Show mIRC-style formatting")
                 onClicked: { dirty = true }
             }
 
             ListItemText {
                 id: showChannelListLabel
-                text: "On connection to IRC server"
+                text: qsTr("On connection to IRC server")
                 role: "Title"
             }
 
             LabelledSwitch {
                 id: showChannelList
                 checked: appConnectionSettings.showChannelList
-                text: "Show list of available channels"
+                text: qsTr("Show list of available channels")
                 onClicked: { dirty = true }
             }
 
             ListItemText {
                 id: appearanceLabel
-                text: "My Message Appearance"
+                text: qsTr("My Message Appearance")
                 role: "Title"
             }
 
             LabelledSwitch {
                 id: formatTextSwitch
                 checked: appConnectionSettings.formatText
-                text: "Formatted Text"
+                text: qsTr("Formatted Text")
                 onClicked: {
                     dirty = true
                     textColourPicker.visible = checked
@@ -102,7 +109,7 @@ Page {
 
             ColourPicker {
                 id: textColourPicker
-                text: "Text Colour"
+                text: qsTr("Text Colour")
                 picked: appConnectionSettings.textColour
                 visible: formatTextSwitch.checked
                 onAccepted: {
@@ -113,7 +120,7 @@ Page {
 
             ColourPicker {
                 id: backgroundColourPicker
-                text: "Background Colour"
+                text: qsTr("Background Colour")
                 picked: appConnectionSettings.backgroundColour
                 visible: formatTextSwitch.checked
                 onAccepted: {
@@ -136,7 +143,7 @@ Page {
                 CheckBox {
                     id: textBoldCheck
                     width: (parent.width - (parent.spacing * 2) - (platformStyle.paddingMedium *2)) / 3
-                    text: "Bold"
+                    text: qsTr("Bold")
                     checked: appConnectionSettings.textBold
                     onCheckedChanged: {
                         dirty = true;
@@ -147,7 +154,7 @@ Page {
                 CheckBox {
                     id: textItalicCheck
                     width: (parent.width - (parent.spacing * 2) - (platformStyle.paddingMedium *2)) / 3
-                    text: "Italic"
+                    text: qsTr("Italic")
                     checked: appConnectionSettings.textItalic
                     onCheckedChanged: {
                         dirty = true
@@ -158,7 +165,7 @@ Page {
                 CheckBox {
                     id: textUnderlineCheck
                     width: (parent.width - (parent.spacing * 2) - (platformStyle.paddingMedium *2)) / 3
-                    text: "Underline"
+                    text: qsTr("Underline")
                     checked: appConnectionSettings.textUnderline
                     onCheckedChanged: {
                         dirty = true
@@ -176,7 +183,7 @@ Page {
 
                 Text {
                     id: sampleText
-                    text: "Sample Text"
+                    text: qsTr("Sample Text")
                     anchors.horizontalCenter: parent.horizontalCenter
                     font.pointSize: 16
                     font.bold: textBoldCheck.checked
@@ -235,6 +242,7 @@ Page {
         if (dirty)
         {
             appConnectionSettings.setShowTimestamp(showTimestamp.checked)
+            appConnectionSettings.setShowMircColours(showMircColours.checked)
             appConnectionSettings.setTextColour(textColourPicker.picked)
             appConnectionSettings.setBackgroundColour(backgroundColourPicker.picked)
             appConnectionSettings.setTextBold(textBoldCheck.checked)
