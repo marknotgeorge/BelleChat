@@ -3,14 +3,32 @@ import QtQuick 1.1
 import com.nokia.symbian 1.1
 
 
-Text {
-    id:outputItem
-    anchors.left: parent.left
-    anchors.right: parent.right
-    wrapMode: Text.Wrap
-    font.pixelSize: platformStyle.fontSizeSmall
-    textFormat: Text.RichText
-    text: ""
-    color: platformStyle.colorNormalLight
+Rectangle {
+    id: outputItem
+    property alias text: outputItemText.text
+    height: outputItemText.height
+    width: parent.width
+    color: platformStyle.colorBackground
+
+    Text {
+        id:outputItemText
+        wrapMode: Text.Wrap
+        width: parent.width
+
+        font.pixelSize: platformStyle.fontSizeSmall
+        textFormat: Text.RichText
+        text: ""
+        color: platformStyle.colorNormalLight
+
+        onLinkActivated: {
+            var banner = infoBannerFactory.createObject(window)
+            banner.text = "Opening " + link + "..."
+            banner.iconSource = "icon-globe.svg"
+            banner.open()
+            if (!Qt.openUrlExternally(link)) {
+                linkFailureDialog.message = "Unable to open link " + link + "\n"
+            }
+        }
+    }
 }
 

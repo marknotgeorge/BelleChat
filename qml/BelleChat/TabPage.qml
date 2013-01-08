@@ -30,25 +30,25 @@ Page {
 
     ListView {
         id: outputView
+        property bool enableAutoScroll: true
         model: outputModel
         focus: true
         delegate: OutputItem {
             id: outputDelegate
             text: model.text
-            onLinkActivated: {
-                var banner = infoBannerFactory.createObject(window)
-                banner.text = "Opening " + link + "..."
-                banner.iconSource = "icon-globe.svg"
-                banner.open()
-                if (!Qt.openUrlExternally(link)) {
-                    linkFailureDialog.message = "Unable to open link " + link + "\n"
-                }
-            }
 
         }
         anchors.fill: parent
+        footer: Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 5
+            color: platformStyle.colorBackground
+        }
         clip: true
-
+        onMovementEnded: {
+            enableAutoScroll = outputView.atYEnd
+        }
     }
 
     ScrollDecorator {
@@ -58,10 +58,13 @@ Page {
 
     function addOutput(output)
     {
-        console.log(output)
+        // console.log(output)
         outputModel.append({"text": output})
         outputView.currentIndex++
-        outputView.positionViewAtEnd()
+        if (outputView.enableAutoScroll)
+        {
+            outputView.positionViewAtEnd()
+        }
     }
 
     function clear()

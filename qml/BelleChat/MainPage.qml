@@ -89,7 +89,7 @@ Page {
 
     TabGroup {
         id: outputTabGroup
-        anchors.bottomMargin: 0
+        anchors.bottomMargin: 5
         anchors.top: outputTabBarLayout.bottom
         anchors.right: parent.right
         anchors.bottom: inputField.top
