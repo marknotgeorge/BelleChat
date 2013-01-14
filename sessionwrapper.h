@@ -33,8 +33,7 @@ public:
 
 private:
     QString colorCodeToName(int code, const QString &defaultColor);
-    ColourPackage* parseColours(QString noFlag);
-    QString formatFragment(QString source);
+    QString parseColours(QString noFlag);
     QString formatString(QString source);
 signals:
     void outputString(QString channel, QString output);

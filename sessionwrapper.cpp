@@ -1449,9 +1449,9 @@ QString Session::colorCodeToName(int code, const QString& defaultColor)
     }
 }
 
-ColourPackage* Session::parseColours (QString noFlag)
+QString Session::parseColours (QString noFlag)
 {
-    ColourPackage* returnPackage = new ColourPackage();
+    QString returnString;
     QString colours;
     QRegExp rx(QLatin1String("(\\d{1,2})(?:,(\\d{1,2}))?"));
     int idx = rx.indexIn(noFlag);
@@ -1477,10 +1477,14 @@ ColourPackage* Session::parseColours (QString noFlag)
                 styles[0] = "colour:white";
 
         colours = styles.join(";");
-        returnPackage->setColours(colours);
-        returnPackage->setMessage(noFlag);
+        if(!colours.isEmpty())
+            returnString = QString("<span style = '%1'>%2")
+                    .arg(colours)
+                    .arg(noFlag);
+        else
+            returnString = noFlag;
     }
-    return returnPackage;
+    return returnString;
 }
 
 
@@ -1537,7 +1541,7 @@ QString Session::formatString(QString source)
     {
         ConnectionSettings settings;
         QString formatted;
-        ColourPackage* parsedColourFragment;
+        QString parsedColourFragment;
         QString noFlag = fragment.mid(1);
 
 
@@ -1567,32 +1571,29 @@ QString Session::formatString(QString source)
             parsedColourFragment = parseColours(noFlag);
             if(settings.showMircColours())
             {
-                if (!parsedColourFragment->colours().isEmpty())     // We must have an opening flag...
+                if (!parsedColourFragment.isEmpty())     // We must have an opening flag...
                 {
                     if (colourFlag) // There's no closing flag, so we must add one...
                     {
-                        formatted = QString("</span><span style='%1'>%2")
-                                .arg(parsedColourFragment->colours())
-                                .arg(parsedColourFragment->message());
+                        formatted = QString("</span>%1")
+                                .arg(parsedColourFragment);
                     }
                     else
                     {
-                        formatted = QString("<span style='%1'>%2")
-                                .arg(parsedColourFragment->colours())
-                                .arg(parsedColourFragment->message());
+                        formatted = parsedColourFragment;
                         colourFlag = true;
                     }
                 }
                 else // There's no colour information, so this must be a closing flag...
                 {
                     if (colourFlag)
-                        formatted = QString("</span>%1").arg(parsedColourFragment->message());
+                        formatted = QString("</span>%1").arg(parsedColourFragment);
                     colourFlag = false;
                 }
             }
             else
             {
-                formatted = parsedColourFragment->message();
+                formatted = parsedColourFragment;
             }
             break;
         case '\x09': // Italic...

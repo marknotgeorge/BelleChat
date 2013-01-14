@@ -30,6 +30,8 @@ Page {
 
     ListView {
         id: outputView
+        // Automatically scroll only when the ListView's showing the
+        // last entry, so the user can scroll back.
         property bool enableAutoScroll: true
         model: outputModel
         focus: true
