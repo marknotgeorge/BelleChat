@@ -35,6 +35,8 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool nsPWIsServerPW READ nsPWIsServerPW WRITE setNsPWIsServerPW NOTIFY nsPWIsServerPWChanged)
     Q_PROPERTY (QString nsPassword READ nsPassword WRITE setNsPassword NOTIFY nsPasswordChanged)
     Q_PROPERTY (bool showMircColours READ showMircColours WRITE setShowMircColours NOTIFY showMircColoursChanged)
+    Q_PROPERTY (bool secure READ secure WRITE setSecure NOTIFY secureChanged)
+    Q_PROPERTY (bool autoReconnect READ autoReconnect WRITE setAutoReconnect NOTIFY autoReconnectChanged)
 
 
 public:
@@ -68,6 +70,8 @@ public:
     Q_INVOKABLE bool nsPWIsServerPW();
     Q_INVOKABLE QString nsPassword();
     Q_INVOKABLE bool showMircColours();
+    Q_INVOKABLE bool secure();
+    Q_INVOKABLE bool autoReconnect();
 
 
 
@@ -100,6 +104,8 @@ signals:
     void nsPWIsServerPWChanged(bool newNsPWisServerPW);
     void nsPasswordChanged(QString newNsPassword);
     void showMircColoursChanged(bool newShowMircColours);
+    void secureChanged(bool newSecure);
+    void autoReconnectChanged(bool newAutoReconnect);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -132,6 +138,8 @@ public slots:
     Q_INVOKABLE void setNsPWIsServerPW(bool newNsPWIsServerPW);
     Q_INVOKABLE void setNsPassword(QString newNsPassword);
     Q_INVOKABLE void setShowMircColours(bool newShowMircColours);
+    Q_INVOKABLE void setSecure(bool newSecure);
+    Q_INVOKABLE void setAutoReconnect(bool newAutoReconnect);
 
 private:
 

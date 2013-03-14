@@ -184,7 +184,17 @@ bool ConnectionSettings::showMircColours()
     return settings.value("showMircColours", "true").toBool();
 }
 
+bool ConnectionSettings::secure()
+{
+    QSettings settings;
+    return settings.value("secure", "false").toBool();
+}
 
+bool ConnectionSettings::autoReconnect()
+{
+    QSettings settings;
+    return settings.value("autoReconnect", "false").toBool();
+}
 
 
 
@@ -401,7 +411,19 @@ void ConnectionSettings::setShowMircColours(bool newShowMircColours)
     emit showMircColoursChanged(newShowMircColours);
 }
 
+void ConnectionSettings::setSecure(bool newSecure)
+{
+    QSettings settings;
+    settings.setValue("secure", newSecure);
+    emit secureChanged(newSecure);
+}
 
+void ConnectionSettings::setAutoReconnect(bool newAutoReconnect)
+{
+    QSettings settings;
+    settings.setValue("autoReconnect", newAutoReconnect);
+    emit autoReconnectChanged(newAutoReconnect);
+}
 
 
 

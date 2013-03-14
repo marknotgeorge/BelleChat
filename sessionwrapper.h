@@ -13,7 +13,6 @@
 #include "palette.h"
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "colourpackage.h"
 
 
 
@@ -25,12 +24,15 @@ class Session : public IrcSession
     Q_PROPERTY(QString lastChannel READ lastChannel WRITE setLastChannel NOTIFY lastChannelChanged)
     Q_PROPERTY(int userCount READ userCount NOTIFY userCountChanged)
     Q_PROPERTY(bool isAway READ isAway WRITE setIsAway NOTIFY isAwayChanged)
+    Q_PROPERTY(bool secure READ isSecure WRITE setSecure)
 
 public:
     explicit Session(QObject *parent = 0);
     QDeclarativeContext *context;
 
 
+    void setSecure(bool secure);
+    bool isSecure() const;
 private:
     QString colorCodeToName(int code, const QString &defaultColor);
     QString parseColours(QString noFlag);
@@ -87,6 +89,7 @@ public slots:
 
     void onIdentNewConnection();
     void onIdentReadyRead();
+
 
 
 

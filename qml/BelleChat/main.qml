@@ -49,7 +49,7 @@ PageStackWindow {
 
     Component {
         id: startPageFactory
-        StartPage {}
+        ServerChoicePage {}
     }
 
     Component {
@@ -281,6 +281,14 @@ PageStackWindow {
     Menu {
         id: menuMain
         content: MenuLayout {
+            MenuItem {
+                id: menuItemDropTable
+                text: "Drop Servers Table"
+                onClicked: {
+                    Database.dropTables()
+
+                }
+            }
             MenuItem {
                 id: menuItemSettings
                 text: "Settings"
@@ -611,12 +619,12 @@ PageStackWindow {
         initialPage.outputToTab("Server", outputString)
         initialPage.outputToTab("Server", "Click the Connect button to connect to the IRC server.")
 
-        // Open the StartPage
-        if (!appConnectionSettings.supressStartPage)
-        {
+        // Open the ServerChoicePage
+        //if (!appConnectionSettings.supressStartPage)
+        //{
             var page = startPageFactory.createObject(initialPage)
             pageStack.push(page)
-        }
+        //}
     }
 
     function joinChannel(channel)

@@ -16,7 +16,7 @@
 #include "sleeper.h"
 #include <QKeyEvent>
 #include <QCoreApplication>
-#include "colourpackage.h"
+#include <QSslSocket>
 
 QTM_USE_NAMESPACE
 
@@ -161,6 +161,7 @@ void Session::updateConnection()
     ConnectionSettings settings;
     setHost(settings.host());
     setPort(settings.port());
+    setSecure(settings.secure());
     setNickName(settings.nickname());
     setUserName(settings.username());
     setRealName(settings.realname());
@@ -1360,7 +1361,7 @@ QString Session::getTimeString()
 
 void Session::open()
 {
-    ConnectionSettings settings;
+    ConnectionSettings settings;    
 
     // Listen on port 113 for an ident request...
     if (settings.respondToIdent())
@@ -1374,6 +1375,8 @@ void Session::open()
             //snooze.sleep(2);
         }
     }
+
+
 
     IrcSession::open();
 }
@@ -1684,6 +1687,31 @@ QString Session::formatString(QString source)
     return returnString;
 }
 
+bool Session::isSecure() const
+{
+#ifdef QT_NO_OPENSSL
+    return false;
+#else
+    return qobject_cast<QSslSocket*>(socket());
+#endif // QT_NO_OPENSSL
+}
+
+void Session::setSecure(bool secure)
+{
+#ifdef QT_NO_OPENSSL
+    Q_UNUSED(secure)
+#else
+    QSslSocket* sslSocket = qobject_cast<QSslSocket*>(socket());
+    if (secure && !sslSocket) {
+        sslSocket = new QSslSocket(this);
+        sslSocket->setPeerVerifyMode(QSslSocket::VerifyNone);
+        sslSocket->ignoreSslErrors();
+        setSocket(sslSocket);
+    } else if (!secure && sslSocket) {
+        setSocket(new QTcpSocket(this));
+    }
+#endif // QT_NO_OPENSSL
+}
 
 
 

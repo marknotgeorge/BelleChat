@@ -35,7 +35,7 @@ symbian {
 
 DEFINES += COMMUNI_STATIC
 
-QT += core gui network
+QT += core gui network sql
 
 # Smart Installer package's UID
 # This UID is from the protected range and therefore the package will
@@ -65,7 +65,9 @@ SOURCES += main.cpp \
     whoisitem.cpp \
     palette.cpp \
     sleeper.cpp \
-    colourpackage.cpp
+    databasemanager.cpp \
+    proxysqltablemodel.cpp \
+    sqlquerymodel.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -87,23 +89,20 @@ HEADERS += \
     whoisitem.h \
     palette.h \
     sleeper.h \
-    colourpackage.h
+    databasemanager.h \
+    proxysqltablemodel.h \
+    sqlquerymodel.h
 
 OTHER_FILES += \
     ReadMe.txt \
     HelpText.js
 
-
+INCLUDEPATH += $$PWD/../communi/include
+DEPENDPATH += $$PWD/../communi/include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../communi/lib/ -lCommuni
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../communi/lib/ -lCommunid
 else:symbian: LIBS += -lCommuni
-
-INCLUDEPATH += $$PWD/../communi/include
-DEPENDPATH += $$PWD/../communi/include
-
-#win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../communi/lib/Communi.lib
-#else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../communi/lib/Communid.lib
 
 symbian {
     # Copied from QTCREATORBUG-5589
@@ -111,3 +110,4 @@ symbian {
     ## Needs to be after other libraries
     LIBS += -lusrt2_2.lib
 }
+

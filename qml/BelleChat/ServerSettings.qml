@@ -87,20 +87,33 @@ Page {
                 //visible: portField.visible
             }
 
-            TextField {
-                id: portField
-                text: appConnectionSettings.port
-                inputMethodHints: Qt.ImhDigitsOnly
-                anchors.right: parent.right
-                anchors.rightMargin: platformStyle.paddingLarge
+            Row {
+                id: portSSLrow
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
-                validator: IntValidator {bottom: 0; top: 65535;}
-                //visible: (activeFocus||!inputContext.visible)
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+
+
+                TextField {
+                    id: portField
+                    text: appConnectionSettings.port
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    width: parent.width - sslCheckBox.width
+                    validator: IntValidator {bottom: 0; top: 65535;}
+                    //visible: (activeFocus||!inputContext.visible)
+                }
+
+                CheckBox {
+                    id: sslCheckBox
+                    text: qsTr("SSL")
+                    checked: appConnectionSettings.secure
+                    anchors.rightMargin: platformStyle.paddingLarge
+                }
             }
 
             Label {
-                id: nicknameLabel             
+                id: nicknameLabel
                 text: qsTr("Nickname")
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
@@ -176,49 +189,6 @@ Page {
                 //visible: (activeFocus||!inputContext.visible)
             }
 
-            Label {
-                id: quitMessageLabel
-                text: qsTr("Default quit message")
-                anchors.left: parent.left
-                anchors.leftMargin: platformStyle.paddingLarge
-                //visible: quitMessageField.visible
-            }
-
-            TextField {
-                id: quitMessageField
-                text: appConnectionSettings.quitMessage
-                anchors.right: parent.right
-                anchors.rightMargin: platformStyle.paddingLarge
-                anchors.left: parent.left
-                anchors.leftMargin: platformStyle.paddingLarge
-                //visible: (activeFocus||!inputContext.visible)
-            }
-
-            Label {
-                id: timeoutIntervalLabel
-                text: qsTr("Connection timeout (seconds)")
-                anchors.left: parent.left
-                anchors.leftMargin: platformStyle.paddingLarge
-            }
-
-            TextField {
-                id: timeoutIntervalField
-                text: appConnectionSettings.timeoutInterval
-                inputMethodHints: Qt.ImhDigitsOnly
-                anchors.right: parent.right
-                anchors.rightMargin: platformStyle.paddingLarge
-                anchors.left: parent.left
-                anchors.leftMargin: platformStyle.paddingLarge
-                validator: IntValidator {bottom: 0; top: 65535;}
-                //visible: (activeFocus||!inputContext.visible)
-            }
-
-            LabelledSwitch {
-                id: respondToIdentSwitch
-                text: qsTr("Respond to IDENT request")
-                checked: appConnectionSettings.respondToIdent
-            }
-
             LabelledSwitch {
                 id: autoJoinChannelsSwitch
                 text: qsTr("Join channels on connection")
@@ -252,7 +222,7 @@ Page {
 
             LabelledSwitch {
                 id: nsPWIsServerPWSwitch
-                text: qsTr("NickServ password is same as server password")
+                text: qsTr("Use server password for NickServ")
                 checked: appConnectionSettings.nsPWIsServerPW
             }
 
@@ -339,6 +309,12 @@ Page {
             appConnectionSettings.setPort(portField.text)
             dirty = true
         }
+        if (sslCheckBox.checked !== appConnectionSettings.secure)
+        {
+            appConnectionSettings.setSecure(sslCheckBox.checked)
+            dirty = true
+        }
+
         if (nicknameField.text !== appConnectionSettings.nickname)
         {
             //console.log("Nickname changed!")
@@ -363,24 +339,7 @@ Page {
             appConnectionSettings.setRealname(realnameField.text)
             dirty = true
         }
-        if (quitMessageField.text !== appConnectionSettings.quitMessage)
-        {
-            //console.log("Quit message changed")
-            appConnectionSettings.setQuitMessage(quitMessageField.text)
-            dirty = true
-        }
-        if (timeoutIntervalField.text !== appConnectionSettings.timeoutInterval.toString())
-        {
 
-            appConnectionSettings.setTimeoutInterval(timeoutIntervalField.text)
-            dirty = true
-        }
-        if (respondToIdentSwitch.checked !== appConnectionSettings.respondToIdent)
-        {
-
-            appConnectionSettings.setRespondToIdent(respondToIdentSwitch.checked)
-            dirty = true
-        }
         if (autoJoinChannelsSwitch.checked !== appConnectionSettings.autoJoinChannels)
         {
 

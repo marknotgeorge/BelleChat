@@ -31,7 +31,7 @@ Page {
         }
         ListElement {
             title: "User Info"
-            page: "UserInfoSettings.qml"
+            page: "ConnectionSettings.qml"
             icon: "icon-userinfo.svg"
         }
     }

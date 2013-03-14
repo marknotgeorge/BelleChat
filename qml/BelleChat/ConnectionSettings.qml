@@ -29,7 +29,7 @@ Page {
             id: headingText
             anchors.fill: heading.paddingItem
             role: "Heading"
-            text: qsTr("User Info Settings")
+            text: qsTr("Connection Settings")
         }
     }
 
@@ -48,6 +48,55 @@ Page {
         Column {
             id: layoutColumns
             anchors { left: parent.left; right: parent.right }
+
+            LabelledSwitch {
+                id: autoReconnectSwitch
+                text: qsTr("Reconnect on connection failure")
+                checked: appConnectionSettings.autoReconnect
+            }
+
+            Label {
+                id: quitMessageLabel
+                text: qsTr("Default quit message")
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                //visible: quitMessageField.visible
+            }
+
+            TextField {
+                id: quitMessageField
+                text: appConnectionSettings.quitMessage
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                //visible: (activeFocus||!inputContext.visible)
+            }
+
+            Label {
+                id: timeoutIntervalLabel
+                text: qsTr("Connection timeout (seconds)")
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+            }
+
+            TextField {
+                id: timeoutIntervalField
+                text: appConnectionSettings.timeoutInterval
+                inputMethodHints: Qt.ImhDigitsOnly
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                validator: IntValidator {bottom: 0; top: 65535;}
+                //visible: (activeFocus||!inputContext.visible)
+            }
+
+            LabelledSwitch {
+                id: respondToIdentSwitch
+                text: qsTr("Respond to IDENT request")
+                checked: appConnectionSettings.respondToIdent
+            }
 
             LabelledSwitch {
                 id: allowUserInfoSwitch
@@ -129,15 +178,23 @@ Page {
 
     function saveSettings()
     {
-        if (allowUserInfoSwitch.checked !== appConnectionSettings.allowUserInfo)
-        {
-            appConnectionSettings.setAllowUserInfo(allowUserInfoSwitch.checked)
-        }
+        if (quitMessageField.text !== appConnectionSettings.quitMessage)
+            appConnectionSettings.setQuitMessage(quitMessageField.text)
 
+
+        if (timeoutIntervalField.text !== appConnectionSettings.timeoutInterval.toString())
+            appConnectionSettings.setTimeoutInterval(timeoutIntervalField.text)
+
+        if (respondToIdentSwitch.checked !== appConnectionSettings.respondToIdent)
+            appConnectionSettings.setRespondToIdent(respondToIdentSwitch.checked)
+
+        if (autoReconnectSwitch.checked !== appConnectionSettings.auroReconnect)
+            appConnectionSettings.setAutoReconnect(autoReconnectSwitch.checked)
+
+        if (allowUserInfoSwitch.checked !== appConnectionSettings.allowUserInfo)
+            appConnectionSettings.setAllowUserInfo(allowUserInfoSwitch.checked)
 
         if(userInfoField.text !== appConnectionSettings.userInfo)
-        {
             appConnectionSettings.setUserInfo(userInfoField.text)
-        }
     }
 }
