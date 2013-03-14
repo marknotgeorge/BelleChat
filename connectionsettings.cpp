@@ -196,6 +196,12 @@ bool ConnectionSettings::autoReconnect()
     return settings.value("autoReconnect", "false").toBool();
 }
 
+bool ConnectionSettings::transparentBackground()
+{
+    QSettings settings;
+    return settings.value("transparentBackground", "false").toBool();
+}
+
 
 
 void ConnectionSettings::setHost(QString newHost)
@@ -423,6 +429,13 @@ void ConnectionSettings::setAutoReconnect(bool newAutoReconnect)
     QSettings settings;
     settings.setValue("autoReconnect", newAutoReconnect);
     emit autoReconnectChanged(newAutoReconnect);
+}
+
+void ConnectionSettings::setTransparentBackground(bool newTransparentBackground)
+{
+    QSettings settings;
+    settings.setValue("transparentBackground", newTransparentBackground);
+    emit transparentBackgroundChanged(newTransparentBackground);
 }
 
 

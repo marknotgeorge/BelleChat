@@ -37,6 +37,7 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool showMircColours READ showMircColours WRITE setShowMircColours NOTIFY showMircColoursChanged)
     Q_PROPERTY (bool secure READ secure WRITE setSecure NOTIFY secureChanged)
     Q_PROPERTY (bool autoReconnect READ autoReconnect WRITE setAutoReconnect NOTIFY autoReconnectChanged)
+    Q_PROPERTY (bool transparentBackground READ transparentBackground WRITE setTransparentBackground NOTIFY transparentBackgroundChanged)
 
 
 public:
@@ -72,6 +73,8 @@ public:
     Q_INVOKABLE bool showMircColours();
     Q_INVOKABLE bool secure();
     Q_INVOKABLE bool autoReconnect();
+    Q_INVOKABLE bool transparentBackground();
+
 
 
 
@@ -106,6 +109,7 @@ signals:
     void showMircColoursChanged(bool newShowMircColours);
     void secureChanged(bool newSecure);
     void autoReconnectChanged(bool newAutoReconnect);
+    void transparentBackgroundChanged(bool newTransparentBackground);
     
 public slots:
     Q_INVOKABLE void setHost(QString newHost);
@@ -140,6 +144,7 @@ public slots:
     Q_INVOKABLE void setShowMircColours(bool newShowMircColours);
     Q_INVOKABLE void setSecure(bool newSecure);
     Q_INVOKABLE void setAutoReconnect(bool newAutoReconnect);
+    Q_INVOKABLE void setTransparentBackground(bool newTransparentBackground);
 
 private:
 

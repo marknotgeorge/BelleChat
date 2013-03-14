@@ -5,8 +5,14 @@ import com.nokia.symbian 1.1
 Row {
     id:window
     height: buttonComponent.height + (platformStyle.paddingSmall*2)
-    spacing: 10
-    anchors {left: parent.left; right: parent.right }
+    spacing: platformStyle.paddingLarge
+    anchors {
+        left: parent.left
+        leftMargin: platformStyle.paddingMedium
+        right: parent.right
+        rightMargin: platformStyle.paddingMedium
+    }
+
     property string text
     property alias picked: cpd.picked
     property alias model: cpd.model

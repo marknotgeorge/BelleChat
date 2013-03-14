@@ -118,11 +118,24 @@ Page {
                 }
             }
 
+            LabelledSwitch {
+                id: transparentBackgroundSwitch
+                text: qsTr("Transparent background")
+                checked: appConnectionSettings.transparentBackground
+                onCheckedChanged: {
+                    dirty = true
+                    if (checked)
+                        sampleBackground.color = platformStyle.colorBackground
+                    else
+                        sampleBackground.color = backgroundColourPicker.model.get(backgroundColourPicker.picked).name
+                }
+            }
+
             ColourPicker {
                 id: backgroundColourPicker
                 text: qsTr("Background Colour")
                 picked: appConnectionSettings.backgroundColour
-                visible: formatTextSwitch.checked
+                visible: formatTextSwitch.checked && !transparentBackgroundSwitch.checked
                 onAccepted: {
                     dirty = true
                     sampleBackground.color = model.get(picked).name
@@ -178,7 +191,9 @@ Page {
                 id: sampleBackground
                 anchors {left: parent.left; right: parent.right }
                 height: sampleText.height
-                color: backgroundColourPicker.model.get(backgroundColourPicker.picked).name
+                color: (transparentBackgroundSwitch.checked) ?
+                           platformStyle.colorBackground :
+                           backgroundColourPicker.model.get(backgroundColourPicker.picked).name
                 visible: formatTextSwitch.checked
 
                 Text {

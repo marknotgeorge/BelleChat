@@ -20,6 +20,11 @@ Page {
     ListModel {
         id: listPages
         ListElement {
+            title: "Connection"
+            page: "ConnectionSettings.qml"
+            icon: "icon-userinfo.svg"
+        }
+        ListElement {
             title: "Server"
             page: "ServerSettings.qml"
             icon: "icon-server.svg"
@@ -28,12 +33,7 @@ Page {
             title: "Display"
             page: "DisplaySettings.qml"
             icon: "icon-device.svg"
-        }
-        ListElement {
-            title: "User Info"
-            page: "ConnectionSettings.qml"
-            icon: "icon-userinfo.svg"
-        }
+        }        
     }
 
 
