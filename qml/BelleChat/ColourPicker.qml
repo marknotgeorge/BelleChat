@@ -8,9 +8,9 @@ Row {
     spacing: platformStyle.paddingLarge
     anchors {
         left: parent.left
-        leftMargin: platformStyle.paddingMedium
+        leftMargin: platformStyle.paddingLarge
         right: parent.right
-        rightMargin: platformStyle.paddingMedium
+        rightMargin: platformStyle.paddingLarge
     }
 
     property string text
@@ -18,11 +18,10 @@ Row {
     property alias model: cpd.model
     signal accepted()
 
-    ListItemText {
+    Label {
         id: labelComponent
         text: window.text
-        width: window.width - (window.spacing * 2) - buttonComponent.width
-        role: "Subtitle"
+        width: window.width - (window.spacing * 2) - buttonComponent.width        
         anchors.verticalCenter: window.verticalCenter
     }
 

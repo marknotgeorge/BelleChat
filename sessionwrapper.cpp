@@ -433,24 +433,14 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         emit outputString(this->host(),
                           colorize(tr("[INFO] %1").arg(IrcUtil::messageToHtml(MID_(1))),
                                    colourPalette.info()));
-    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_") &&
-            message->code() != Irc::ERR_BADCHANNELKEY)
-    {
-        emit outputString(this->host(),
-                          colorize(tr("[ERROR] %1").arg(IrcUtil::messageToHtml(MID_(1))),
-                                   colourPalette.info()));
-        emit displayError(MID_(1));
-    }
+    if (QByteArray(Irc::toString(message->code())).startsWith("ERR_"))
+            handleErrorMessage(message);
+
+
 
     switch (message->code())
     {
-    case Irc::ERR_BADCHANNELKEY:
-        // This code is received when a join attempt on a protected channel fails
-        // due to a missing or wrong key.
-        //
-        // Tell the UI a key is required.
-        emit channelRequiresKey(P_(1));
-        break;
+
     case Irc::RPL_MOTDSTART:
     case Irc::RPL_MOTD:
         emit outputString(this->host(),
@@ -570,6 +560,43 @@ void Session::handleNumericMessage(IrcNumericMessage *message)
         break;
     }
 
+}
+
+void Session::handleErrorMessage(IrcNumericMessage *message)
+{
+    switch (message->code())
+    {
+    case Irc::ERR_BADCHANNELKEY:
+        // This code is received when a join attempt on a protected channel fails
+        // due to a missing or wrong key.
+        //
+        // Tell the UI a key is required.
+        emit channelRequiresKey(P_(1));
+        break;
+
+    case Irc::ERR_NICKNAMEINUSE:
+        // If we receive this whilst trying to reconnect, the server doesn't realise
+        // the connection has failed. Therefore send a QUIT message.
+        if (!isConnected())
+        {
+            qDebug() << "Nickname in use on reconnect!";
+            IrcCommand* command = IrcCommand::createQuit();
+            sendCommand(command);
+        }
+        else
+        {
+            emit outputString(this->host(),
+                              colorize(tr("[ERROR] %1").arg(IrcUtil::messageToHtml(MID_(1))),
+                                       colourPalette.info()));
+            emit displayError(MID_(1));
+        }
+
+    default:
+    emit outputString(this->host(),
+                      colorize(tr("[ERROR] %1").arg(IrcUtil::messageToHtml(MID_(1))),
+                               colourPalette.info()));
+    emit displayError(MID_(1));
+    }
 }
 
 void Session::handlePartMessage(IrcPartMessage *message)
@@ -1397,6 +1424,21 @@ void Session::pressReturn()
     QKeyEvent *event = new QKeyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier, "Return", false);
     QCoreApplication::postEvent (this, event);
 
+}
+
+void Session::resetSocket()
+{
+    // Reset the socket when automatically reconnecting.
+    ConnectionSettings settings;
+    if (settings.secure())
+    {
+        QSslSocket* sslSocket = new QSslSocket(this);
+        sslSocket->setPeerVerifyMode(QSslSocket::VerifyNone);
+        sslSocket->ignoreSslErrors();
+        setSocket(sslSocket);
+    }
+    else
+        setSocket(new QTcpSocket(this));
 }
 
 void Session::onIdentNewConnection()

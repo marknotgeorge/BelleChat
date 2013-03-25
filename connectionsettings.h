@@ -37,6 +37,8 @@ class ConnectionSettings : public QObject
     Q_PROPERTY (bool showMircColours READ showMircColours WRITE setShowMircColours NOTIFY showMircColoursChanged)
     Q_PROPERTY (bool secure READ secure WRITE setSecure NOTIFY secureChanged)
     Q_PROPERTY (bool autoReconnect READ autoReconnect WRITE setAutoReconnect NOTIFY autoReconnectChanged)
+    Q_PROPERTY (int reconnectRetries READ reconnectRetries WRITE setReconnectRetries NOTIFY reconnectRetriesChanged)
+    Q_PROPERTY (int reconnectInterval READ reconnectInterval WRITE setReconnectInterval NOTIFY reconnectIntervalChanged)
     Q_PROPERTY (bool transparentBackground READ transparentBackground WRITE setTransparentBackground NOTIFY transparentBackgroundChanged)
 
 
@@ -73,6 +75,8 @@ public:
     Q_INVOKABLE bool showMircColours();
     Q_INVOKABLE bool secure();
     Q_INVOKABLE bool autoReconnect();
+    Q_INVOKABLE int reconnectRetries();
+    Q_INVOKABLE int reconnectInterval();
     Q_INVOKABLE bool transparentBackground();
 
 
@@ -109,6 +113,8 @@ signals:
     void showMircColoursChanged(bool newShowMircColours);
     void secureChanged(bool newSecure);
     void autoReconnectChanged(bool newAutoReconnect);
+    void reconnectRetriesChanged(int newReconnectRetries);
+    void reconnectIntervalChanged(int newReconnectInterval);
     void transparentBackgroundChanged(bool newTransparentBackground);
     
 public slots:
@@ -144,6 +150,8 @@ public slots:
     Q_INVOKABLE void setShowMircColours(bool newShowMircColours);
     Q_INVOKABLE void setSecure(bool newSecure);
     Q_INVOKABLE void setAutoReconnect(bool newAutoReconnect);
+    Q_INVOKABLE void setReconnectRetries(int newReconnectRetries);
+    Q_INVOKABLE void setReconnectInterval(int newReconnectInterval);
     Q_INVOKABLE void setTransparentBackground(bool newTransparentBackground);
 
 private:

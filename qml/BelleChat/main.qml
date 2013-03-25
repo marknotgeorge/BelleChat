@@ -11,6 +11,7 @@ PageStackWindow {
     property bool namesListRequested: false
     property bool channelListCancelled: false
     property bool openServerSettings: false
+    property int connectionRetriesUsed: 0
 
     initialPage: MainPage { tools: serverToolbar }
     platformSoftwareInputPanelEnabled: true
@@ -114,7 +115,19 @@ PageStackWindow {
         onTriggered: {
             Session.close()
             connectingDialog.close()
-            connectionTimeoutDialog.open()
+            // connectionTimeoutDialog.open()
+        }
+    }
+
+    Timer {
+        id:reconnectTimer
+        interval: appConnectionSettings.reconnectInterval * 1000
+        onTriggered: {
+            var reconnectString = qsTr("Reconnecting to ") + appConnectionSettings.host + "..."
+            initialPage.outputToTab("Server", reconnectString)
+            Session.resetSocket()
+            Session.open()
+            connectionTimer.start()
         }
     }
 
@@ -167,23 +180,25 @@ PageStackWindow {
 
         }
         onDisconnected: {
-            if (!userDisconnected)
+            /* if (!userDisconnected)
             {
                 var failureString = "Connection to " + appConnectionSettings.host + " failed."
                 Session.close()
                 initialPage.outputToTab("Server", failureString)
-            }
+            } */
             connectionTimer.stop()
             connectingDialog.close()
 
-            userDisconnected = false;
             initialPage.closeAllTabs()
             if (!tryingToQuit)
             {
                 initialPage.clearTab("Server")
                 initialPage.outputToTab("Server", "Disconnected from " + appConnectionSettings.host + ".")
                 buttonConnect.state = "Disconnected"
+
+                //userDisconnected = false;
             }
+
             else
                 exit()
         }
@@ -215,12 +230,34 @@ PageStackWindow {
         }
         onSocketError: {
             var failureString = "Connection to " + appConnectionSettings.host + " failed."
+
             Session.close()
             connectionTimer.stop()
             connectingDialog.close()
             initialPage.outputToTab("Server", failureString)
             buttonConnect.state = "Disconnected"
-            connectionTimeoutDialog.open()
+            //connectionTimeoutDialog.open()
+            if (appConnectionSettings.autoReconnect)
+            {
+                connectionRetriesUsed++
+                console.debug("Connection retry " + connectionRetriesUsed + " of " + appConnectionSettings.reconnectRetries)
+                if (connectionRetriesUsed <= appConnectionSettings.reconnectRetries)
+                {
+                    // Build the message strings. More complicated than it needs
+                    // to be because of localisation...
+                    var retryBeg = qsTr("Reconnection attempt ")
+                    var retryMdl = qsTr(" of ")
+                    var retryEnd = qsTr(" .")
+                    var intervalBeg = qsTr("Pausing for ")
+                    var intervalEnd = qsTr(" seconds. Please wait...")
+                    var retryString = retryBeg + connectionRetriesUsed + retryMdl + appConnectionSettings.reconnectRetries + retryEnd
+                    var messageString = intervalBeg + appConnectionSettings.reconnectInterval + intervalEnd
+                    initialPage.outputToTab("Server", retryString)
+                    initialPage.outputToTab("Server", messageString)
+                    buttonConnect.state = "Connecting"
+                    reconnectTimer.start()
+                }
+            }
         }
         onQueryReceived: {
             var button = initialPage.findButton(sender)
@@ -448,6 +485,7 @@ PageStackWindow {
             initialPage.outputToTab("Server", outputString)
             Session.close()
             connectionTimer.stop()
+            reconnectTimer.stop()
         }
     }
 
@@ -622,8 +660,8 @@ PageStackWindow {
         // Open the ServerChoicePage
         //if (!appConnectionSettings.supressStartPage)
         //{
-            var page = startPageFactory.createObject(initialPage)
-            pageStack.push(page)
+        var page = startPageFactory.createObject(initialPage)
+        pageStack.push(page)
         //}
     }
 

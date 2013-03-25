@@ -194,6 +194,7 @@ Page {
                 text: qsTr("Join channels on connection")
                 checked: appConnectionSettings.autoJoinChannels
             }
+
             Label {
                 id: autoJoinChanListLabel
                 text: qsTr("Channels to join\n Format: channel [key], channel [key], ...")
@@ -222,19 +223,29 @@ Page {
 
             LabelledSwitch {
                 id: nsPWIsServerPWSwitch
-                text: qsTr("Use server password for NickServ")
+                visible: sendNsPasswordSwitch.checked
+                text: qsTr("NickServ pw same as server")
                 checked: appConnectionSettings.nsPWIsServerPW
+            }
+
+            Label {
+                id: nsPasswordLabel
+                text: qsTr("NickServ password")
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                visible: (sendNsPasswordSwitch.checked && !nsPWIsServerPWSwitch.checked)
             }
 
             TextField {
                 id: nsPasswordField
                 text: appConnectionSettings.nsPassword
-                visible: !(nsPWIsServerPWSwitch.checked)
+                visible: (sendNsPasswordSwitch.checked && !nsPWIsServerPWSwitch.checked)
                 anchors.right: parent.right
                 anchors.rightMargin: platformStyle.paddingLarge
                 anchors.left: parent.left
                 anchors.leftMargin: platformStyle.paddingLarge
                 inputMethodHints: Qt.ImhNoAutoUppercase
+                echoMode: TextInput.PasswordEchoOnEdit
                 //visible: (activeFocus||!inputContext.visible)
             }
 

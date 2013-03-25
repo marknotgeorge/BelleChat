@@ -48,29 +48,12 @@ Page {
         Column {
             id: layoutColumns
             anchors { left: parent.left; right: parent.right }
+            spacing: platformStyle.paddingMedium
 
-            LabelledSwitch {
-                id: autoReconnectSwitch
-                text: qsTr("Reconnect on connection failure")
-                checked: appConnectionSettings.autoReconnect
-            }
-
-            Label {
-                id: quitMessageLabel
-                text: qsTr("Default quit message")
-                anchors.left: parent.left
-                anchors.leftMargin: platformStyle.paddingLarge
-                //visible: quitMessageField.visible
-            }
-
-            TextField {
-                id: quitMessageField
-                text: appConnectionSettings.quitMessage
-                anchors.right: parent.right
-                anchors.rightMargin: platformStyle.paddingLarge
-                anchors.left: parent.left
-                anchors.leftMargin: platformStyle.paddingLarge
-                //visible: (activeFocus||!inputContext.visible)
+            ListItemText {
+                id: onDisconnectionLabel
+                role: "Title"
+                text: qsTr("On connecting")
             }
 
             Label {
@@ -93,6 +76,78 @@ Page {
             }
 
             LabelledSwitch {
+                id: autoReconnectSwitch
+                text: qsTr("Retry if connection lost")
+                checked: appConnectionSettings.autoReconnect
+            }
+
+            Label {
+                id: reconnectRetryLabel
+                text: qsTr("Number of times to retry")
+                visible: autoReconnectSwitch.checked
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+            }
+
+            TextField {
+                id: reconnectRetryField
+                text: appConnectionSettings.reconnectRetries
+                visible: autoReconnectSwitch.checked
+                inputMethodHints: Qt.ImhDigitsOnly
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                validator: IntValidator {bottom: 0; top: 65535;}
+                //visible: (activeFocus||!inputContext.visible)
+            }
+
+            Label {
+                id: reconnectIntervalLabel
+                text: qsTr("Interval between attempts (seconds)")
+                visible: autoReconnectSwitch.checked
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+            }
+
+            TextField {
+                id: reconnectIntervalField
+                text: appConnectionSettings.reconnectInterval
+                visible: autoReconnectSwitch.checked
+                inputMethodHints: Qt.ImhDigitsOnly
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                validator: IntValidator {bottom: 0; top: 65535;}
+                //visible: (activeFocus||!inputContext.visible)
+            }
+
+            ListItemText {
+                id: personalInfoLabel
+                role: "Title"
+                text: qsTr("Personal information")
+            }
+
+            Label {
+                id: quitMessageLabel
+                text: qsTr("Default quit message")
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                //visible: quitMessageField.visible
+            }
+
+            TextField {
+                id: quitMessageField
+                text: appConnectionSettings.quitMessage
+                anchors.right: parent.right
+                anchors.rightMargin: platformStyle.paddingLarge
+                anchors.left: parent.left
+                anchors.leftMargin: platformStyle.paddingLarge
+                //visible: (activeFocus||!inputContext.visible)
+            }
+
+            LabelledSwitch {
                 id: respondToIdentSwitch
                 text: qsTr("Respond to IDENT request")
                 checked: appConnectionSettings.respondToIdent
@@ -100,7 +155,7 @@ Page {
 
             LabelledSwitch {
                 id: allowUserInfoSwitch
-                text: qsTr("Allow BelleChat to send user info")
+                text: qsTr("Send USERINFO")
                 checked: appConnectionSettings.allowUserInfo
             }
 
@@ -167,20 +222,18 @@ Page {
                 flicker.contentY = focusChildY + focusChildHeight - flicker.height
             }
         }
-    }
-
-    QueryDialog {
-        id: connectedQuery
-        titleText: qsTr("Connected to server")
-        message: qsTr("Settings changes will not apply until the next time you connect.\n")
-        acceptButtonText: qsTr("Ok")
-    }
+    }    
 
     function saveSettings()
     {
         if (quitMessageField.text !== appConnectionSettings.quitMessage)
             appConnectionSettings.setQuitMessage(quitMessageField.text)
 
+        if(reconnectRetryField.text !== appConnectionSettings.reconnectRetries.toString())
+            appConnectionSettings.setReconnectRetries(reconnectRetryField.text)
+
+        if (reconnectIntervalField.text !== appConnectionSettings.reconnectInterval.toString())
+            appConnectionSettings.setReconnectInterval(reconnectIntervalField.text)
 
         if (timeoutIntervalField.text !== appConnectionSettings.timeoutInterval.toString())
             appConnectionSettings.setTimeoutInterval(timeoutIntervalField.text)
@@ -188,7 +241,7 @@ Page {
         if (respondToIdentSwitch.checked !== appConnectionSettings.respondToIdent)
             appConnectionSettings.setRespondToIdent(respondToIdentSwitch.checked)
 
-        if (autoReconnectSwitch.checked !== appConnectionSettings.auroReconnect)
+        if (autoReconnectSwitch.checked !== appConnectionSettings.autoReconnect)
             appConnectionSettings.setAutoReconnect(autoReconnectSwitch.checked)
 
         if (allowUserInfoSwitch.checked !== appConnectionSettings.allowUserInfo)

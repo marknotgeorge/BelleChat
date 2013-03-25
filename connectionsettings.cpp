@@ -196,6 +196,18 @@ bool ConnectionSettings::autoReconnect()
     return settings.value("autoReconnect", "false").toBool();
 }
 
+int ConnectionSettings::reconnectRetries()
+{
+    QSettings settings;
+    return settings.value("reconnectRetries", "3").toInt();
+}
+
+int ConnectionSettings::reconnectInterval()
+{
+    QSettings settings;
+    return settings.value("reconnectInterval", "15").toInt();
+}
+
 bool ConnectionSettings::transparentBackground()
 {
     QSettings settings;
@@ -429,6 +441,21 @@ void ConnectionSettings::setAutoReconnect(bool newAutoReconnect)
     QSettings settings;
     settings.setValue("autoReconnect", newAutoReconnect);
     emit autoReconnectChanged(newAutoReconnect);
+}
+
+void ConnectionSettings::setReconnectRetries(int newReconnectRetries)
+{
+    QSettings settings;
+    settings.setValue("reconnectRetries", newReconnectRetries);
+    emit reconnectRetriesChanged(newReconnectRetries);
+
+}
+
+void ConnectionSettings::setReconnectInterval(int newReconnectInterval)
+{
+    QSettings settings;
+    settings.setValue("reconnectInterval", newReconnectInterval);
+    emit reconnectIntervalChanged(newReconnectInterval);
 }
 
 void ConnectionSettings::setTransparentBackground(bool newTransparentBackground)

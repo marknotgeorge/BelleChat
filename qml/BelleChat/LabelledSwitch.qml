@@ -9,20 +9,19 @@ Row {
     height: switchComponent.height
     anchors {
         left: parent.left
-        leftMargin: platformStyle.paddingMedium
+        leftMargin: platformStyle.paddingLarge
         right: parent.right
-        rightMargin: platformStyle.paddingMedium
+        rightMargin: platformStyle.paddingLarge
     }
     property alias checked: switchComponent.checked
     property alias text: labelComponent.text
 
     signal clicked()
 
-    ListItemText {
-        id: labelComponent
-        role: "subtitle"
+    Label {
+        id: labelComponent        
         anchors {verticalCenter: window.verticalCenter }
-        width: window.width - window.spacing - switchComponent.width - (platformStyle.paddingMedium * 2)
+        width: window.width - window.spacing - switchComponent.width - (platformStyle.paddingLarge * 2)
     }
 
     Switch {

@@ -86,6 +86,7 @@ public slots:
     Q_INVOKABLE void open();
     Q_INVOKABLE void sendNickServPassword(QString password);
     Q_INVOKABLE void pressReturn();
+    Q_INVOKABLE void resetSocket();
 
     void onIdentNewConnection();
     void onIdentReadyRead();
@@ -145,6 +146,7 @@ protected:
     void handleNickMessage(IrcNickMessage* message);
     void handleNoticeMessage(IrcNoticeMessage* message);
     void handleNumericMessage(IrcNumericMessage* message);
+    void handleErrorMessage(IrcNumericMessage* message);
     void handlePartMessage(IrcPartMessage* message);
     void handlePongMessage(IrcPongMessage* message);
     void handlePrivateMessage(IrcPrivateMessage* message);

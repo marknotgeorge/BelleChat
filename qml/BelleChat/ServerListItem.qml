@@ -9,7 +9,7 @@ ListItem {
 
     Column {
         id: itemRow
-        anchors.fill: pageListItem.paddingItem
+        anchors.fill: serverListItem.paddingItem
 
         ListItemText {
             id: topLine
@@ -20,7 +20,7 @@ ListItem {
 
         ListItemText {
             id: bottomLine
-            mode: pageListItem.mode
+            mode: serverListItem.mode
             role: "Subtitle"
             text: url + " : " + port
         }
